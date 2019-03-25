@@ -1,0 +1,4 @@
+export const CONNECT = 'CONNECT'
+export const STATUS_UPDATED = "STATUS_UPDATED"
+export const CONNECTED = 'CONNECTED'
+export const CONNECTION_ERROR = 'CONNECTION_ERROR'
