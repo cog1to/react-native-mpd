@@ -104,7 +104,11 @@ export default class MpdClientWrapper {
 
     disconnect() {
         if (this.client != null) {
-            this._sendCommand(cmd('close', []))
+            return this._sendCommand(cmd('close', []))
+        } else {
+            return new Promise((resolve) => {
+                resolve()
+            })
         }
     }
 
@@ -123,28 +127,40 @@ export default class MpdClientWrapper {
         })
     }
 
-    getStatus(callback) {
+    getStatus() {
         return this._sendCommand(cmd('status', []), mpd.parseKeyValueMessage)        
     }
 
-    getQueue(callback) {
+    getQueue() {
         return this._sendCommand(cmd('playlistinfo', []), mpd.parseArrayMessage)        
     }
 
-    getCurrentSong(callback) {
+    getCurrentSong() {
         return this._sendCommand(cmd('currentsong', []), mpd.parseKeyValueMessage)
     }
 
-    getList(path, callback) {
+    getList(path) {
         return this._sendCommand(cmd('listall', [path]), mpd.parseArrayMessage)
     }
 
-    play(callback) {
+    play() {
         return this._sendCommand(cmd('pause', [0]), mpd.parseKeyValueMessage)
     }
 
-    pause(callback) {
+    pause() {
         return this._sendCommand(cmd('pause', [1]), mpd.parseKeyValueMessage)        
+    }
+
+    next() {
+        return this._sendCommand(cmd('next', []), mpd.parseKeyValueMessage)
+    }
+
+    previous() {
+        return this._sendCommand(cmd('previous', []), mpd.parseKeyValueMessage)
+    }
+
+    seek(position) {
+        return this._sendCommand(cmd('seekcur', [position]), mpd.parseKeyValueMessage)
     }
 
     // MARK: - Event listeners

@@ -6,8 +6,10 @@ import {
   Button,
   Text,
 } from 'react-native';
-import MpdContext from '../utils/MpdContext'
 import Input from '../components/common/Input'
+
+import { connect } from 'redux'
+
 
 export default class LoginScreen extends React.Component {
   static propTypes = {
