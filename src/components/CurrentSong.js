@@ -33,8 +33,6 @@ class CurrentSong extends React.Component {
 
 		const { title, album, artist, file } = currentSong		
 
-		console.log('state == ' + state)
-
 		if (state === 'stop') {
 			return (
 				<View style={styles.container}>

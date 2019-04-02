@@ -14,16 +14,13 @@ import { getAlbumArt } from '../redux/reducers/archive/actions'
 
 class AlbumArt extends React.Component {
 
-	componentDidUpdate(prevProps, prevState, snapshot) {
-		console.log('*** updating component')
-
+	componentDidUpdate(prevProps, prevState) {
 		const { dispatch } = this.props
 		const { currentSong: { album, albumArtist, artist, songid }, uri } = this.props
 		const nextArtist = (albumArtist ? albumArtist : artist)
 		const prevArtist = (prevProps.currentSong !== null ? (prevProps.currentSong.albumArtist ? prevProps.currentSong.albumArtist : prevProps.currentSong.artist ) : null)
 
 		if (prevProps.currentSong === null || (prevProps.currentSong.album !== album && prevArtist !== nextArtist) || uri === null) {
-			console.log('*** getting album art')			
 			dispatch(getAlbumArt(nextArtist, album))
 		}
 	}
@@ -39,8 +36,7 @@ class AlbumArt extends React.Component {
 	}
 }
 
-const mapStateToProps = state => {
-	console.log('*** mapping state to AlbumArt')
+const uriFromState = (state) => {
 	const { artist, album, albumArtist } = state.currentSong
 	const realArtist = albumArtist ? albumArtist : artist
     
@@ -49,9 +45,13 @@ const mapStateToProps = state => {
     	uri = state.archive[realArtist][album]
     }
 
+	return uri
+}
+
+const mapStateToProps = state => {
     return {
         currentSong: state.currentSong,
-        uri: uri
+        uri: uriFromState(state),
     }
 }
 
@@ -60,7 +60,7 @@ export default connect(mapStateToProps, null)(AlbumArt)
 const styles = StyleSheet.create({
 	container: {
 		aspectRatio: 1,
-		width:'100%',
+		width:'100%',		
 	},
 	image: {
 		flex: 1,
