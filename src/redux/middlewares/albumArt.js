@@ -1,7 +1,6 @@
-import * as types from './ActionTypes'
-import * as updateTypes from './UpdateTypes'
+import * as types from '../reducers/archive/types'
 
-import { getAlbumArt, albumArtReceived } from './Actions'
+import { getAlbumArt, albumArtReceived } from '../reducers/archive/actions'
 
 import CoverArtArchive from '../../api/CoverArtArchive'
 import LastFM from '../../api/LastFM'

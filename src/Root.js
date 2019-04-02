@@ -7,7 +7,7 @@ import LoginScreen from './screens/Login'
 import Player from './screens/Player'
 
 // Actions.
-import { connect } from './redux/mpd/Actions'
+import { connect } from './redux/reducers/status/actions'
 
 class Root extends Component {
     constructor(props) {
@@ -25,13 +25,13 @@ class Root extends Component {
         if (connected) {
             return (<Player />)
         } else {
-            return (<LoginScreen onSubmit={this.connectToMpd} />)
+            return (<LoginScreen onSubmit={this.connectToMpd}/>)
         }
     }
 }
 
 const mapStateToProps = state => {
-    let connected = state.connected
+    let connected = state.status.connected
     return {
         connected: connected
     }

@@ -14,7 +14,7 @@ import Root from './src/Root'
 import { Provider } from 'react-redux'
 
 // MPD Redux.
-import { configureStore } from './src/redux/mpd/ClientStore'
+import { configureStore } from './src/redux/store'
 
 const store = configureStore()
 

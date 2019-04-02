@@ -10,28 +10,28 @@ import {
 import { connect } from 'react-redux';
 
 // Actions.
-import { listenFor } from '../redux/mpd/Actions'
+import { addListener, removeListener } from '../redux/reducers/listeners/actions'
 
-// Update types.
-import * as updateTypes from '../redux/mpd/UpdateTypes'
+// Subsystems.
+import { SUBSYSTEMS } from '../redux/reducers/listeners/types'
 
 class CurrentSong extends React.Component {
 
 	componentWillUnmount() {
 		const { dispatch } = this.props
-		dispatch(listenFor(updateTypes.CURRENT_SONG, 'current-song', false))
+		dispatch(removeListener(SUBSYSTEMS.CURRENT_SONG, 'current-song'))
 	}
 
 	componentDidMount() {
 		const { dispatch } = this.props
-		dispatch(listenFor(updateTypes.CURRENT_SONG, 'current-song', true))
+		dispatch(addListener(SUBSYSTEMS.CURRENT_SONG, 'current-song'))
 	}
 
 	render() {
 		const { currentSong, state } = this.props
 		if (!currentSong) return null
 
-		const { Title, Album, Artist, file } = currentSong		
+		const { title, album, artist, file } = currentSong		
 
 		console.log('state == ' + state)
 
@@ -44,12 +44,12 @@ class CurrentSong extends React.Component {
 		} else {
 			return (
 				<View style={styles.container}>					
-					{Title && (<Text style={styles.songName}>{Title}</Text>)}
-					{!Title && file && (<Text style={styles.songName}>{file}</Text>)}
-					{!Title && !file && (<Text style={styles.songName}>---</Text>)}
+					{title && (<Text style={styles.songName}>{title}</Text>)}
+					{!title && file && (<Text style={styles.songName}>{file}</Text>)}
+					{!title && !file && (<Text style={styles.songName}>---</Text>)}
 				
-					{Artist && (<Text style={styles.albumName}>{Artist} - {Album ? Album : '[Unknown album]'}</Text>)}
-					{!Artist && (<Text style={styles.albumName}>---</Text>)}
+					{artist && (<Text style={styles.albumName}>{artist} - {album ? album : '[Unknown album]'}</Text>)}
+					{!artist && (<Text style={styles.albumName}>---</Text>)}
 				</View>
 			)
 		}
@@ -60,7 +60,7 @@ const mapStateToProps = state => {
     let currentSong = state.currentSong
     return {
         currentSong: currentSong,
-        state: state.state,
+        state: state.status.player,
     }
 }
 

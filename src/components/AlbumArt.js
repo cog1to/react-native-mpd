@@ -10,21 +10,21 @@ import {
 import { connect } from 'react-redux';
 
 // Actions.
-import { getAlbumArt } from '../redux/mpd/Actions'
-
-// Update types.
-import * as updateTypes from '../redux/mpd/UpdateTypes'
+import { getAlbumArt } from '../redux/reducers/archive/actions'
 
 class AlbumArt extends React.Component {
 
 	componentDidUpdate(prevProps, prevState, snapshot) {
-		const { dispatch } = this.props
-		const { currentSong: { Id, Album, Artist, AlbumArtist }, uri } = this.props
-		const artist = (AlbumArtist ? AlbumArtist : Artist)
-		const prevArtist = (prevProps.currentSong !== null ? (prevProps.currentSong.AlbumArtist ? prevProps.currentSong.AlbumArtist : prevProps.currentSong.Artist ) : null)
+		console.log('*** updating component')
 
-		if (prevProps.currentSong === null || (prevProps.currentSong.Album !== Album && prevArtist !== artist) || uri === null) {
-			dispatch(getAlbumArt(artist, Album))
+		const { dispatch } = this.props
+		const { currentSong: { album, albumArtist, artist, songid }, uri } = this.props
+		const nextArtist = (albumArtist ? albumArtist : artist)
+		const prevArtist = (prevProps.currentSong !== null ? (prevProps.currentSong.albumArtist ? prevProps.currentSong.albumArtist : prevProps.currentSong.artist ) : null)
+
+		if (prevProps.currentSong === null || (prevProps.currentSong.album !== album && prevArtist !== nextArtist) || uri === null) {
+			console.log('*** getting album art')			
+			dispatch(getAlbumArt(nextArtist, album))
 		}
 	}
 
@@ -40,25 +40,17 @@ class AlbumArt extends React.Component {
 }
 
 const mapStateToProps = state => {
-	const { currentSong } = state
-
-	if (currentSong === null) {
-		return {
-			currentSong: null,
-			uri: null,
-		}
-	}
-
-    const { Artist, Album, AlbumArtist } = currentSong
-    const artist = AlbumArtist ? AlbumArtist : Artist
+	console.log('*** mapping state to AlbumArt')
+	const { artist, album, albumArtist } = state.currentSong
+	const realArtist = albumArtist ? albumArtist : artist
     
     let uri = null
-    if (currentSong !== null && artist in state.archive && Album in state.archive[artist]) {
-    	uri = state.archive[artist][Album]
+    if (state.currentSong !== null && artist in state.archive && album in state.archive[realArtist]) {
+    	uri = state.archive[realArtist][album]
     }
 
     return {
-        currentSong: currentSong,
+        currentSong: state.currentSong,
         uri: uri
     }
 }

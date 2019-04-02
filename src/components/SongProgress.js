@@ -11,14 +11,15 @@ import {
 import { connect } from 'react-redux';
 
 // Actions.
-import { listenFor, seek } from '../redux/mpd/Actions'
+import { addListener, removeListener } from '../redux/reducers/listeners/actions'
+import { seek } from '../redux/reducers/player/actions'
 
-// Update types.
-import * as updateTypes from '../redux/mpd/UpdateTypes'
+// Subsystems.
+import { SUBSYSTEMS } from '../redux/reducers/listeners/types'
 
 class SongProgress extends React.Component {
 	static defaultProps = {
-		state: 'stop',
+		player: 'stop',
 		duration: 1,
 		elapsed: 0,
 	}
@@ -53,8 +54,8 @@ class SongProgress extends React.Component {
 	}
 
 	componentWillReceiveProps(nextProps) {
-		const { state, addListener, removeListener } = nextProps
-		if (state === 'play') {
+		const { player, addListener, removeListener } = nextProps
+		if (player === 'play') {
 			addListener()
 		} else {
 			removeListener()
@@ -62,10 +63,10 @@ class SongProgress extends React.Component {
 	}
 
 	render() {
-		const { state, duration, elapsed } = this.props
+		const { player, duration, elapsed } = this.props
 		const { value, dragging } = this.state
 
-		const disabled = state === 'stop'
+		const disabled = player === 'stop'
 		const style = disabled ? styles.disabled : styles.enabled
 
 		const minimumValue = 0
@@ -101,12 +102,11 @@ class SongProgress extends React.Component {
 	}
 }
 
-const mapStateToProps = state => {	
-    const playerState = (state.state !== null) ? state.state : 'stop'
-    const { elapsed, duration } = state
-    
+const mapStateToProps = state => {
+    const { player, elapsed, duration } = state.status
+
     return {
-        state: playerState,
+        player,
         elapsed,
         duration,
     }
@@ -114,8 +114,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 	return {
-		addListener: () => { dispatch(listenFor(updateTypes.PROGRESS, 'player-progress', true)) },
-		removeListener: () => { dispatch(listenFor(updateTypes.PROGRESS, 'player-progress', false)) },
+		addListener: () => { dispatch(addListener(SUBSYSTEMS.PROGRESS, 'player-progress')) },
+		removeListener: () => { dispatch(removeListener(SUBSYSTEMS.PROGRESS, 'player-progress')) },
 		seek: (position) => { dispatch(seek(position)) },
 	}
 }
