@@ -6,6 +6,9 @@ import { connect, connected, connectionError, error, getStatus, statusUpdated } 
 import * as currentSongTypes from '../reducers/currentsong/types'
 import { getCurrentSong, currentSongUpdated } from '../reducers/currentsong/actions'
 
+import * as queueTypes from '../reducers/queue/types'
+import { getQueue, queueUpdated } from '../reducers/queue/actions'
+
 import * as listenerTypes from '../reducers/listeners/types'
 
 import MpdClientWrapper from '../../utils/MpdClientWrapper'
@@ -26,6 +29,14 @@ const handlePlayerUpdate = (store) => {
 
 		if (store.getState().listeners.status.length > 0) {
 			store.dispatch(getStatus('status'))
+		}
+	}
+}
+
+const handleQueueUpdate = (store) => {
+	return () => {
+		if (store.getState().listeners.queue.length > 0) {
+			store.dispatch(getQueue())
 		}
 	}
 }
@@ -60,9 +71,11 @@ const songToState = (song) => {
 		state.file = song.file
 	}
 
-	if ('SongId' in song) {
-		state.songId = song.SongId
+	if ('Id' in song) {
+		state.songId = song.Id
 	}
+
+	console.log(JSON.stringify(state))
 
 	return state
 }
@@ -74,6 +87,12 @@ const statusToState = (status) => {
 	}
 }
 
+const queueToState = (queue) => {
+	return queue.map((element) => {
+		return songToState(element)
+	})
+}
+
 export const mpdMiddleware = store => {	
 	return next => action => {
 		switch (action.type) {
@@ -81,6 +100,9 @@ export const mpdMiddleware = store => {
 				client.mpd.connect(action.host, action.port).then(() => {
 					// Subscribe to player events.
 					client.disconnects.push(client.mpd.onPlayerUpdate(handlePlayerUpdate(store)))
+
+					// Subscribe to queue events.
+					client.disconnects.push(client.mpd.onQueueUpdate(handleQueueUpdate(store)))
 
 					// Emit connected action.
 					store.dispatch(connected(true))
@@ -150,6 +172,19 @@ export const mpdMiddleware = store => {
 				client.mpd.seek(action.position)
 				break
 
+			case queueTypes.GET_QUEUE:
+				client.mpd.getQueue().then((result) => {
+					let queue = queueToState(result)
+					store.dispatch(queueUpdated(queue))
+				}).catch((e) => {
+					store.dispatch(error(e, queueTypes.GET_QUEUE))
+				})				
+				break
+
+			case queueTypes.SET_CURRENT_SONG:
+				client.mpd.setCurrentSong(action.songId)
+				break
+
 			case listenerTypes.ADD_LISTENER:
 				if (!store.getState().listeners[action.subsystem].includes(action.id)) {
 					if (action.subsystem === listenerTypes.SUBSYSTEMS.CURRENT_SONG) {
@@ -158,6 +193,8 @@ export const mpdMiddleware = store => {
 						store.dispatch(getStatus('status'))
 					} else if (action.subsystem === listenerTypes.SUBSYSTEMS.PROGRESS) {
 						store.dispatch(getStatus('progress'))
+					} else if (action.subsystem === listenerTypes.SUBSYSTEMS.QUEUE) {
+						store.dispatch(getQueue())
 					}
 				}
 				break

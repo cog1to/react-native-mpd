@@ -8,3 +8,8 @@ export const currentSongUpdated = (data) => ({
 export const getCurrentSong = () => ({
 	type: types.GET_CURRENT_SONG,
 })
+
+export const setCurrentSong = (songId) => ({
+	type: types.SET_CURRENT_SONG,
+	songId,
+})

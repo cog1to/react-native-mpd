@@ -2,12 +2,13 @@ import PropTypes from 'prop-types'
 
 import * as types from './types'
 
-const currentSongPropTypes = {
+export const currentSongPropTypes = {
 	file: PropTypes.string,
 	title: PropTypes.string,
 	artist: PropTypes.string,
 	album: PropTypes.string,
 	abumArtist: PropTypes.string,
+	songId: PropTypes.string,
 }
 
 const initialState = {
@@ -16,6 +17,7 @@ const initialState = {
 	artist: null,
 	album: null,
 	abumArtist: null,
+	songId: null,
 }
 
 export const currentSongReducer = (state = initialState, action) => {

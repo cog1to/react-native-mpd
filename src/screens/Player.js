@@ -1,5 +1,4 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { 
     View, 
     StyleSheet,
@@ -17,17 +16,10 @@ export default class Player extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-                <View style={styles.player}>
-                    <AlbumArt />
-                    <CurrentSong />
-                    <SongProgress />
-                    <Controls
-                        style={[styles.controls]}
-                        onNextSong={this.handleNextSong}
-                        onPreviousSong={this.handlePreviousSong}
-                        onPlayPause={this.handlePlayPause}                    
-                    />                    
-                </View>
+                <AlbumArt />
+                <CurrentSong />
+                <SongProgress />
+                <Controls />
             </View>
         )
     }
@@ -35,10 +27,6 @@ export default class Player extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,        
-        justifyContent: 'space-evenly',
-    },
-    player: {
         flex: 1,
         justifyContent: 'space-evenly', 
         padding: 20,

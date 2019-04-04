@@ -5,4 +5,5 @@ export const SUBSYSTEMS = {
 	STATUS: 'status',
     CURRENT_SONG: 'currentSong',
     PROGRESS: 'progress',
+    QUEUE: 'queue'
 }

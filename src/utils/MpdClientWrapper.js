@@ -163,6 +163,10 @@ export default class MpdClientWrapper {
         return this._sendCommand(cmd('seekcur', [position]), mpd.parseKeyValueMessage)
     }
 
+    setCurrentSong(songId) {
+        return this._sendCommand(cmd('playid', [songId]), mpd.parseKeyValueMessage)
+    }
+
     // MARK: - Event listeners
 
     _handleSystemUpdate(systemName) {

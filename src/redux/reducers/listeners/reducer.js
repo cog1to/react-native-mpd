@@ -6,12 +6,14 @@ const listenersPropTypes = {
 	status: PropTypes.arrayOf(PropTypes.string),
 	currentSong: PropTypes.arrayOf(PropTypes.string),
 	progress: PropTypes.arrayOf(PropTypes.string),
+	queue: PropTypes.arrayOf(PropTypes.string),
 }
 
 const initialState = {
 	status: [],
 	currentSong: [],
 	progress: [],
+	queue: [],
 }
 
 export const listenersReducer = (state = initialState, action) => {

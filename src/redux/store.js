@@ -5,6 +5,7 @@ import { archiveReducer } from './reducers/archive/reducer'
 import { listenersReducer } from './reducers/listeners/reducer'
 import { statusReducer } from './reducers/status/reducer'
 import { currentSongReducer } from './reducers/currentsong/reducer'
+import { queueReducer } from './reducers/queue/reducer'
 
 // Middlewares.
 import { mpdMiddleware } from './middlewares/mpd'
@@ -15,6 +16,7 @@ const reducer = combineReducers({
 	archive: archiveReducer,
 	listeners: listenersReducer,
 	status: statusReducer,
+	queue: queueReducer,
 	currentSong: currentSongReducer,
 })
 
