@@ -9,21 +9,7 @@ import {
 // Redux.
 import { connect } from 'react-redux';
 
-// Actions.
-import { getAlbumArt } from '../redux/reducers/archive/actions'
-
 class AlbumArt extends React.Component {
-
-	componentDidUpdate(prevProps, prevState) {
-		const { dispatch } = this.props
-		const { currentSong: { album, albumArtist, artist, songid }, uri } = this.props
-		const nextArtist = (albumArtist ? albumArtist : artist)
-		const prevArtist = (prevProps.currentSong !== null ? (prevProps.currentSong.albumArtist ? prevProps.currentSong.albumArtist : prevProps.currentSong.artist ) : null)
-
-		if (prevProps.currentSong === null || (prevProps.currentSong.album !== album && prevArtist !== nextArtist) || uri === null) {
-			dispatch(getAlbumArt(nextArtist, album))
-		}
-	}
 
 	render() {
 		const { uri } = this.props

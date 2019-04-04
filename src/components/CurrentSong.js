@@ -9,23 +9,7 @@ import {
 // Redux.
 import { connect } from 'react-redux';
 
-// Actions.
-import { addListener, removeListener } from '../redux/reducers/listeners/actions'
-
-// Subsystems.
-import { SUBSYSTEMS } from '../redux/reducers/listeners/types'
-
 class CurrentSong extends React.Component {
-
-	componentWillUnmount() {
-		const { dispatch } = this.props
-		dispatch(removeListener(SUBSYSTEMS.CURRENT_SONG, 'current-song'))
-	}
-
-	componentDidMount() {
-		const { dispatch } = this.props
-		dispatch(addListener(SUBSYSTEMS.CURRENT_SONG, 'current-song'))
-	}
 
 	render() {
 		const { currentSong, state } = this.props

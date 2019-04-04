@@ -10,12 +10,7 @@ import {
 // Redux.
 import { connect } from 'react-redux';
 
-// Actions.
-import { addListener, removeListener } from '../redux/reducers/listeners/actions'
-import { seek } from '../redux/reducers/player/actions'
-
-// Subsystems.
-import { SUBSYSTEMS } from '../redux/reducers/listeners/types'
+import { seek, startProgressUpdate, stopProgressUpdate } from '../redux/reducers/player/actions'
 
 class SongProgress extends React.Component {
 	static defaultProps = {
@@ -114,8 +109,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 	return {
-		addListener: () => { dispatch(addListener(SUBSYSTEMS.PROGRESS, 'player-progress')) },
-		removeListener: () => { dispatch(removeListener(SUBSYSTEMS.PROGRESS, 'player-progress')) },
+		addListener: () => { dispatch(startProgressUpdate()) },
+		removeListener: () => { dispatch(stopProgressUpdate()) },
 		seek: (position) => { dispatch(seek(position)) },
 	}
 }

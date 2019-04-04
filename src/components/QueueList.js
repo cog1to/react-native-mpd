@@ -14,11 +14,7 @@ import { queuePropTypes } from '../redux/reducers/queue/reducer'
 import { connect } from 'react-redux';
 
 // Actions.
-import { addListener, removeListener } from '../redux/reducers/listeners/actions'
 import { setCurrentSong }  from '../redux/reducers/queue/actions'
-
-// Subsystems.
-import { SUBSYSTEMS } from '../redux/reducers/listeners/types'
 
 // List item.
 import QueueListItem from './QueueListItem'
@@ -35,16 +31,6 @@ class QueueList extends React.Component {
 
 	static defaultProps = {
 		queue: [],
-	}
-
-	componentDidMount() {
-		const { addListener } = this.props
-		addListener()
-	}
-
-	componentWillUnmount() {
-		const { removeListener } = this.props
-		removeListener()
 	}
 
 	render() {
@@ -103,16 +89,6 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
 	return {
-		addListener: () => { 
-			dispatch(addListener(SUBSYSTEMS.QUEUE, 'queue')) 
-			dispatch(addListener(SUBSYSTEMS.CURRENT_SONG, 'queue'))
-			dispatch(addListener(SUBSYSTEMS.STATUS, 'queue')) 
-		},
-		removeListener: () => { 
-			dispatch(removeListener(SUBSYSTEMS.QUEUE, 'queue')) 
-			dispatch(addListener(SUBSYSTEMS.CURRENT_SONG, 'queue')) 
-			dispatch(addListener(SUBSYSTEMS.STATUS, 'queue')) 
-		},
 		play: (songId) => {
 			dispatch(setCurrentSong(songId))
 		}

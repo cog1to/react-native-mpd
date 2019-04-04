@@ -12,27 +12,13 @@ import FontAwesome, { Icons } from 'react-native-fontawesome'
 import { connect } from 'react-redux';
 
 // Actions.
-import { addListener, removeListener } from '../redux/reducers/listeners/actions'
 import { playPause, playNext, playPrevious } from '../redux/reducers/player/actions'
-
-// Subsystems.
-import { SUBSYSTEMS } from '../redux/reducers/listeners/types'
 
 class Controls extends React.Component {
 	static defaultProps = {
 		state: 'stop',
 	}
-
-	componentDidMount() {
-		const { addListener } = this.props
-		addListener()
-	}
-
-	componentWillUnmount() {
-		const { removeListener } = this.props
-		removeListener()
-	}
-
+	
 	playPause = () => {
 		const { onPlayPause, state } = this.props
 		
@@ -93,8 +79,6 @@ const mapDispatchToProps = dispatch => {
 		onPlayPause: (state) => { dispatch(playPause(state)) },
 		onNext: () => { dispatch(playNext()) },
 		onPrevious: () => { dispatch(playPrevious()) },
-		addListener: () => { dispatch(addListener(SUBSYSTEMS.STATUS, 'player-controls')) },
-		removeListener: () => { dispatch(removeListener(SUBSYSTEMS.STATUS, 'player-controls')) },
 	}
 }
 

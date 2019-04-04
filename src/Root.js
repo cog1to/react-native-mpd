@@ -24,7 +24,8 @@ class Root extends Component {
         const { connected } = this.props
 
         if (connected) {
-            return (<Queue />)
+            //return (<Queue />)
+            return (<Player />)
         } else {
             return (<LoginScreen onSubmit={this.connectToMpd}/>)
         }

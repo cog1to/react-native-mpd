@@ -17,3 +17,11 @@ export const seek = (position) => ({
 	type: types.SEEK,
 	position,
 })
+
+export const startProgressUpdate = () => ({
+	type: types.START_PROGRESS_UPDATE,
+})
+
+export const stopProgressUpdate = () => ({
+	type: types.STOP_PROGRESS_UPDATE,
+})

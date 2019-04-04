@@ -1,15 +1,9 @@
-import * as playerTypes from '../reducers/player/types'
+import types from '../types'
 
-import * as statusTypes from '../reducers/status/types'
 import { connect, connected, connectionError, error, getStatus, statusUpdated } from '../reducers/status/actions'
-
-import * as currentSongTypes from '../reducers/currentsong/types'
 import { getCurrentSong, currentSongUpdated } from '../reducers/currentsong/actions'
-
-import * as queueTypes from '../reducers/queue/types'
 import { getQueue, queueUpdated } from '../reducers/queue/actions'
-
-import * as listenerTypes from '../reducers/listeners/types'
+import { getAlbumArt } from '../reducers/archive/actions'
 
 import MpdClientWrapper from '../../utils/MpdClientWrapper'
 
@@ -18,26 +12,19 @@ const client = {
 	mpd: new MpdClientWrapper(),
 	disconnects: [],
 	progressTimeout: null,
+	updatingProgress: false,
 }
 
 // Returns a handler function for player update events.
 const handlePlayerUpdate = (store) => {
 	return () => {
-		if (store.getState().listeners.currentSong.length > 0) {
-			store.dispatch(getCurrentSong())
-		}
-
-		if (store.getState().listeners.status.length > 0) {
-			store.dispatch(getStatus('status'))
-		}
+		store.dispatch(getStatus('status'))		
 	}
 }
 
 const handleQueueUpdate = (store) => {
 	return () => {
-		if (store.getState().listeners.queue.length > 0) {
-			store.dispatch(getQueue())
-		}
+		store.dispatch(getQueue())
 	}
 }
 
@@ -96,7 +83,7 @@ const queueToState = (queue) => {
 export const mpdMiddleware = store => {	
 	return next => action => {
 		switch (action.type) {
-			case statusTypes.CONNECT:
+			case types.CONNECT:
 				client.mpd.connect(action.host, action.port).then(() => {
 					// Subscribe to player events.
 					client.disconnects.push(client.mpd.onPlayerUpdate(handlePlayerUpdate(store)))
@@ -106,12 +93,13 @@ export const mpdMiddleware = store => {
 
 					// Emit connected action.
 					store.dispatch(connected(true))
+					store.dispatch(getStatus('status'))
 				}).catch((error) => {
 					store.dispatch(connectionError(error))
 				})
 				break
 
-			case statusTypes.DISCONNECT:
+			case types.DISCONNECT:
 				client.mpd.disconnect().then(() => {
 					// Unsubscribe from all events.
 					client.disconnects.forEach((callback) => {
@@ -125,7 +113,7 @@ export const mpdMiddleware = store => {
 				})
 				break
 
-			case statusTypes.GET_STATUS:
+			case types.GET_STATUS:
 				client.mpd.getStatus().then((status) => {
 					const newState = statusToState(status)
 					store.dispatch(statusUpdated(newState, action.source))
@@ -134,23 +122,43 @@ export const mpdMiddleware = store => {
 				})
 				break
 
-			case statusTypes.STATUS_UPDATED:
-				if (action.source === 'progress' && store.getState().listeners.progress.length > 0) {
+			case types.STATUS_UPDATED:
+				if (action.source === 'progress' && client.updatingProgress) {
 					client.progressTimeout = setTimeout(() => store.dispatch(getStatus('progress')), 1000)
+				}
+
+				if (action.status.songid != store.getState().status.songid) {
+					store.dispatch(getCurrentSong())
+				}
+
+				if (store.getState().queue.length == 0) {
+					store.dispatch(getQueue())
 				}
 
 				break
 
-			case currentSongTypes.GET_CURRENT_SONG:
+			case types.GET_CURRENT_SONG:
 				client.mpd.getCurrentSong().then((result) => {
 					let song = songToState(result)
 					store.dispatch(currentSongUpdated(song))
 				}).catch((e) => {
-					store.dispatch(error(e, currentSongTypes.GET_CURRENT_SONG))
-				})				
+					store.dispatch(error(e, types.GET_CURRENT_SONG))
+				})
 				break
 
-			case playerTypes.PLAY_PAUSE:
+			case types.CURRENT_SONG_UPDATED:
+				const { album, artist, albumArtist } = action.data
+				const nextArtist = (albumArtist ? albumArtist : artist)
+				const archive = store.getState().archive
+				
+				if (album !== null && nextArtist !== null) {
+					if (!(nextArtist in archive) || !(album in archive[nextArtist])) {
+						store.dispatch(getAlbumArt(nextArtist, album))
+					}
+				}
+				break
+
+			case types.PLAY_PAUSE:
 				const { state } = action
 
 				if (state === 'play') {
@@ -160,44 +168,46 @@ export const mpdMiddleware = store => {
 				}
 				break
 
-			case playerTypes.PLAY_NEXT:
+			case types.PLAY_NEXT:
 				client.mpd.next()
 				break
 
-			case playerTypes.PLAY_PREVIOUS:
+			case types.PLAY_PREVIOUS:
 				client.mpd.previous()
 				break
 
-			case playerTypes.SEEK:
+			case types.SEEK:
 				client.mpd.seek(action.position)
 				break
 
-			case queueTypes.GET_QUEUE:
+			case types.GET_QUEUE:
 				client.mpd.getQueue().then((result) => {
 					let queue = queueToState(result)
 					store.dispatch(queueUpdated(queue))
 				}).catch((e) => {
-					store.dispatch(error(e, queueTypes.GET_QUEUE))
+					store.dispatch(error(e, types.GET_QUEUE))
 				})				
 				break
 
-			case queueTypes.SET_CURRENT_SONG:
+			case types.SET_CURRENT_SONG:
 				client.mpd.setCurrentSong(action.songId)
 				break
 
-			case listenerTypes.ADD_LISTENER:
-				if (!store.getState().listeners[action.subsystem].includes(action.id)) {
-					if (action.subsystem === listenerTypes.SUBSYSTEMS.CURRENT_SONG) {
-						store.dispatch(getCurrentSong())
-					} else if (action.subsystem === listenerTypes.SUBSYSTEMS.STATUS) {
-						store.dispatch(getStatus('status'))
-					} else if (action.subsystem === listenerTypes.SUBSYSTEMS.PROGRESS) {
-						store.dispatch(getStatus('progress'))
-					} else if (action.subsystem === listenerTypes.SUBSYSTEMS.QUEUE) {
-						store.dispatch(getQueue())
-					}
+			case types.START_PROGRESS_UPDATE:
+				if (!client.updatingProgress) {
+					client.updatingProgress = true
+					store.dispatch(getStatus('progress'))
 				}
 				break
+
+			case types.STOP_PROGRESS_UPDATE:
+				client.updatingProgress = false
+				if (client.progressTimeout !== null) {
+					clearTimeout(client.progressTimeout)
+				}
+
+				break
+
 			default:
 				break
 		}
