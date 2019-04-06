@@ -5,6 +5,9 @@ import {
   StyleSheet,
   Text,
   FlatList,
+  LayoutAnimation,
+  Platform,
+  UIManager,
 } from 'react-native'
 
 // Song prop types.
@@ -15,9 +18,21 @@ import { connect } from 'react-redux';
 
 // Actions.
 import { setCurrentSong }  from '../redux/reducers/queue/actions'
+import { playPause } from '../redux/reducers/player/actions'
 
 // List item.
 import QueueListItem from './QueueListItem'
+
+if (Platform.OS === 'android') {
+	UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
+const RowAnimation = {
+	duration: 150,
+	create: { type: 'linear', property: 'opacity' }, 
+	update: { type: 'linear', property: 'opacity' }, 
+	delete: { type: 'linear', property: 'opacity' }
+}
 
 class QueueList extends React.Component {
 	
@@ -25,12 +40,17 @@ class QueueList extends React.Component {
 		queue: PropTypes.arrayOf(PropTypes.shape({
 			name: PropTypes.string.isRequired,
 			subtitle: PropTypes.string,
-			playing: PropTypes.bool.isRequired,
+			status: PropTypes.string,
+			songId: PropTypes.string.isRequired,
 		}))
 	}
 
 	static defaultProps = {
 		queue: [],
+	}
+
+	componentWillReceiveProps(nextProps) {
+		LayoutAnimation.configureNext(RowAnimation)
 	}
 
 	render() {
@@ -50,19 +70,26 @@ class QueueList extends React.Component {
 			id={item.songId}
 			name={item.name}
 			subtitle={item.subtitle}
-			playing={item.playing}
-			onPressItem={this.onPressItem}
+			status={item.status}
+			onPressItem={this.onPressItem}			
 		/>
 	}
 
-	onPressItem = (id: string) => {
-    	const { play } = this.props
-    	play(id)
+	onPressItem = (id, status) => {
+    	const { play, playPause } = this.props
+    	if (status === null) {
+    		play(id)
+    	} else if (status === 'play') {
+    		playPause('pause')
+    	} else {
+    		playPause('play')
+    	}
   	}
 }
 
 const queueToList = (state) => {
-	const currentSongId = state.status.player === 'stop' ? null : state.currentSong.songId
+	const player = state.status.player
+	const currentSongId = player === 'stop' ? null : state.currentSong.songId	
 
 	return state.queue.map(song => {
 		let name = song.title
@@ -76,7 +103,7 @@ const queueToList = (state) => {
 			songId: song.songId,
 			name: name,
 			subtitle: artist,
-			playing: song.songId === currentSongId
+			status: (song.songId === currentSongId ? player : null)
 		}
 	})
 }
@@ -91,6 +118,9 @@ const mapDispatchToProps = dispatch => {
 	return {
 		play: (songId) => {
 			dispatch(setCurrentSong(songId))
+		},
+		playPause: (state) => {
+			dispatch(playPause(state))
 		}
 	}
 }

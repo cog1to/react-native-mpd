@@ -62,8 +62,6 @@ const songToState = (song) => {
 		state.songId = song.Id
 	}
 
-	console.log(JSON.stringify(state))
-
 	return state
 }
 
