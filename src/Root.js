@@ -6,6 +6,7 @@ import { connect as reduxConnect } from 'react-redux';
 import LoginScreen from './screens/Login'
 import Player from './screens/Player'
 import Queue from './screens/Queue'
+import Browse from './screens/Browse'
 
 // Actions.
 import { connect } from './redux/reducers/status/actions'
@@ -24,8 +25,9 @@ class Root extends Component {
         const { connected } = this.props
 
         if (connected) {
-            return (<Queue />)
+            //return (<Queue />)
             //return (<Player />)
+            return (<Browse />)
         } else {
             return (<LoginScreen onSubmit={this.connectToMpd}/>)
         }

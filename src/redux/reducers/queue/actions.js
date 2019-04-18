@@ -13,3 +13,8 @@ export const setCurrentSong = (songId) => ({
 	type: types.SET_CURRENT_SONG,
 	songId,
 })
+
+export const deleteSong = (songId) => ({
+	type: types.DELETE_SONG,
+	songId,
+})

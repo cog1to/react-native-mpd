@@ -1,13 +1,13 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { 
-  View, 
-  StyleSheet,
-  Text,
-  FlatList,
-  LayoutAnimation,
-  Platform,
-  UIManager,
+    View, 
+    StyleSheet,
+    Text,
+    FlatList,
+    LayoutAnimation,
+    Platform,
+    UIManager,
 } from 'react-native'
 
 // Song prop types.
@@ -17,118 +17,128 @@ import { queuePropTypes } from '../redux/reducers/queue/reducer'
 import { connect } from 'react-redux';
 
 // Actions.
-import { setCurrentSong }  from '../redux/reducers/queue/actions'
+import { setCurrentSong, deleteSong }  from '../redux/reducers/queue/actions'
 import { playPause } from '../redux/reducers/player/actions'
 
 // List item.
 import QueueListItem from './QueueListItem'
 
 if (Platform.OS === 'android') {
-	UIManager.setLayoutAnimationEnabledExperimental(true);
+    UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
 const RowAnimation = {
-	duration: 150,
-	create: { type: 'linear', property: 'opacity' }, 
-	update: { type: 'linear', property: 'opacity' }, 
-	delete: { type: 'linear', property: 'opacity' }
+    duration: 150,
+    create: { type: 'linear', property: 'opacity' }, 
+    update: { type: 'linear', property: 'opacity' }, 
+    delete: { type: 'linear', property: 'opacity' }
 }
 
 class QueueList extends React.Component {
-	
-	static propTypes = {
-		queue: PropTypes.arrayOf(PropTypes.shape({
-			name: PropTypes.string.isRequired,
-			subtitle: PropTypes.string,
-			status: PropTypes.string,
-			songId: PropTypes.string.isRequired,
-		}))
-	}
+    
+    static propTypes = {
+        queue: PropTypes.arrayOf(PropTypes.shape({
+            name: PropTypes.string.isRequired,
+            subtitle: PropTypes.string,
+            status: PropTypes.string,
+            songId: PropTypes.string.isRequired,
+        }))
+    }
 
-	static defaultProps = {
-		queue: [],
-	}
+    static defaultProps = {
+        queue: [],
+    }
 
-	componentWillReceiveProps(nextProps) {
-		LayoutAnimation.configureNext(RowAnimation)
-	}
+    componentWillReceiveProps(nextProps) {
+        LayoutAnimation.configureNext(RowAnimation)
+    }
 
-	render() {
-		return (
-			<FlatList style={styles.container}
-				data={this.props.queue}
-		        keyExtractor={this.keyExtractor}
-		        renderItem={this.renderItem}
-			/>
-		)
-	}
+    render() {
+        return (
+            <FlatList 
+                style={styles.container}
+                data={this.props.queue}
+                keyExtractor={this.keyExtractor}
+                renderItem={this.renderItem}
+            />
+        )
+    }
 
-	keyExtractor = (item, index) => item.songId
+    keyExtractor = (item, index) => item.songId
 
-	renderItem = ({item}) => {
-		return <QueueListItem
-			id={item.songId}
-			name={item.name}
-			subtitle={item.subtitle}
-			status={item.status}
-			onPressItem={this.onPressItem}			
-		/>
-	}
+    renderItem = ({item}) => {
+        return <QueueListItem
+            id={item.songId}
+            name={item.name}
+            subtitle={item.subtitle}
+            status={item.status}
+            onPressItem={this.onPressItem}
+            onDeleteItem={this.onDeleteItem}
+        />
+    }
 
-	onPressItem = (id, status) => {
-    	const { play, playPause } = this.props
-    	if (status === null) {
-    		play(id)
-    	} else if (status === 'play') {
-    		playPause('pause')
-    	} else {
-    		playPause('play')
-    	}
-  	}
+    onPressItem = (id, status) => {
+        const { play, playPause } = this.props
+        if (status === null) {
+            play(id)
+        } else if (status === 'play') {
+            playPause('pause')
+        } else {
+            playPause('play')
+        }
+    }
+
+    onDeleteItem = (id) => {
+        const { remove } = this.props
+        remove(id)
+    }
 }
 
 const queueToList = (state) => {
-	const player = state.status.player
-	const currentSongId = player === 'stop' ? null : state.currentSong.songId	
+    const player = state.status.player
+    const currentSongId = player === 'stop' ? null : state.currentSong.songId   
 
-	return state.queue.map(song => {
-		let name = song.title
-		if (name === null) {
-			name = song.file
-		}
+    return state.queue.map(song => {
+        let name = song.title
+        if (name === null) {
+            name = song.file
+        }
 
-		let artist = song.artist
+        let artist = song.artist
 
-		return {
-			songId: song.songId,
-			name: name,
-			subtitle: artist,
-			status: (song.songId === currentSongId ? player : null)
-		}
-	})
+        return {
+            songId: song.songId,
+            name: name,
+            subtitle: artist,
+            status: (song.songId === currentSongId ? player : null)
+        }
+    })
 }
 
 const mapStateToProps = state => {
     return {
-    	queue: queueToList(state),    	
+        queue: queueToList(state),      
     }
 }
 
 const mapDispatchToProps = dispatch => {
-	return {
-		play: (songId) => {
-			dispatch(setCurrentSong(songId))
-		},
-		playPause: (state) => {
-			dispatch(playPause(state))
-		}
-	}
+    return {
+        play: (songId) => {
+            dispatch(setCurrentSong(songId))
+        },
+        playPause: (state) => {
+            dispatch(playPause(state))
+        },
+        remove: (songId) => {
+            dispatch(deleteSong(songId))
+        }
+    }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(QueueList)
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-	}
+    container: {
+        flex: 1,
+    }
 })

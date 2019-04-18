@@ -14,7 +14,7 @@ export const configureStore = () => {
 		applyMiddleware(
 			mpdMiddleware,
 			albumArtMiddleware,
-			loggerMiddleware,
+//			loggerMiddleware,
 		)
 	)
 

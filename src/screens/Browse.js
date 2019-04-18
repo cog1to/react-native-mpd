@@ -4,20 +4,21 @@ import {
     StyleSheet,
 } from 'react-native'
 
-import QueueList from '../components/QueueList'
+import BrowseList from '../components/BrowseList'
 
-export default class Queue extends React.Component {
+export default class Browse extends React.Component {
     render() {
         return (
             <View style={styles.container}>
-                <QueueList />
+                <BrowseList />
             </View>
         )
     }
-} 
+}
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
 })
+

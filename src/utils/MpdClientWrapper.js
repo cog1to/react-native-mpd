@@ -127,6 +127,12 @@ export default class MpdClientWrapper {
         })
     }
 
+    parseList(entries) {
+        return function(msg) {
+            return mpd.parseArrayMessage(msg, entries)
+        }
+    }
+
     getStatus() {
         return this._sendCommand(cmd('status', []), mpd.parseKeyValueMessage)        
     }
@@ -140,7 +146,7 @@ export default class MpdClientWrapper {
     }
 
     getList(path) {
-        return this._sendCommand(cmd('listall', [path]), mpd.parseArrayMessage)
+        return this._sendCommand(cmd('lsinfo', [path]), this.parseList(['directory', 'file', 'playlist']))
     }
 
     play() {
@@ -165,6 +171,10 @@ export default class MpdClientWrapper {
 
     setCurrentSong(songId) {
         return this._sendCommand(cmd('playid', [songId]), mpd.parseKeyValueMessage)
+    }
+
+    deleteSongId(songId) {
+        return this._sendCommand(cmd('deleteid', [songId]), mpd.parseKeyValueMessage)   
     }
 
     // MARK: - Event listeners
