@@ -18,12 +18,10 @@ import FontAwesome, { Icons } from 'react-native-fontawesome'
 import { connect } from 'react-redux'
 
 // Actions.
-import { changeCurrentDir } from '../redux/reducers/browser/actions'
+import { changeCurrentDir, addToQueue } from '../redux/reducers/browser/actions'
 
 // Add menu.
-import BrowseAddMenu from './BrowseAddMenu'
-
-import Highlightable from './common/Highlightable'
+import { OPTIONS, BrowseAddMenu } from './BrowseAddMenu'
 
 // Highlightable list.
 import HighlightableList from './common/HighlightableList'
@@ -33,11 +31,6 @@ if (Platform.OS === 'android') {
 }
 
 class BrowseListItem extends React.PureComponent {
-
-    handlePress = () => {
-        const { item, onItemSelected } = this.props
-        onItemSelected(item)
-    }
 
     handleMenuPress = () => {
         const { item, onItemMenuSelected } = this.props
@@ -51,9 +44,6 @@ class BrowseListItem extends React.PureComponent {
         let displayType = artist != null ? artist : type
 
         return (
-            <Highlightable
-                onPress={this.handlePress}
-            >
                 <View style={styles.itemContainer}>
                     <Text style={styles.status}>
                         {type === 'FILE' && (<FontAwesome>{Icons.music}</FontAwesome>) }
@@ -74,7 +64,6 @@ class BrowseListItem extends React.PureComponent {
                         </TouchableOpacity>
                     )}
                 </View>
-            </Highlightable>
         )
     }
 }
@@ -83,18 +72,20 @@ class BrowseList extends React.Component {
     
     state = {
         showingMenu: false,
+        selected: []
     }
 
     static defaultProps = {
         currentDir: [''],
         content: [],
+        queueSize: 0,
+        position: null,
     }
 
     renderItem = ({item}) => {
         return (
             <BrowseListItem
                 item={item}
-                onItemSelected={this.onItemPress}
                 onItemMenuSelected={this.onItemMenuPress}
             />
         )
@@ -104,33 +95,92 @@ class BrowseList extends React.Component {
         return item.name
     }
 
-    onItemPress = (item) => {
+    onItemPress = (item, deselect) => {
         const { currentDir, loadCurrentDir } = this.props
         
         if (item.type === 'DIRECTORY') {
             let newDir = currentDir.slice()
             newDir.push(item.name)
-
             this.props.loadCurrentDir(newDir)
+            
+            deselect()
         } else {
+            let newSelected = this.state.selected.slice()
+            newSelected.push({name: item.name, deselect: deselect})
+
             this.setState({
                 showingMenu: true,
+                selected: newSelected,
             })
         }
     }
 
     onItemMenuPress = (item) => {
-        // TODO: Add to queue.
+        let newSelected = this.state.selected.slice()
+        newSelected.push({name: item.name})
+
+        this.setState({
+            showingMenu: true,
+            selected: newSelected,
+        })
     }
 
     handleBackPress = () => {
         const { currentDir, loadCurrentDir } = this.props
+        const { showingMenu, selected } = this.state
+
+        if (showingMenu) {
+            selected.forEach((item) => {
+                if ('deselect' in item) {
+                    item.deselect()
+                }
+            })
+
+            this.setState({
+                showingMenu: false,
+                selected: [],
+            })
+
+            return true
+        }
+
         if (currentDir.length > 1) {
             loadCurrentDir(currentDir.slice(0, currentDir.length-1))
             return true
         }
 
         return false
+    }
+
+    onOptionSelected = (option) => {
+        const { addToQueue, content, queueSize, position = null } = this.props
+        const { name, deselect = null } = this.state.selected[0]
+
+        const item = content.filter(el => {
+            return el.name === name
+        })[0]
+
+        switch (option) {
+            case OPTIONS.ADD_TO_QUEUE_BEGINNING:
+                console.log('adding to beginning ' + name + ', ' + item.type)
+                addToQueue(item.fullPath, 0, item.type)
+                break
+            case OPTIONS.ADD_TO_QUEUE_END:
+                addToQueue(item.fullPath, queueSize, item.type)
+                break
+            case OPTIONS.ADD_TO_QUEUE_AFTER_CURRENT_SONG:
+                addToQueue(item.fullPath, position + 1, item.type)
+                break
+        }
+
+        if (deselect) {
+            deselect()
+        }
+
+        this.setState({
+            showingMenu: false,
+            selected: [],
+        })
     }
 
     componentDidMount() {
@@ -153,22 +203,39 @@ class BrowseList extends React.Component {
     }
 
     render() {
-        const { showingMenu } = this.state
+        const { showingMenu, selected } = this.state
+        const { queueSize = 0, position = null } = this.props
+        
+        // Populating options.
+        const options = [OPTIONS.ADD_TO_QUEUE_BEGINNING]
+
+        // If there's a current song, we can use at as an anchor.
+        if (position !== null) {
+            options.push(OPTIONS.ADD_TO_QUEUE_AFTER_CURRENT_SONG)
+        }
+
+        // If queue is not empty, we can add at the and as well as beginning.
+        if (queueSize > 0) {
+            options.push(OPTIONS.ADD_TO_QUEUE_END)
+        }
 
         return (
             <View style={styles.container}>
-                <FlatList
-                    ref={(component) => {this.flatList = component}}
+                <HighlightableList
                     style={styles.list}
                     data={this.props.content}
                     keyExtractor={this.keyExtractor}
                     renderItem={this.renderItem}
+                    onItemSelected={this.onItemPress}
                 />
                 {showingMenu && (
                     <View style={styles.menuWrapper}>
                         <TouchableWithoutFeedback>
                             <View style={styles.menuContainer}>
-                                <BrowseAddMenu />
+                                <BrowseAddMenu 
+                                    options={options}
+                                    onOptionSelected={this.onOptionSelected}
+                                />
                             </View>
                         </TouchableWithoutFeedback>
                     </View>
@@ -194,12 +261,17 @@ const nodeFromPath = (path, tree) => {
 
 const mapStateToProps = state => {
     const { tree, currentDir } = state.browser
+    const { position = null } = state.currentSong
+    const { player } = state.status
 
-    let content = nodeFromPath(currentDir, tree)    
+    let content = nodeFromPath(currentDir, tree)
+    let queueSize = state.queue.length
 
     return {
         currentDir: state.browser.currentDir,
         content: (content === null ? [] : (content.children !== null ? content.children : [])),
+        queueSize: queueSize,
+        position: player !== 'stop' ? position : null,
     }
 }
 
@@ -208,6 +280,10 @@ const mapDispatchToProps = dispatch => {
         loadCurrentDir: (path) => {
             dispatch(changeCurrentDir(path))
         },
+        addToQueue: (uri, position, type) => {
+            console.log('dispatching')
+            dispatch(addToQueue(uri, position, type))
+        }
    }
 }
 

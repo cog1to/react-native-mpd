@@ -9,6 +9,7 @@ export const currentSongPropTypes = {
     album: PropTypes.string,
     abumArtist: PropTypes.string,
     songId: PropTypes.string,
+    position: PropTypes.number,
 }
 
 const initialState = {
@@ -18,6 +19,7 @@ const initialState = {
     album: null,
     abumArtist: null,
     songId: null,
+    position: null,
 }
 
 export const currentSongReducer = (state = initialState, action) => {

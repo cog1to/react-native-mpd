@@ -11,3 +11,10 @@ export const treeUpdated = (path, content) => ({
     content: content,
 })
 
+export const addToQueue = (uri, position, type) => ({
+    type: types.ADD_TO_QUEUE,
+    uri: uri,
+    position: position,
+    fileType: type,
+})
+

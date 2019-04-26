@@ -4,7 +4,7 @@ import { connect, connected, connectionError, error, getStatus, statusUpdated } 
 import { getCurrentSong, currentSongUpdated } from '../reducers/currentsong/actions'
 import { getQueue, queueUpdated } from '../reducers/queue/actions'
 import { getAlbumArt } from '../reducers/archive/actions'
-import { changeCurrentDir, treeUpdated } from '../reducers/browser/actions'
+import { changeCurrentDir, treeUpdated, addToQueue } from '../reducers/browser/actions'
 
 import MpdClientWrapper from '../../utils/MpdClientWrapper'
 
@@ -32,40 +32,25 @@ const handleQueueUpdate = (store) => {
 }
 
 const songToState = (song) => {
-    let state = {
-        file: null,
-        title: null,
-        artist: null,
-        album: null,
-        abumArtist: null,
-        songId: null,
-    }
+    const { 
+        Artist: artist = null,
+        Album: album = null,
+        AlbumArtist: albumArtist = null,
+        Title: title = null,
+        Id: songId = null,
+        Pos: position = null,
+        file: file = null,
+    } = song
 
-    if ('Artist' in song) {
-        state.artist = song.Artist
+    return {
+        artist: artist,
+        album: album,
+        albumArtist: albumArtist,
+        title: title,
+        songId: songId,
+        file: file,
+        position: parseFloat(position)
     }
-
-    if ('Album' in song) {
-        state.album = song.Album
-    }
-
-    if ('AlbumArtist' in song) {
-        state.artist = song.AlbumArtist
-    }
-
-    if ('Title' in song) {
-        state.title = song.Title
-    }
-
-    if ('file' in song) {
-        state.file = song.file
-    }
-
-    if ('Id' in song) {
-        state.songId = song.Id
-    }
-
-    return state
 }
 
 const statusToState = (status) => {
@@ -76,15 +61,12 @@ const statusToState = (status) => {
 }
 
 const queueToState = (queue) => {
-    return queue.map((element) => {
+    return queue.filter(el => { return el.Id != null }).map((element) => {
         return songToState(element)
     })
 }
 
 const listToChildren = (list) => {
-//    list.forEach((el) => {
-//        console.log('*** ' + JSON.stringify(el))
-//    })
     return list.filter((el) => ('directory' in el || 'file' in el || 'playlist' in el)).map((element) => {        
         let node = {}
         
@@ -128,6 +110,30 @@ const nodeFromPath = (path, tree) => {
     })
 
     return node
+}
+
+async function getContentRecursively(uri) {
+    let nodes = listToChildren(await client.mpd.getList(uri))
+    
+    let results = []
+    for (let index = 0; index < nodes.length; index++) {
+        const node = nodes[index]
+        switch (node.type) {
+            case TreeNodeType.FILE:
+                results.push(node)
+                break
+            case TreeNodeType.DIRECTORY:
+                let children = await getContentRecursively(node.fullPath)
+                children.forEach(file => { results.push(file) })
+                break
+            case TreeNodeType.PLAYLIST:
+                break
+            default:
+                break
+        }
+    }
+
+    return results
 }
 
 export const mpdMiddleware = store => {
@@ -280,8 +286,33 @@ export const mpdMiddleware = store => {
                     })
                 }
                 break
+            
+            case types.ADD_TO_QUEUE:
+                const { uri, position, fileType = null } = action
+                
+                if (fileType === TreeNodeType.DIRECTORY) {
+                    getContentRecursively(uri).then((content) => {
+                        content.forEach((node, index) => {
+                            client.mpd.addToQueue(node.fullPath, position + index)
+                        })
+                    }).catch((e) => {
+                        console.log(e)
+                        store.dispatch(error(e, types.ADD_TO_QUEUE))
+                    })
+                } else if (fileType === TreeNodeType.PLAYLIST) {
+                    client.mpd.getPlaylist(uri).then((content) => {
+                        content.forEach((node, index) => {
+                            client.mpd.addToQueue(node.file, position + index)
+                        })
+                    })
+                    // Handle playlists.
+                } else {
+                    client.mpd.addToQueue(uri, position)
+                }
+                break
 
             default:
+                console.log('got ' + action.type)
                 break
         }
 

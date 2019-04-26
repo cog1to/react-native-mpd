@@ -10,9 +10,14 @@ import PropTypes from 'prop-types'
 
 class HighlightableItem extends React.Component {
     
+    state = {
+        selected: false,
+    }
+    
     constructor(props) {
         super(props)
         this.animatedValue = new Animated.Value(0)
+        this.animating = false
     }
 
     static propTypes = {
@@ -20,48 +25,76 @@ class HighlightableItem extends React.Component {
         baseColor: PropTypes.string.isRequired,
         duration: PropTypes.number.isRequired,
         onPress: PropTypes.func.isRequired,
-        selected: PropTypes.bool.isRequired,
+        onPressIn: PropTypes.func.isRequired,
     }
 
     static defaultProps = {
         highlightColor: '#aaaaaa',
         baseColor: '#ffffff',
-        duration: 150,
+        duration: 250,
         selected: false,
     }
 
-    handlePressIn = () => {
-        this.animateBackground(1)
+    deselect = () => {
+        this.setState({
+            selected: false,
+        })
     }
 
-    handlePressOut = () => {
-        if (!this.props.selected) {
+    handlePressIn = () => {
+        this.props.onPressIn(this.deselect)
+
+        this.setState({
+            selected: true,
+        })
+    }
+
+    handlePress = () => {
+        const { id, onPress } = this.props
+        onPress(id, this.deselect)
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (nextProps.id !== this.props.id) {
+            return true
+        }
+        
+        if (nextState.selected !== this.state.selected && !this.animating) {
+            return true
+        }
+
+        return false
+    }
+
+    componentWillUpdate(nextProps, nextState) {
+        if (nextState.selected) {
+            this.animatedValue.setValue(1)
+        } else {
             this.animateBackground(0)
         }
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        return nextProps.id !== this.props.id
-    }
-
-    onAnimationEnded = () => {
-        if (this.props.selected && this.animatedValue.getValue() == 0) {
-            this.animateBackground(0)
-        } else if (!this.props.selected && this.animatedValue.getValue() == 1) {
+    onAnimationEnded = (endValue) => {
+        if (this.state.selected && endValue == 0) {
             this.animateBackground(1)
+        } else if (!this.state.selected && endValue == 1) {
+            this.animateBackground(0)
+        } else {
+            this.animating = false
         }
     }
     
     animateBackground = (endValue) => {
         const { duration } = this.props
-
+        
+        this.animating = true
         Animated.timing(
             this.animatedValue,
             {
                 toValue: endValue,
                 duration: duration/2,
             }
-        ).start(this.onAnimationEnded)
+        ).start(() => this.onAnimationEnded(endValue))
     }
 
     render() {
@@ -75,8 +108,7 @@ class HighlightableItem extends React.Component {
         return (
             <TouchableWithoutFeedback
                 onPressIn={this.handlePressIn}
-                onPressOut={this.handlePressOut}
-                onPress={this.props.onPress}
+                onPress={this.handlePress}
             >
                 <Animated.View style={this.props.style, { backgroundColor: backgroundColorValue }}>
                     {this.props.children}
@@ -89,25 +121,47 @@ class HighlightableItem extends React.Component {
 export default class HighlightableList extends React.Component {
 
     static defaultProps = {
-        onItemSelected: (item) => {},
-        selected: [],
+        onItemSelected: (item, deselect) => {
+            deselect()
+        },
     }
 
-    handleOnSelected = (item) => {
-        this.props.onItemSelected(item) 
+    handleOnSelected = (id, deselect) => {
+        if (this.scrolling) {
+            deselect()
+            return
+        }
+
+        const { keyExtractor, data } = this.props
+        const item = data.filter(item => {
+            return keyExtractor(item) === id 
+        })[0]
+
+        this.props.onItemSelected(item, deselect)
+    }
+
+    handlePressIn = (deselect) => {
+        this.deselect = deselect
+    }
+
+    handleScrollBegin = () => {
+        this.deselect()
+    }
+
+    scrollToOffset = (config) => {
+        this.ref.scrollToOffset(config)
     }
 
     renderItem = ({item}) => {
-        const { keyExtractor } = this.props.keyExtractor
-        const isSelected = selected.includes(keyExtractor(item))
+        const { keyExtractor } = this.props
 
         return (
             <HighlightableItem
                 id={keyExtractor(item)}
-                selected={isSelected}
                 onPress={this.handleOnSelected}
+                onPressIn={this.handlePressIn}
             >
-                {this.props.renderItem(item)}
+                {this.props.renderItem({item})}
             </HighlightableItem>
         )        
     }
@@ -115,13 +169,13 @@ export default class HighlightableList extends React.Component {
     render() {
         return (
             <FlatList
+                ref={(component) => {this.ref = component}}
                 {...this.props}
                 renderItem={this.renderItem}
+                onScrollBeginDrag={this.handleScrollBegin}
+                onScrollEndDrag={this.handleScrollEnd}
             />
         )
     }
 }
 
-const styles = StyleSheet.create({
-
-})

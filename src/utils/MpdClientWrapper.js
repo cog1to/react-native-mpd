@@ -149,6 +149,10 @@ export default class MpdClientWrapper {
         return this._sendCommand(cmd('lsinfo', [path]), this.parseList(['directory', 'file', 'playlist']))
     }
 
+    getPlaylist(name) {
+        return this._sendCommand(cmd('listplaylist', [name]), mpd.parseArrayMessage)
+    }
+
     play() {
         return this._sendCommand(cmd('pause', [0]), mpd.parseKeyValueMessage)
     }
@@ -175,6 +179,10 @@ export default class MpdClientWrapper {
 
     deleteSongId(songId) {
         return this._sendCommand(cmd('deleteid', [songId]), mpd.parseKeyValueMessage)   
+    }
+
+    addToQueue(uri, position) {
+        return this._sendCommand(cmd('addid', [uri, position]), mpd.parseKeyValueMessage)
     }
 
     // MARK: - Event listeners
