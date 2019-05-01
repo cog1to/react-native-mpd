@@ -32,12 +32,17 @@ class HighlightableItem extends React.Component {
         highlightColor: '#aaaaaa',
         baseColor: '#ffffff',
         duration: 250,
-        selected: false,
     }
 
     deselect = () => {
         this.setState({
             selected: false,
+        })
+    }
+
+    select = () => {
+        this.setState({
+            selected: true,
         })
     }
 
@@ -111,7 +116,8 @@ class HighlightableItem extends React.Component {
                 onPress={this.handlePress}
             >
                 <Animated.View style={this.props.style, { backgroundColor: backgroundColorValue }}>
-                    {this.props.children}
+                    {/*this.props.children*/}
+                    {React.cloneElement(this.props.children, { select: this.select, deselect: this.deselect })}
                 </Animated.View>
             </TouchableWithoutFeedback>
         )
@@ -161,7 +167,7 @@ export default class HighlightableList extends React.Component {
                 onPress={this.handleOnSelected}
                 onPressIn={this.handlePressIn}
             >
-                {this.props.renderItem({item})}
+                {this.props.renderItem({ item })}
             </HighlightableItem>
         )        
     }
@@ -173,7 +179,6 @@ export default class HighlightableList extends React.Component {
                 {...this.props}
                 renderItem={this.renderItem}
                 onScrollBeginDrag={this.handleScrollBegin}
-                onScrollEndDrag={this.handleScrollEnd}
             />
         )
     }

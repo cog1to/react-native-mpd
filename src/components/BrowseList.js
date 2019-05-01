@@ -33,8 +33,9 @@ if (Platform.OS === 'android') {
 class BrowseListItem extends React.PureComponent {
 
     handleMenuPress = () => {
-        const { item, onItemMenuSelected } = this.props
-        onItemMenuSelected(item)
+        const { item, onItemMenuSelected, select, deselect } = this.props
+        select()
+        onItemMenuSelected(item, deselect)
     }
 
     render() {
@@ -44,26 +45,26 @@ class BrowseListItem extends React.PureComponent {
         let displayType = artist != null ? artist : type
 
         return (
-                <View style={styles.itemContainer}>
-                    <Text style={styles.status}>
-                        {type === 'FILE' && (<FontAwesome>{Icons.music}</FontAwesome>) }
-                        {type === 'DIRECTORY' && (<FontAwesome>{Icons.folder}</FontAwesome>) }
-                        {type === 'PLAYLIST' && (<FontAwesome>{Icons.fileAlt}</FontAwesome>) }
-                    </Text>
-                    <View style={styles.description}>
-                        <Text style={styles.title}>{displayName}</Text>
-                        <Text style={styles.subtitle}>{displayType}</Text>
-                    </View>
-                    {type === 'DIRECTORY' && (
-                        <TouchableOpacity
-                            onPress={this.handleMenuPress}
-                        >
-                            <Text style={{...styles.status, fontSize: 14, fontWeight: 'bold'}}>
-                                ...
-                            </Text>
-                        </TouchableOpacity>
-                    )}
+            <View style={styles.itemContainer}>
+                <Text style={styles.status}>
+                    {type === 'FILE' && (<FontAwesome>{Icons.music}</FontAwesome>) }
+                    {type === 'DIRECTORY' && (<FontAwesome>{Icons.folder}</FontAwesome>) }
+                    {type === 'PLAYLIST' && (<FontAwesome>{Icons.fileAlt}</FontAwesome>) }
+                </Text>
+                <View style={styles.description}>
+                    <Text style={styles.title}>{displayName}</Text>
+                    <Text style={styles.subtitle}>{displayType}</Text>
                 </View>
+                {type === 'DIRECTORY' && (
+                    <TouchableOpacity
+                        onPress={this.handleMenuPress}
+                    >
+                        <Text style={{...styles.status, fontSize: 14, fontWeight: 'bold'}}>
+                            ...
+                        </Text>
+                    </TouchableOpacity>
+                )}
+            </View>
         )
     }
 }
@@ -82,7 +83,7 @@ class BrowseList extends React.Component {
         position: null,
     }
 
-    renderItem = ({item}) => {
+    renderItem = ({ item }) => {
         return (
             <BrowseListItem
                 item={item}
@@ -102,7 +103,6 @@ class BrowseList extends React.Component {
             let newDir = dir.slice()
             newDir.push(item.name)
             
-            //this.props.loadCurrentDir(newDir)
             this.props.onNavigate(newDir)
             
             deselect()
@@ -117,9 +117,9 @@ class BrowseList extends React.Component {
         }
     }
 
-    onItemMenuPress = (item) => {
+    onItemMenuPress = (item, deselect) => {
         let newSelected = this.state.selected.slice()
-        newSelected.push({name: item.name})
+        newSelected.push({name: item.name, deselect })
 
         this.setState({
             showingMenu: true,

@@ -103,6 +103,9 @@ const TabNavigator = createBottomTabNavigator(
     {
         tabBarOptions: {
             showLabel: false,
+            style: {
+                elevation: 20,
+            }
         }
     }
 )
