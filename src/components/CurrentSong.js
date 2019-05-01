@@ -1,41 +1,40 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { 
-  View, 
-  StyleSheet,
-  Text,
+    View, 
+    StyleSheet,
+    Text,
 } from 'react-native'
 
 // Redux.
 import { connect } from 'react-redux';
 
 class CurrentSong extends React.Component {
+    render() {
+        const { currentSong, state } = this.props
+        if (!currentSong) return null
 
-	render() {
-		const { currentSong, state } = this.props
-		if (!currentSong) return null
+        const { title, album, artist, file } = currentSong              
 
-		const { title, album, artist, file } = currentSong		
-
-		if (state === 'stop') {
-			return (
-				<View style={styles.container}>
-					<Text style={styles.songName}>Player is stopped</Text>
-				</View>
-			)
-		} else {
-			return (
-				<View style={styles.container}>					
-					{title && (<Text style={styles.songName}>{title}</Text>)}
-					{!title && file && (<Text style={styles.songName}>{file}</Text>)}
-					{!title && !file && (<Text style={styles.songName}>---</Text>)}
-				
-					{artist && (<Text style={styles.albumName}>{artist} - {album ? album : '[Unknown album]'}</Text>)}
-					{!artist && (<Text style={styles.albumName}>---</Text>)}
-				</View>
-			)
-		}
-	}
+        if (state === 'stop') {
+            return (
+                <View style={styles.container}>
+                    <Text style={styles.songName}>Player is stopped</Text>
+                </View>
+            )
+        } else {
+            return (
+                <View style={styles.container}>                                 
+                    {title && (<Text style={styles.songName}>{title}</Text>)}
+                    {!title && file && (<Text style={styles.songName}>{file}</Text>)}
+                    {!title && !file && (<Text style={styles.songName}>---</Text>)}
+                             
+                    {artist && (<Text style={styles.albumName}>{artist} - {album ? album : '[Unknown album]'}</Text>)}
+                    {!artist && (<Text style={styles.albumName}>---</Text>)}
+                </View>
+            )
+        }
+    }
 }
 
 const mapStateToProps = state => {
@@ -49,18 +48,19 @@ const mapStateToProps = state => {
 export default connect(mapStateToProps, null)(CurrentSong)
 
 const styles = StyleSheet.create({
-	container: {
-		flexDirection: 'column',
-		alignItems: 'center',
-	},
-	songName: {
-		fontWeight: 'bold',
-		fontSize: 20,
-		color: 'black',
-		textAlign: 'center',
-	},
-	albumName: {
-		fontSize: 16,
-		textAlign: 'center',
-	},
+    container: {
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginVertical: 10,
+    },
+    songName: {
+        fontWeight: 'bold',
+        fontSize: 20,
+        color: 'black',
+        textAlign: 'center',
+    },
+    albumName: {
+        fontSize: 16,
+        textAlign: 'center',
+    },
 })

@@ -222,7 +222,7 @@ class BrowseList extends React.Component {
                 />
                 {showingMenu && (
                     <View style={styles.menuWrapper}>
-                        <TouchableWithoutFeedback>
+                        <TouchableWithoutFeedback onPress={this.handleBackPress}>
                             <View style={styles.menuContainer}>
                                 <BrowseAddMenu 
                                     options={options}
