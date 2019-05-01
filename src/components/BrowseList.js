@@ -18,7 +18,7 @@ import FontAwesome, { Icons } from 'react-native-fontawesome'
 import { connect } from 'react-redux'
 
 // Actions.
-import { changeCurrentDir, addToQueue } from '../redux/reducers/browser/actions'
+import { changeCurrentDir, addToQueue, addToQueuePlay } from '../redux/reducers/browser/actions'
 
 // Add menu.
 import { OPTIONS, BrowseAddMenu } from './BrowseAddMenu'
@@ -55,15 +55,13 @@ class BrowseListItem extends React.PureComponent {
                     <Text style={styles.title}>{displayName}</Text>
                     <Text style={styles.subtitle}>{displayType}</Text>
                 </View>
-                {type === 'DIRECTORY' && (
-                    <TouchableOpacity
-                        onPress={this.handleMenuPress}
-                    >
-                        <Text style={{...styles.status, fontSize: 14, fontWeight: 'bold'}}>
-                            ...
-                        </Text>
-                    </TouchableOpacity>
-                )}
+                <TouchableOpacity
+                    onPress={this.handleMenuPress}
+                >
+                    <Text style={{...styles.status, fontSize: 14, fontWeight: 'bold'}}>
+                        ...
+                    </Text>
+                </TouchableOpacity>
             </View>
         )
     }
@@ -97,23 +95,17 @@ class BrowseList extends React.Component {
     }
 
     onItemPress = (item, deselect) => {
-        const { dir, loadCurrentDir } = this.props
+        const { dir, loadCurrentDir, addToQueuePlay, queueSize } = this.props
         
         if (item.type === 'DIRECTORY') {
             let newDir = dir.slice()
             newDir.push(item.name)
             
             this.props.onNavigate(newDir)
-            
             deselect()
         } else {
-            let newSelected = this.state.selected.slice()
-            newSelected.push({name: item.name, deselect: deselect})
-
-            this.setState({
-                showingMenu: true,
-                selected: newSelected,
-            })
+            addToQueuePlay(item.fullPath, queueSize)
+            deselect()
         }
     }
 
@@ -273,8 +265,10 @@ const mapDispatchToProps = dispatch => {
             dispatch(changeCurrentDir(path))
         },
         addToQueue: (uri, position, type) => {
-            console.log('dispatching')
             dispatch(addToQueue(uri, position, type))
+        },
+        addToQueuePlay: (uri, position) => {
+            dispatch(addToQueuePlay(uri, position))
         }
    }
 }

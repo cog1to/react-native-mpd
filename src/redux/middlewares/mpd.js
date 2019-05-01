@@ -25,9 +25,23 @@ const handlePlayerUpdate = (store) => {
     }
 }
 
+// Returns a handler function for queue update events.
 const handleQueueUpdate = (store) => {
     return () => {
         store.dispatch(getQueue())
+    }
+}
+
+// Returns a handler function for error events.
+const handleErrorUpdate = (store) => {
+    return (err) => {
+        store.dispatch(error(err))
+    }
+}
+
+const handleClose = (store) => {
+    return () => {
+        store.dispatch(connected(false))
     }
 }
 
@@ -146,6 +160,12 @@ export const mpdMiddleware = store => {
 
                     // Subscribe to queue events.
                     client.disconnects.push(client.mpd.onQueueUpdate(handleQueueUpdate(store)))
+
+                    // Subscribe to error events.
+                    client.disconnects.push(client.mpd.onError(handleErrorUpdate(store)))
+
+                    // Subsccribe to close events.
+                    client.disconnects.push(client.mpd.onDisconnected(handleClose(store)))
 
                     // Emit connected action.
                     store.dispatch(connected(true))
@@ -309,9 +329,18 @@ export const mpdMiddleware = store => {
                     client.mpd.addToQueue(uri, position)
                 }
                 break
+            
+            case types.ADD_TO_QUEUE_PLAY:
+                const { uri: song, position: pos } = action
+
+                client.mpd.addToQueue(song, pos).then(({ Id }) => {
+                    client.mpd.setCurrentSong(Id)
+                }).catch((e) => {
+                    console.log(e)
+                    store.dispatch(error(e, types.ADD_TO_QUEUE_PLAY))
+                })
 
             default:
-                console.log('got ' + action.type)
                 break
         }
 

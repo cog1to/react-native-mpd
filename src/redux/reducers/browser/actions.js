@@ -18,3 +18,9 @@ export const addToQueue = (uri, position, type) => ({
     fileType: type,
 })
 
+export const addToQueuePlay = (uri, position) => ({
+    type: types.ADD_TO_QUEUE_PLAY,
+    uri: uri,
+    position: position,
+})
+

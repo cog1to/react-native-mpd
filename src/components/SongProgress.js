@@ -5,12 +5,14 @@ import {
     StyleSheet,
     Slider,
     Text,
+    Animated,
 } from 'react-native'
 
 // Redux.
 import { connect } from 'react-redux';
 
 import { seek, startProgressUpdate, stopProgressUpdate } from '../redux/reducers/player/actions'
+import { getStatus } from '../redux/reducers/status/actions'
 
 class SongProgress extends React.Component {
     static defaultProps = {
@@ -57,6 +59,11 @@ class SongProgress extends React.Component {
         }
     }
 
+    componentDidMount() {
+        const { getStatus } = this.props
+        getStatus()
+    }
+
     render() {
         const { player, duration, elapsed } = this.props
         const { value, dragging } = this.state
@@ -65,13 +72,14 @@ class SongProgress extends React.Component {
         const style = disabled ? styles.disabled : styles.enabled
 
         const minimumValue = 0
+        const maximumValue = duration > 0 ? duration : 1
         
         return (
-            <View style={[this.props.style, styles.container]}>
+            <Animated.View style={[this.props.style, styles.container]}>
                 <Slider 
                     style={style}
                     minimumValue={0} 
-                    maximumValue={duration}
+                    maximumValue={maximumValue}
                     step={0.5}
                     value={dragging ? value : elapsed}
                     disabled={disabled}
@@ -88,7 +96,7 @@ class SongProgress extends React.Component {
                         </Text>
                     </View>
                 )}
-            </View>
+            </Animated.View>
         )
     }
 }
@@ -108,6 +116,7 @@ const mapDispatchToProps = dispatch => {
         addListener: () => { dispatch(startProgressUpdate()) },
         removeListener: () => { dispatch(stopProgressUpdate()) },
         seek: (position) => { dispatch(seek(position)) },
+        getStatus: () => { dispatch(getStatus()) },
     }
 }
 

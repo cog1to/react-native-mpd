@@ -82,6 +82,7 @@ export default class MpdClientWrapper {
                     
                         // Socket closed event.
                         client.on(EventNames.DISCONNECTED, () => {
+                            console.log('*** disconnected')
                             self._client = null
                             self._emit(EventNames.DISCONNECTED)
                         })
@@ -93,9 +94,9 @@ export default class MpdClientWrapper {
 
                         resolve()
                     })
-                    } else {
-                        reject(Error('Failed to connect'))
-                    }                
+                } else {
+                    reject(Error('Failed to connect'))
+                }                
             } catch (e) {
                 reject(e)
             }
