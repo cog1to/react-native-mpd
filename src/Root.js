@@ -1,6 +1,8 @@
 // Basic react stuff.
 import React, { Component } from 'react'
-import { connect as reduxConnect } from 'react-redux';
+import { connect as reduxConnect } from 'react-redux'
+import { NavigationActions } from 'react-navigation'
+import { View, StatusBar } from 'react-native'
 
 // Screens.
 import LoginScreen from './screens/Login'
@@ -11,26 +13,37 @@ import Browse from './screens/Browse'
 // Actions.
 import { connect } from './redux/reducers/status/actions'
 
+// Navigator.
+import AppContainer from './Routes'
+
 class Root extends Component {
     constructor(props) {
         super(props)
     }
     
-    connectToMpd = (host, port) => {
-        const { connect } = this.props
-        connect(host, port)
+    componentWillUpdate(nextProps, nextState) {
+        if (nextProps && nextProps.connected != this.props.connected) {
+            if (nextProps.connected) {
+                this.navigator && this.navigator.dispatch(
+                    NavigationActions.navigate({ routeName: 'Home' })
+                )
+            } else {
+                this.navigator && this.navigator.dispatch(
+                    NavigationActions.back({})
+                )
+            }
+        }
     }
 
     render() {
-        const { connected } = this.props
-
-        if (connected) {
-            //return (<Queue />)
-            //return (<Player />)
-            return (<Browse />)
-        } else {
-            return (<LoginScreen onSubmit={this.connectToMpd}/>)
-        }
+        return (
+            <View style={{flex: 1}}>
+                <StatusBar translucent={true} backgroundColor="#FFFFFF" barStyle="dark-content" />
+                <AppContainer
+                    ref={ nav => { this.navigator = nav } }
+                />
+            </View>
+        )
     }
 }
 
@@ -41,8 +54,4 @@ const mapStateToProps = state => {
     }
 }
 
-const mapDispatchToProps = dispatch => ({
-    connect: (host, port) => dispatch(connect(host, port))
-})
-
-export default reduxConnect(mapStateToProps, mapDispatchToProps)(Root)
+export default reduxConnect(mapStateToProps)(Root)

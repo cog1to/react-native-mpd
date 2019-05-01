@@ -305,7 +305,6 @@ export const mpdMiddleware = store => {
                             client.mpd.addToQueue(node.file, position + index)
                         })
                     })
-                    // Handle playlists.
                 } else {
                     client.mpd.addToQueue(uri, position)
                 }

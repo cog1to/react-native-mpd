@@ -76,7 +76,7 @@ class BrowseList extends React.Component {
     }
 
     static defaultProps = {
-        currentDir: [''],
+        dir: [''],
         content: [],
         queueSize: 0,
         position: null,
@@ -96,12 +96,14 @@ class BrowseList extends React.Component {
     }
 
     onItemPress = (item, deselect) => {
-        const { currentDir, loadCurrentDir } = this.props
+        const { dir, loadCurrentDir } = this.props
         
         if (item.type === 'DIRECTORY') {
-            let newDir = currentDir.slice()
+            let newDir = dir.slice()
             newDir.push(item.name)
-            this.props.loadCurrentDir(newDir)
+            
+            //this.props.loadCurrentDir(newDir)
+            this.props.onNavigate(newDir)
             
             deselect()
         } else {
@@ -126,7 +128,7 @@ class BrowseList extends React.Component {
     }
 
     handleBackPress = () => {
-        const { currentDir, loadCurrentDir } = this.props
+        const { dir, loadCurrentDir } = this.props
         const { showingMenu, selected } = this.state
 
         if (showingMenu) {
@@ -144,11 +146,6 @@ class BrowseList extends React.Component {
             return true
         }
 
-        if (currentDir.length > 1) {
-            loadCurrentDir(currentDir.slice(0, currentDir.length-1))
-            return true
-        }
-
         return false
     }
 
@@ -162,7 +159,6 @@ class BrowseList extends React.Component {
 
         switch (option) {
             case OPTIONS.ADD_TO_QUEUE_BEGINNING:
-                console.log('adding to beginning ' + name + ', ' + item.type)
                 addToQueue(item.fullPath, 0, item.type)
                 break
             case OPTIONS.ADD_TO_QUEUE_END:
@@ -184,7 +180,9 @@ class BrowseList extends React.Component {
     }
 
     componentDidMount() {
-        this.props.loadCurrentDir([''])
+        const { dir, loadCurrentDir } = this.props
+
+        loadCurrentDir(dir)
         if (Platform.OS === 'android') {
             BackHandler.addEventListener('hardwareBackPress', this.handleBackPress)
         }
@@ -196,15 +194,9 @@ class BrowseList extends React.Component {
         }
     }
 
-    componentWillReceiveProps = (nextProps) => {
-        if (this.flatList && nextProps.currentDir.length != this.props.currentDir) {
-            this.flatList.scrollToOffset({ offset: 0, animated: false })
-        }
-    }
-
     render() {
         const { showingMenu, selected } = this.state
-        const { queueSize = 0, position = null } = this.props
+        const { queueSize = 0, position = null, content } = this.props
         
         // Populating options.
         const options = [OPTIONS.ADD_TO_QUEUE_BEGINNING]
@@ -223,7 +215,7 @@ class BrowseList extends React.Component {
             <View style={styles.container}>
                 <HighlightableList
                     style={styles.list}
-                    data={this.props.content}
+                    data={content}
                     keyExtractor={this.keyExtractor}
                     renderItem={this.renderItem}
                     onItemSelected={this.onItemPress}
@@ -259,17 +251,17 @@ const nodeFromPath = (path, tree) => {
     return node
 }
 
-const mapStateToProps = state => {
-    const { tree, currentDir } = state.browser
+const mapStateToProps = (state, ownProps) => {
+    const { dir } = ownProps
+    const { tree } = state.browser
     const { position = null } = state.currentSong
     const { player } = state.status
 
-    let content = nodeFromPath(currentDir, tree)
+    let content = tree != null ? nodeFromPath(dir, tree).children : []
     let queueSize = state.queue.length
 
     return {
-        currentDir: state.browser.currentDir,
-        content: (content === null ? [] : (content.children !== null ? content.children : [])),
+        content: content,
         queueSize: queueSize,
         position: player !== 'stop' ? position : null,
     }
