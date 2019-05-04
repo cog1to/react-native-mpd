@@ -5,6 +5,7 @@ import { getCurrentSong, currentSongUpdated } from '../reducers/currentsong/acti
 import { getQueue, queueUpdated } from '../reducers/queue/actions'
 import { getAlbumArt } from '../reducers/archive/actions'
 import { changeCurrentDir, treeUpdated, addToQueue } from '../reducers/browser/actions'
+import { searchUpdated } from '../reducers/search/actions'
 
 import MpdClientWrapper from '../../utils/MpdClientWrapper'
 
@@ -74,8 +75,8 @@ const statusToState = (status) => {
     }
 }
 
-const queueToState = (queue) => {
-    return queue.filter(el => { return el.Id != null }).map((element) => {
+const queueToState = (queue, withId) => {
+    return queue.filter(el => { return !withId || el.Id != null }).map((element) => {
         return songToState(element)
     })
 }
@@ -258,7 +259,7 @@ export const mpdMiddleware = store => {
 
             case types.GET_QUEUE:
                 client.mpd.getQueue().then((result) => {
-                    let queue = queueToState(result)
+                    let queue = queueToState(result, true)
                     store.dispatch(queueUpdated(queue))
                 }).catch((e) => {
                     store.dispatch(error(e, types.GET_QUEUE))
@@ -339,6 +340,25 @@ export const mpdMiddleware = store => {
                     console.log(e)
                     store.dispatch(error(e, types.ADD_TO_QUEUE_PLAY))
                 })
+                break
+
+            case types.SEARCH:
+                const { expression } = action
+
+                const searchExpressions = expression.map(({ tag, value }) => {
+                    return '(' + tag + ' contains \'' + value  + '\')'
+                })
+
+                const combined = '(' + searchExpressions.join(' AND ')  + ')'
+
+                client.mpd.search(combined).then(results => {
+                    var list = queueToState(results, false)
+                    store.dispatch(searchUpdated(list))
+                }).catch((e) => {
+                    console.log(e)
+                    store.dispatch(error(e, types.SEARCH))
+                })
+                break
 
             default:
                 break

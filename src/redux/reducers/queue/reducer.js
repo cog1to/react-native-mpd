@@ -10,11 +10,11 @@ export const queuePropTypes = PropTypes.arrayOf(PropTypes.shape(currentSongPropT
 const initialState = []
 
 export const queueReducer = (state = initialState, action) => {
-	switch (action.type) {
-		case types.QUEUE_UPDATED:
-			const { queue } = action
-			return queue
-		default:
-			return state
-	}
+    switch (action.type) {
+        case types.QUEUE_UPDATED:
+            const { queue } = action
+            return queue
+        default:
+            return state
+    }
 }

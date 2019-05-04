@@ -174,6 +174,10 @@ export default class MpdClientWrapper {
         return this._sendCommand(cmd('seekcur', [position]), mpd.parseKeyValueMessage)
     }
 
+    search(expression) {
+        return this._sendCommand(cmd('search', [expression]), mpd.parseArrayMessage)
+    }
+
     setCurrentSong(songId) {
         return this._sendCommand(cmd('playid', [songId]), mpd.parseKeyValueMessage)
     }

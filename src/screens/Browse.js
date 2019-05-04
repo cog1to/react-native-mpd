@@ -12,8 +12,6 @@ export default class Browse extends React.Component {
     onNavigate = (dir) => {
         const { navigation } = this.props
 
-        console.log('navigating to ' + dir)
-
         const action = NavigationActions.navigate({
             params: {
                 name: dir[dir.length-1],
