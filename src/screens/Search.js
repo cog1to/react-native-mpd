@@ -5,6 +5,7 @@ import {
     Button,
     StyleSheet,
 } from 'react-native'
+import { NavigationActions } from 'react-navigation'
 
 // Redux.
 import { connect } from 'react-redux'
@@ -27,14 +28,28 @@ Fields = [
 
 class Search extends React.Component {
 
-    state = { }
+    state = { 
+        dirty: false,
+        criteria: {},
+    }
 
+    showResults = (content) => {
+        const { navigation } = this.props
+
+        const action = NavigationActions.navigate({
+            params: {
+                content: content,
+            },
+            routeName: 'SearchResults',
+        })
+        navigation.dispatch(action)
+    }
+    
     shouldComponentUpdate(nextProps, nextState) {
-        const { navigation: { navigate } } = this.props
         const { results } = nextProps
 
-        if (results.length > 0) {
-            console.log('showing search results')
+        if (!nextState.dirty && results != null) {
+            this.showResults(results)
             return false
         }
 
@@ -42,14 +57,17 @@ class Search extends React.Component {
     }
 
     onChangeText = (text, fieldId) => {
-        let newState = Object.assign({}, this.state)
-        newState[fieldId] = text
-        this.setState(newState)
+        let newCriteria = Object.assign({}, this.state.criteria)
+        newCriteria[fieldId] = text
+        this.setState({
+            criteria: newCriteria,
+            dirty: true,
+        })
     }
 
     onSearch = () => {
         const { doSearch } = this.props
-        const tags = this.state
+        const tags = this.state.criteria
 
         const nonEmptyTags = Object.keys(tags).filter((key) => {
             return (key in tags) && tags[key] !== null && tags[key].length > 0
@@ -58,11 +76,15 @@ class Search extends React.Component {
         const total = nonEmptyTags.map(tag => {
             return { tag: tag, value: tags[tag] }
         })
-
-        doSearch(total)
+        
+        this.setState({
+            dirty: false,
+        }, () => doSearch(total))
     }
 
     render() {
+        const { criteria } = this.state
+
         return (
             <View style={styles.container}>
                 <ScrollView>
@@ -72,7 +94,7 @@ class Search extends React.Component {
                                 key={ID}
                                 placeholder={title}
                                 onChangeText={(text) => this.onChangeText(text, tag)}
-                                value={this.state[tag]}
+                                value={criteria[tag]}
                             />
                         )
                     })}
@@ -95,7 +117,6 @@ const mapDispatchToProps = dispatch => {
 
 const mapStateToProps = (state) => {
     const results = state.search
-    console.log(JSON.stringify(results))
 
     return {
         results: results,

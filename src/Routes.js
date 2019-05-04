@@ -7,6 +7,7 @@ import Player from './screens/Player'
 import Queue from './screens/Queue'
 import Browse from './screens/Browse'
 import Search from './screens/Search'
+import SearchResults from './screens/SearchResults'
 
 const getTabBarIcon = icon => ({ tintColor }) => (
     <FontAwesome style={{ color: tintColor, fontSize: 20 }}>{Icons[icon]}</FontAwesome> 
@@ -73,6 +74,18 @@ const PlayerNavigator = createStackNavigator(
     }
 )
 
+const searchResultsTitleFromLength = (length) => {
+    let prefix = 'Found ' + length
+
+    if (length == 1) {
+        prefix += ' track'
+    } else {
+        prefix += ' tracks'
+    }
+
+    return prefix
+}
+
 const SearchNavigator = createStackNavigator(
     {
         Search: {
@@ -84,11 +97,25 @@ const SearchNavigator = createStackNavigator(
                     height: 56 + 24,
                 }
             })
+        },
+        SearchResults: {
+            screen: SearchResults,
+            params: { content: [] },
+            navigationOptions: ({ navigation }) => ({
+                title: searchResultsTitleFromLength(navigation.state.params.content.length)
+            })
         }
     },
     {
         navigationOptions: {
-            tabBarIcon: getTabBarIcon('search')
+            tabBarIcon: getTabBarIcon('search'),
+             
+        },
+        defaultNavigationOptions: {
+            headerStyle: {
+                paddingTop: 24,
+                height: 56 + 24,
+            },
         }
     }
 )

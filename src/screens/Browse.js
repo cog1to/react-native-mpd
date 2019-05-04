@@ -5,35 +5,90 @@ import {
 } from 'react-native'
 import { NavigationActions } from 'react-navigation'
 
-import BrowseList from '../components/BrowseList'
+// Redux.
+import { connect } from 'react-redux'
 
-export default class Browse extends React.Component {
+// Actions.
+import { changeCurrentDir } from '../redux/reducers/browser/actions'
+
+// Items list.
+import ItemsList from '../components/ItemsList'
+
+class Browse extends React.Component {
     
-    onNavigate = (dir) => {
+    static defaultProps = {
+        content: [],
+    }
+
+    onNavigate = (item) => {
         const { navigation } = this.props
+        const { state: { params: { dir } } } = navigation
+
+        const newDir = dir.slice()
+        newDir.push(item.name)
 
         const action = NavigationActions.navigate({
             params: {
-                name: dir[dir.length-1],
-                dir: dir,
+                name: item.name,
+                dir: newDir,
             },
             routeName: 'Browse',
-            key: 'Browse' + dir,
+            key: 'Browse' + newDir,
         })
         navigation.dispatch(action)
     }
 
+    componentDidMount() {
+        const { navigation: { state: { params: { dir } } }, loadCurrentDir } = this.props
+        loadCurrentDir(dir)
+    }
+
     render() {
-        const { navigation: { state: { params } } } = this.props
-        const { dir } = params
+        const { content, navigation: { state: { params } } } = this.props
 
         return (
             <View style={styles.container}>
-                <BrowseList dir={dir} onNavigate={this.onNavigate} />
+                <ItemsList content={content} onNavigate={this.onNavigate} />
             </View>
         )
     }
 }
+
+const nodeFromPath = (path, tree) => {
+    let node = tree
+    
+    if (node === null) {
+        return null
+    }
+
+    path.length > 1 && path.slice(1).forEach((element) => {
+        node = node.children.filter((child) => child.name === element)[0]
+    })
+
+    return node
+}
+
+const mapStateToProps = (state, ownProps) => {
+    const { navigation: { state: { params: { dir = [''] } } } } = ownProps
+    const { tree } = state.browser
+
+    let content = tree != null ? nodeFromPath(dir, tree).children : []
+
+    return {
+        ...ownProps,
+        content: content,
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        loadCurrentDir: (path) => {
+            dispatch(changeCurrentDir(path))
+        },
+    }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Browse)
 
 const styles = StyleSheet.create({
     container: {

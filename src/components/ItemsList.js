@@ -30,7 +30,7 @@ if (Platform.OS === 'android') {
     UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-class BrowseListItem extends React.PureComponent {
+class BrowseListItem extends React.Component {
 
     handleMenuPress = () => {
         const { item, onItemMenuSelected, select, deselect } = this.props
@@ -38,8 +38,19 @@ class BrowseListItem extends React.PureComponent {
         onItemMenuSelected(item, deselect)
     }
 
+    shouldComponentUpdate(nextProps) {
+        const { item: nextItem, playing: nextPlaying } = nextProps
+        const { item, playing } = this.props
+
+        return item.name != nextItem.name
+            || item.type != nextItem.type
+            || item.artist != nextItem.artist
+            || item.title != nextItem.title
+            || playing != nextPlaying
+    }
+
     render() {
-        const { item: { name, type, artist, title } } = this.props
+        const { item: { name, type, artist, title, fullPath }, playing } = this.props
 
         let displayName = title != null ? title : name
         let displayType = artist != null ? artist : type
@@ -47,7 +58,10 @@ class BrowseListItem extends React.PureComponent {
         return (
             <View style={styles.itemContainer}>
                 <Text style={styles.status}>
-                    {type === 'FILE' && (<FontAwesome>{Icons.music}</FontAwesome>) }
+                    {type === 'FILE' && (playing 
+                        ? (<FontAwesome>{Icons.play}</FontAwesome>) 
+                        : (<FontAwesome>{Icons.music}</FontAwesome>))
+                    }
                     {type === 'DIRECTORY' && (<FontAwesome>{Icons.folder}</FontAwesome>) }
                     {type === 'PLAYLIST' && (<FontAwesome>{Icons.fileAlt}</FontAwesome>) }
                 </Text>
@@ -67,7 +81,7 @@ class BrowseListItem extends React.PureComponent {
     }
 }
 
-class BrowseList extends React.Component {
+class ItemsList extends React.Component {
     
     state = {
         showingMenu: false,
@@ -82,16 +96,19 @@ class BrowseList extends React.Component {
     }
 
     renderItem = ({ item }) => {
+        const { file } = this.props
+
         return (
             <BrowseListItem
                 item={item}
+                playing={item.fullPath === file}
                 onItemMenuSelected={this.onItemMenuPress}
             />
         )
     }
 
     keyExtractor = (item) => {
-        return item.name
+        return item.fullPath
     }
 
     onItemPress = (item, deselect) => {
@@ -168,9 +185,6 @@ class BrowseList extends React.Component {
     }
 
     componentDidMount() {
-        const { dir, loadCurrentDir } = this.props
-
-        loadCurrentDir(dir)
         if (Platform.OS === 'android') {
             BackHandler.addEventListener('hardwareBackPress', this.handleBackPress)
         }
@@ -184,7 +198,7 @@ class BrowseList extends React.Component {
 
     render() {
         const { showingMenu, selected } = this.state
-        const { queueSize = 0, position = null, content } = this.props
+        const { queueSize = 0, position = null, content, file = null } = this.props
         
         // Populating options.
         const options = [OPTIONS.ADD_TO_QUEUE_BEGINNING]
@@ -207,6 +221,7 @@ class BrowseList extends React.Component {
                     keyExtractor={this.keyExtractor}
                     renderItem={this.renderItem}
                     onItemSelected={this.onItemPress}
+                    extraData={file}
                 />
                 {showingMenu && (
                     <View style={styles.menuWrapper}>
@@ -225,31 +240,15 @@ class BrowseList extends React.Component {
     }
 }
 
-const nodeFromPath = (path, tree) => {
-    let node = tree
-    
-    if (node === null) {
-        return null
-    }
-
-    path.slice(1).forEach((element) => {
-        node = node.children.filter((child) => child.name === element)[0]
-    })
-
-    return node
-}
-
 const mapStateToProps = (state, ownProps) => {
-    const { dir } = ownProps
-    const { tree } = state.browser
-    const { position = null } = state.currentSong
+    const { position = null, file = null } = state.currentSong
     const { player } = state.status
 
-    let content = tree != null ? nodeFromPath(dir, tree).children : []
     let queueSize = state.queue.length
 
     return {
-        content: content,
+        ...ownProps,
+        file: file,
         queueSize: queueSize,
         position: player !== 'stop' ? position : null,
     }
@@ -257,9 +256,6 @@ const mapStateToProps = (state, ownProps) => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        loadCurrentDir: (path) => {
-            dispatch(changeCurrentDir(path))
-        },
         addToQueue: (uri, position, type) => {
             dispatch(addToQueue(uri, position, type))
         },
@@ -270,7 +266,7 @@ const mapDispatchToProps = dispatch => {
 }
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(BrowseList)
+export default connect(mapStateToProps, mapDispatchToProps)(ItemsList)
 
 const styles = StyleSheet.create({
     container: {

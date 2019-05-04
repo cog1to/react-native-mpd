@@ -351,8 +351,12 @@ export const mpdMiddleware = store => {
 
                 const combined = '(' + searchExpressions.join(' AND ')  + ')'
 
+                // Reset previous search results.
+                store.dispatch(searchUpdated(null))
+
+                // Get new search results.
                 client.mpd.search(combined).then(results => {
-                    var list = queueToState(results, false)
+                    var list = listToChildren(results, false)
                     store.dispatch(searchUpdated(list))
                 }).catch((e) => {
                     console.log(e)

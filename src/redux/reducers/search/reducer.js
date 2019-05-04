@@ -1,6 +1,6 @@
 import * as types from './types'
 
-const initialState = []
+const initialState = null
 
 export const searchReducer = (state = initialState, action) => {
     switch (action.type) {

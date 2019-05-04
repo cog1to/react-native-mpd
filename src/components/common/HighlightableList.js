@@ -59,17 +59,17 @@ class HighlightableItem extends React.Component {
         onPress(id, this.deselect)
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        if (nextProps.id !== this.props.id) {
-            return true
-        }
-        
-        if (nextState.selected !== this.state.selected && !this.animating) {
-            return true
-        }
-
-        return false
-    }
+//    shouldComponentUpdate(nextProps, nextState) {
+//        if (nextProps.id !== this.props.id) {
+//            return true
+//        }
+//        
+//        if (nextState.selected !== this.state.selected && !this.animating) {
+//            return true
+//        }
+//
+//        return false
+//    }
 
     componentWillUpdate(nextProps, nextState) {
         if (nextState.selected) {
@@ -116,7 +116,6 @@ class HighlightableItem extends React.Component {
                 onPress={this.handlePress}
             >
                 <Animated.View style={this.props.style, { backgroundColor: backgroundColorValue }}>
-                    {/*this.props.children*/}
                     {React.cloneElement(this.props.children, { select: this.select, deselect: this.deselect })}
                 </Animated.View>
             </TouchableWithoutFeedback>
@@ -165,8 +164,7 @@ export default class HighlightableList extends React.Component {
             <HighlightableItem
                 id={keyExtractor(item)}
                 onPress={this.handleOnSelected}
-                onPressIn={this.handlePressIn}
-            >
+                onPressIn={this.handlePressIn}>
                 {this.props.renderItem({ item })}
             </HighlightableItem>
         )        
