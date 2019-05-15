@@ -309,26 +309,64 @@ export const mpdMiddleware = store => {
                 break
             
             case types.ADD_TO_QUEUE:
-                const { uri, position, fileType = null } = action
+                const { items, position } = action
                 
-                if (fileType === TreeNodeType.DIRECTORY) {
-                    getContentRecursively(uri).then((content) => {
-                        content.forEach((node, index) => {
-                            client.mpd.addToQueue(node.fullPath, position + index)
-                        })
-                    }).catch((e) => {
-                        console.log(e)
-                        store.dispatch(error(e, types.ADD_TO_QUEUE))
-                    })
-                } else if (fileType === TreeNodeType.PLAYLIST) {
-                    client.mpd.getPlaylist(uri).then((content) => {
-                        content.forEach((node, index) => {
-                            client.mpd.addToQueue(node.file, position + index)
+                const handleFile = (uri, position) => {
+                    return new Promise((resolve, reject) => {
+                        client.mpd.addToQueue(uri, position).then((result) => {
+                            resolve(1+position)
+                        }).catch((e) => {
+                            reject(e)
                         })
                     })
-                } else {
-                    client.mpd.addToQueue(uri, position)
                 }
+
+                const handleFileList = (uris, position) => {
+                    return uris.reduce((promise, uri) => {
+                        return new Promise((resolve, reject) => {
+                            promise.then((pos) => {
+                                handleFile(uri, pos).then((newPos) => {
+                                    resolve(newPos)
+                                }).catch((e) => {
+                                    reject(e)
+                                })
+                            })
+                        })
+                    }, Promise.resolve(position))
+                }
+
+                const handlePlaylist = (uri, position) => {
+                    return client.mpd.getPlaylist(uri).then((content) => {
+                        let files = content.map(node => { return node.file })
+                        return handleFileList(files, position)
+                    })
+                }
+
+                const handleDirectory = (uri, position) => {
+                    return getContentRecursively(uri).then((content) => {
+                        let files = content.map(node => { return node.fullPath })
+                        return handleFileList(files, position)
+                    })
+                }
+
+                const handleEverything = (items, position) => {
+                    return items.reduce((promise, { path, type }) => { 
+                        return promise.then((newPos) => {
+                            if (type == TreeNodeType.DIRECTORY) {
+                                return handleDirectory(path, newPos)
+                            } else if (type == TreeNodeType.PLAYLIST) {
+                                return handlePlaylist(path, newPos)
+                            } else {
+                                return handleFile(path, newPos)
+                            }
+                        })
+                    }, Promise.resolve(position))
+                }
+
+                handleEverything(items, position).catch((e) => {
+                    console.log(e)
+                    store.dispatch(error(e, types.ADD_TO_QUEUE))
+                })
                 break
             
             case types.ADD_TO_QUEUE_PLAY:

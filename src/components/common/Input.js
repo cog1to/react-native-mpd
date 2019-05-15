@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
         marginVertical: 5
     },
     textInput: {
-        height: 40,
+        height: 41,
         flex: 1,
     }
 })

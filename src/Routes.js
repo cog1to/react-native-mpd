@@ -1,6 +1,17 @@
 import React from 'react'
-import { createStackNavigator, createBottomTabNavigator, createAppContainer } from 'react-navigation'
+import {
+    TouchableOpacity,
+    StyleSheet,
+    Text,
+    View,
+} from 'react-native'
+import {
+    createStackNavigator,
+    createBottomTabNavigator,
+    createAppContainer,
+} from 'react-navigation'
 import FontAwesome, { Icons } from 'react-native-fontawesome'
+import Icon from 'react-native-vector-icons/MaterialIcons'
 
 import Login from './screens/Login'
 import Player from './screens/Player'
@@ -13,17 +24,47 @@ const getTabBarIcon = icon => ({ tintColor }) => (
     <FontAwesome style={{ color: tintColor, fontSize: 20 }}>{Icons[icon]}</FontAwesome> 
 )
 
+const barOptionsFromState = ({ title, navigation }) => {
+    let options = {
+        title: title,
+        headerStyle: {
+            paddingTop: 24,
+            height: 56 + 24,
+        }
+    }
+
+    const allSelected = navigation.getParam('allSelected')
+    let globalSelectionText = allSelected ? 'DESELECT ALL' : 'SELECT ALL'
+
+    if (navigation.getParam('editing') === true) {
+        options.headerLeft = (
+            <TouchableOpacity onPress={navigation.getParam('onCancelEditing')} style={styles.headerButton}>
+                <Icon name='clear' size={24} color='#000000' /> 
+            </TouchableOpacity>
+        )
+        options.headerRight = (
+            <View style={styles.rightEditingHeader}>
+                <TouchableOpacity onPress={() => navigation.getParam('onGlobalSelectionToggled')(!allSelected)}>
+                    <Text style={styles.headerTextButton}>{globalSelectionText}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={navigation.getParam('onConfirmEditing')} style={styles.headerButton}>
+                    <Icon name='add' size={24} color='#000000' /> 
+                </TouchableOpacity>
+            </View>
+        )
+    }
+
+    return options
+}
+
 const BrowseNavigator = createStackNavigator(
     {
         Browse: {
             screen: Browse,
-            params: { name: 'Browse', dir: [''], },
-            navigationOptions: ({ navigation }) => ({
+            params: { name: 'Browse', dir: [''], allSelected: false, },
+            navigationOptions: ({ navigation }) => barOptionsFromState({
                 title: navigation.state.params.name,
-                headerStyle: {
-                    paddingTop: 24,
-                    height: 56 + 24,
-                }
+                navigation: navigation,
             })
         }
     },
@@ -100,9 +141,10 @@ const SearchNavigator = createStackNavigator(
         },
         SearchResults: {
             screen: SearchResults,
-            params: { content: [] },
-            navigationOptions: ({ navigation }) => ({
-                title: searchResultsTitleFromLength(navigation.state.params.content.length)
+            params: { content: [], allSelected: false, },
+            navigationOptions: ({ navigation }) => barOptionsFromState({
+                title: searchResultsTitleFromLength(navigation.state.params.content.length),
+                navigation: navigation,
             })
         }
     },
@@ -153,3 +195,25 @@ const AppNavigator = createStackNavigator({
 })
 
 export default createAppContainer(AppNavigator)
+
+const styles = StyleSheet.create({
+    headerButton: {
+        height: '100%',
+        aspectRatio: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    headerText: {
+        color: 'black',
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
+    rightEditingHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    headerTextButton: {
+        color: 'black',
+        fontWeight: 'bold',
+    }
+})

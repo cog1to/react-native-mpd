@@ -39,16 +39,18 @@ class Browse extends React.Component {
     }
 
     componentDidMount() {
-        const { navigation: { state: { params: { dir } } }, loadCurrentDir } = this.props
+        const { navigation, loadCurrentDir } = this.props
+        const { state: { params: { dir } } } = navigation
         loadCurrentDir(dir)
     }
 
     render() {
-        const { content, navigation: { state: { params } } } = this.props
+        const { content, navigation } = this.props
+        const { state: { params } } = navigation
 
         return (
             <View style={styles.container}>
-                <ItemsList content={content} onNavigate={this.onNavigate} />
+                <ItemsList content={content} onNavigate={this.onNavigate} navigation={navigation} />
             </View>
         )
     }

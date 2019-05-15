@@ -11,7 +11,7 @@ import PropTypes from 'prop-types'
 class HighlightableItem extends React.Component {
     
     state = {
-        selected: false,
+        pressed: false,
     }
     
     constructor(props) {
@@ -36,13 +36,13 @@ class HighlightableItem extends React.Component {
 
     deselect = () => {
         this.setState({
-            selected: false,
+            pressed: false,
         })
     }
 
     select = () => {
         this.setState({
-            selected: true,
+            pressed: true,
         })
     }
 
@@ -50,39 +50,40 @@ class HighlightableItem extends React.Component {
         this.props.onPressIn(this.deselect)
 
         this.setState({
-            selected: true,
+            pressed: true,
+        })
+    }
+
+    handlePressOut = () => {
+        this.setState({
+            pressed: false,
         })
     }
 
     handlePress = () => {
         const { id, onPress } = this.props
-        onPress(id, this.deselect)
+        onPress(id)
     }
 
-//    shouldComponentUpdate(nextProps, nextState) {
-//        if (nextProps.id !== this.props.id) {
-//            return true
-//        }
-//        
-//        if (nextState.selected !== this.state.selected && !this.animating) {
-//            return true
-//        }
-//
-//        return false
-//    }
+    handleLongPress = () => {
+        const { id, onLongPress } = this.props
+        onLongPress(id)
+    }
 
     componentWillUpdate(nextProps, nextState) {
-        if (nextState.selected) {
+        if (nextState.pressed || nextProps.selected) {
+            console.log('*** ' + this.props.id + ' selected')
             this.animatedValue.setValue(1)
         } else {
+            console.log('*** ' + this.props.id + ' deselected')
             this.animateBackground(0)
         }
     }
 
     onAnimationEnded = (endValue) => {
-        if (this.state.selected && endValue == 0) {
+        if ((this.state.pressed || this.props.selected) && endValue == 0) {
             this.animateBackground(1)
-        } else if (!this.state.selected && endValue == 1) {
+        } else if (!(this.state.pressed || this.props.selected) && endValue == 1) {
             this.animateBackground(0)
         } else {
             this.animating = false
@@ -113,7 +114,9 @@ class HighlightableItem extends React.Component {
         return (
             <TouchableWithoutFeedback
                 onPressIn={this.handlePressIn}
+                onPressOut={this.handlePressOut}
                 onPress={this.handlePress}
+                onLongPress={this.handleLongPress}
             >
                 <Animated.View style={this.props.style, { backgroundColor: backgroundColorValue }}>
                     {React.cloneElement(this.props.children, { select: this.select, deselect: this.deselect })}
@@ -149,6 +152,20 @@ export default class HighlightableList extends React.Component {
         this.deselect = deselect
     }
 
+    handleLongPress = (id, deselect) => {
+        if (this.scrolling) {
+            deselect()
+            return
+        }
+
+        const { keyExtractor, data } = this.props
+        const item = data.filter(item => {
+            return keyExtractor(item) === id 
+        })[0]
+
+        this.props.onItemLongPress(item, deselect)
+    }
+
     handleScrollBegin = () => {
         this.deselect()
     }
@@ -164,7 +181,8 @@ export default class HighlightableList extends React.Component {
             <HighlightableItem
                 id={keyExtractor(item)}
                 onPress={this.handleOnSelected}
-                onPressIn={this.handlePressIn}>
+                onPressIn={this.handlePressIn}
+                onLongPress={this.handleLongPress}>
                 {this.props.renderItem({ item })}
             </HighlightableItem>
         )        

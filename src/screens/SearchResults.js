@@ -12,11 +12,12 @@ import ItemsList from '../components/ItemsList'
 
 export default class SearchResults extends React.Component {
     render() {
-        const { navigation: { state: { params: { content } } } } = this.props
+        const { navigation } = this.props
+        const { state: { params: { content } } } = navigation
 
         return (
             <View style={styles.container}>
-                <ItemsList content={content} onNavigate={this.onNavigate} />
+                <ItemsList content={content} onNavigate={this.onNavigate} navigation={navigation} />
             </View>
         )
     }
