@@ -10,7 +10,9 @@ import {
     Platform,
     UIManager,
     LayoutAnimation,
+    Animated,
 } from 'react-native'
+import PropTypes from 'prop-types'
 
 // Icons.
 import FontAwesome, { Icons } from 'react-native-fontawesome'
@@ -26,9 +28,6 @@ import { addToQueue, addToQueuePlay } from '../redux/reducers/browser/actions'
 
 // Add menu.
 import { OPTIONS, BrowseAddMenu } from './BrowseAddMenu'
-
-// Highlightable list.
-import HighlightableList from './common/HighlightableList'
 
 // Enable animations on Android.
 if (Platform.OS === 'android') {
@@ -46,11 +45,138 @@ const CustomLayoutAnimation = {
     },
 }
 
+const HighlightableView = (WrappedComponent) => {
+    return class extends React.Component {
+
+        state = {
+            pressed: false,
+            selected: false,
+        }
+
+        constructor(props) {
+            super(props)
+            this.animatedValue = new Animated.Value(0)
+            this.animating = false
+        }
+
+        static propTypes = {
+            highlightColor: PropTypes.string.isRequired,
+            duration: PropTypes.number.isRequired,
+            onTap: PropTypes.func.isRequired,
+            onLongTap: PropTypes.func.isRequired,
+        }
+
+        static defaultProps = {
+            highlightColor: '#00000033',
+            duration: 200,
+        }
+        
+        // State manipulation.
+        
+        deselect = () => {
+            this.setState({
+                pressed: false,
+            })
+        }
+
+        select = () => {
+            this.setState({
+                pressed: true,
+            })
+        }
+
+        // Animations.
+        
+        componentWillUpdate(nextProps, nextState) {
+            if (nextState.pressed || nextProps.selected) {
+                this.animatedValue.setValue(1)
+            } else {
+                this.animateBackground(0)
+            }
+        }
+
+        onAnimationEnded = (endValue) => {
+            if ((this.state.pressed || this.props.selected) && endValue == 0) {
+                this.animateBackground(1)
+            } else if (!(this.state.pressed || this.props.selected) && endValue == 1) {
+                this.animateBackground(0)
+            } else {
+                this.animating = false
+            }
+        }
+        
+        animateBackground = (endValue) => {
+            const { duration } = this.props
+            
+            this.animating = true
+            Animated.timing(
+                this.animatedValue,
+                {
+                    toValue: endValue,
+                    duration: duration/2,
+                }
+            ).start(() => this.onAnimationEnded(endValue))
+        }
+
+        // Touch events.
+
+        handlePressIn = () => {
+            this.select()
+        }
+
+        handlePressOut = () => {
+            this.deselect()
+        }
+
+        handlePress = () => {
+            const { onTap, item } = this.props
+            onTap(item)
+        }
+
+        handleLongPress = () => {
+            const { onLongTap, item } = this.props
+            onLongTap(item)
+        }
+
+        // Rendering.
+
+        render() {
+            const { highlightColor } = this.props
+            
+            const opacity = this.animatedValue.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0, 1]
+            })
+
+            const highlightViewStyle = {
+                backgroundColor: highlightColor,
+                opacity: opacity,
+                position: 'absolute',
+                width: '100%',
+                height: '100%',
+                zIndex: -1,
+            }
+
+            return (
+                <TouchableWithoutFeedback
+                    onPressIn={this.handlePressIn}
+                    onPressOut={this.handlePressOut}
+                    onPress={this.handlePress}
+                    onLongPress={this.handleLongPress}>
+                    <View>
+                        <WrappedComponent {...this.props} />
+                        <Animated.View style={highlightViewStyle} />
+                    </View>
+                </TouchableWithoutFeedback>
+            )
+        }
+    }
+}
+
 class BrowseListItem extends React.Component {
 
     handleMenuPress = () => {
-        const { item, onItemMenuSelected, select } = this.props
-        select()
+        const { item, onItemMenuSelected } = this.props
         onItemMenuSelected(item)
     }
 
@@ -121,6 +247,8 @@ class BrowseListItem extends React.Component {
     }
 }
 
+const HighlightableBrowseListItem = HighlightableView(BrowseListItem)
+
 class ItemsList extends React.Component {
     
     state = {
@@ -138,14 +266,19 @@ class ItemsList extends React.Component {
 
     renderItem = ({ item }) => {
         const { file } = this.props
-        const { editing } = this.state
+        const { editing, selected } = this.state
+        const key = this.keyExtractor(item)
+        const isSelected = (selected.find((el) => { return el.name == item.name }) != null)
 
         return (
-            <BrowseListItem
+            <HighlightableBrowseListItem
                 item={item}
                 playing={item.fullPath === file}
                 onItemMenuSelected={this.onItemMenuPress}
+                onTap={this.onItemTap}
+                onLongTap={this.onItemLongTap}
                 editing={editing}
+                selected={isSelected}
             />
         )
     }
@@ -154,7 +287,7 @@ class ItemsList extends React.Component {
         return item.fullPath
     }
 
-    onItemPress = (item) => {
+    onItemTap = (item) => {
         const { addToQueuePlay, queueSize, navigation, content } = this.props
         const { editing, selected } = this.state
         
@@ -167,8 +300,6 @@ class ItemsList extends React.Component {
                     this.onCancelEditing()
                 } else {
                     // First update own state.
-                    console.log('Deselecting ' + item.name)
-                    console.log('New selected:\n' + JSON.stringify(newSelected))
                     this.setState({
                         selected: newSelected,
                     })
@@ -200,7 +331,7 @@ class ItemsList extends React.Component {
         }
     }
 
-    onItemLongPress = (item) => {
+    onItemLongTap = (item) => {
         const { navigation, content } = this.props
 
         LayoutAnimation.configureNext(CustomLayoutAnimation)
@@ -246,11 +377,6 @@ class ItemsList extends React.Component {
 
             if (!editing) {
                 newSelected = []
-//                selected.forEach((item) => {
-//                    if ('deselect' in item) {
-//                        item.deselect()
-//                    }
-//                })
             }
 
             this.setState({
@@ -296,10 +422,6 @@ class ItemsList extends React.Component {
                 break
         }
 
-//        this.state.selected.forEach(({ name, deselect }) => {
-//            deselect()
-//        })
-
         this.setState({
             showingMenu: false,
             selected: [],
@@ -311,9 +433,6 @@ class ItemsList extends React.Component {
         navigation.setParams({ editing: false })
 
         const { selected } = this.state
-//        selected.forEach(({ name, deselect }) => {
-//            deselect()
-//        })
 
         LayoutAnimation.configureNext(CustomLayoutAnimation)
 
@@ -404,13 +523,11 @@ class ItemsList extends React.Component {
 
         return (
             <View style={styles.container}>
-                <HighlightableList
+                <FlatList
                     style={styles.list}
                     data={enumerated}
                     keyExtractor={this.keyExtractor}
                     renderItem={this.renderItem}
-                    onItemSelected={this.onItemPress}
-                    onItemLongPress={this.onItemLongPress}
                     extraData={{file, editing, selected}}
                 />
                 {showingMenu && (
