@@ -11,8 +11,42 @@ import FontAwesome, { Icons } from 'react-native-fontawesome'
 import Draggable from './common/Draggable'
 import { Dimensions } from 'react-native'
 
-export default class QueueListItem extends React.PureComponent {
+import { HighlightableView } from './common/HighlightableView'
 
+class ForegroundView extends React.PureComponent {
+
+    static propTypes = {
+        name: PropTypes.string,
+        id: PropTypes.string.isRequired,
+        status: PropTypes.string.isRequired,
+        subtitle: PropTypes.string,
+    }
+
+    render() {
+        const { status, subtitle, id, name } = this.props
+
+        return (<View style={styles.container}>
+            {status !== null && (
+                <Text style={[styles.status, styles.statusActive]}>
+                    <FontAwesome>{status === 'play' ? Icons.play : Icons.pause  }</FontAwesome>
+                </Text>
+            )}
+            {status === null && (
+                <Text style={[styles.status, styles.statusInactive]}>
+                    {id}
+                </Text>
+            )}
+            <View style={styles.description}>
+                <Text style={styles.title} ellipsizeMode='tail' selectable={false} numberOfLines={1}>{name}</Text>
+                {subtitle && (<Text style={styles.subtitle}>{subtitle}</Text>)}
+           </View>
+        </View>)
+    } 
+}
+
+const HighlightableForegroundView = HighlightableView(ForegroundView)
+
+export default class QueueListItem extends React.PureComponent {
     constructor(props) {
         super(props)
         
@@ -23,12 +57,8 @@ export default class QueueListItem extends React.PureComponent {
         }
     }
 
-    onPress = () => {
-        this.props.onPressItem(this.props.id, this.props.status)
-    }
-
     onDelete = () => {
-        this.props.onDeleteItem(this.props.id)
+        this.props.onDeleteItem(item)
     }
 
     handleTouchStart = () => {
@@ -66,7 +96,7 @@ export default class QueueListItem extends React.PureComponent {
     }
 
     render() {
-        const { name, subtitle, status, id } = this.props
+        const { item: { name, status, id }, subtitle } = this.props
 
         return (
             <View>
@@ -75,8 +105,7 @@ export default class QueueListItem extends React.PureComponent {
                     onTouchStart={() => this.handleTouchStart()}
                     onTouchMove={offset => this.handleTouchMove(offset)}
                     onTouchEnd={(offset, velocity) => this.handleTouchEnd(offset, velocity)}
-                    onShouldHandle={(offset) => this.handleShouldHandle(offset)}
-                >
+                    onShouldHandle={(offset) => this.handleShouldHandle(offset)}>
                     {({ handlers, dragging }) => {
                         const style = {
                             transform: [
@@ -88,24 +117,22 @@ export default class QueueListItem extends React.PureComponent {
 
                         return (
                             <Animated.View {...handlers} style={[styles.foreground, style]}>
-                                <TouchableWithoutFeedback onPress={this.onPress}>
-                                    <View style={styles.container}>
-                                        {status !== null && (
-                                            <Text style={[styles.status, styles.statusActive]}>
-                                                <FontAwesome>{status === 'play' ? Icons.play : Icons.pause  }</FontAwesome>
-                                            </Text>
-                                        )}
-                                        {status === null && (
-                                            <Text style={[styles.status, styles.statusInactive]}>
-                                                {id}
-                                            </Text>
-                                        )}
-                                        <View style={styles.description}>
-                                            <Text style={styles.title} ellipsizeMode='tail' selectable={false} numberOfLines={1}>{name}</Text>
-                                            {subtitle && (<Text style={styles.subtitle}>{subtitle}</Text>)}
-                                        </View>
+                                <View style={styles.container}>
+                                    {status !== null && (
+                                        <Text style={[styles.status, styles.statusActive]}>
+                                            <FontAwesome>{status === 'play' ? Icons.play : Icons.pause  }</FontAwesome>
+                                        </Text>
+                                    )}
+                                    {status === null && (
+                                        <Text style={[styles.status, styles.statusInactive]}>
+                                            {id}
+                                        </Text>
+                                    )}
+                                    <View style={styles.description}>
+                                        <Text style={styles.title} ellipsizeMode='tail' selectable={false} numberOfLines={1}>{name}</Text>
+                                        {subtitle && (<Text style={styles.subtitle}>{subtitle}</Text>)}
                                     </View>
-                                </TouchableWithoutFeedback>
+                                </View>
                             </Animated.View>
                         )
                     }}

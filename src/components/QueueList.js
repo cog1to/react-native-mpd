@@ -23,6 +23,9 @@ import { playPause } from '../redux/reducers/player/actions'
 // List item.
 import QueueListItem from './QueueListItem'
 
+// Highlightable wrapper.
+import { HighlightableView } from './common/HighlightableView'
+
 if (Platform.OS === 'android') {
     UIManager.setLayoutAnimationEnabledExperimental(true);
 }
@@ -33,6 +36,8 @@ const RowAnimation = {
     update: { type: 'linear', property: 'opacity' }, 
     delete: { type: 'linear', property: 'opacity' }
 }
+
+const HighlightableQueueListItem = HighlightableView(QueueListItem)
 
 class QueueList extends React.Component {
     
@@ -67,17 +72,16 @@ class QueueList extends React.Component {
     keyExtractor = (item, index) => item.songId
 
     renderItem = ({item}) => {
-        return <QueueListItem
-            id={item.songId}
-            name={item.name}
+        return <HighlightableQueueListItem
+            item={{ id: item.songId, status: item.status, name: item.name }}
             subtitle={item.subtitle}
-            status={item.status}
-            onPressItem={this.onPressItem}
+            onTap={this.onPressItem}
+            onLongTap={this.onLongPressItem}
             onDeleteItem={this.onDeleteItem}
         />
     }
 
-    onPressItem = (id, status) => {
+    onPressItem = ({ id, status, name }) => {
         const { play, playPause } = this.props
         if (status === null) {
             play(id)
@@ -86,6 +90,10 @@ class QueueList extends React.Component {
         } else {
             playPause('play')
         }
+    }
+
+    onLongPressItem = ({ id, status, name }) => {
+
     }
 
     onDeleteItem = (id) => {
