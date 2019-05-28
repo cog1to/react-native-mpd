@@ -8,6 +8,7 @@ import {
     LayoutAnimation,
     Platform,
     UIManager,
+    BackHandler,
 } from 'react-native'
 
 // Song prop types.
@@ -17,7 +18,7 @@ import { queuePropTypes } from '../redux/reducers/queue/reducer'
 import { connect } from 'react-redux';
 
 // Actions.
-import { setCurrentSong, deleteSong }  from '../redux/reducers/queue/actions'
+import { setCurrentSong, deleteSongs, clear }  from '../redux/reducers/queue/actions'
 import { playPause } from '../redux/reducers/player/actions'
 
 // List item.
@@ -37,10 +38,25 @@ const RowAnimation = {
     delete: { type: 'linear', property: 'opacity' }
 }
 
+const CustomLayoutAnimation = {
+    duration: 200,
+    create: {
+        type: LayoutAnimation.Types.linear,
+        property: LayoutAnimation.Properties.opacity,
+    },
+    update: {
+        type: LayoutAnimation.Types.easeInEaseOut,
+    },
+}
+
 const HighlightableQueueListItem = HighlightableView(QueueListItem)
 
 class QueueList extends React.Component {
-    
+    state = {
+        selected: [],
+        editing: false,
+    }
+
     static propTypes = {
         queue: PropTypes.arrayOf(PropTypes.shape({
             name: PropTypes.string.isRequired,
@@ -65,6 +81,7 @@ class QueueList extends React.Component {
                 data={this.props.queue}
                 keyExtractor={this.keyExtractor}
                 renderItem={this.renderItem}
+                extraData={this.state.selected}
             />
         )
     }
@@ -72,8 +89,13 @@ class QueueList extends React.Component {
     keyExtractor = (item, index) => item.songId
 
     renderItem = ({item}) => {
-        return <HighlightableQueueListItem
+        const { selected } = this.state
+        const { songId: id } = item
+        const isSelected = (selected.find(el => { return el.id === id }) != null)
+
+        return <QueueListItem
             item={{ id: item.songId, status: item.status, name: item.name }}
+            selected={isSelected}
             subtitle={item.subtitle}
             onTap={this.onPressItem}
             onLongTap={this.onLongPressItem}
@@ -82,6 +104,34 @@ class QueueList extends React.Component {
     }
 
     onPressItem = ({ id, status, name }) => {
+        const { editing, selected } = this.state
+        if (editing) {
+            let newSelected = selected.slice()
+            if (selected.find(el => { return el.id === id }) != null) {
+                newSelected = selected.filter(el => { return el.id !== id })
+
+                if (newSelected.length == 0) {
+                    this.onCancelEditing()
+                } else {
+                    // First update own state.
+                    this.setState({
+                        selected: newSelected,
+                    })
+
+                    // Update navigation bar state.
+                    navigation.setParams({
+                        allSelected: newSelected.length === content.length
+                    })
+                }
+            } else {
+                newSelected.push({ id, status, name })
+                this.setState({
+                    selected: newSelected,
+                })
+            }
+            return
+        }
+
         const { play, playPause } = this.props
         if (status === null) {
             play(id)
@@ -93,12 +143,119 @@ class QueueList extends React.Component {
     }
 
     onLongPressItem = ({ id, status, name }) => {
+        const { navigation, queue } = this.props
+        const { editing, selected } = this.state
+        
+        let newSelected = selected.slice()
+        if (selected.find(el => { return el.id === id }) != null) {
+            newSelected = selected.filter(el => { return el.id !== id })
+        } else {
+            newSelected.push({ id, status, name })
+        }
+
+        // Update state.
+        this.setState({
+            editing: true,
+            selected: newSelected,
+        })
+
+        // Update navigation bar state.
+        navigation.setParams({
+            editing: true,
+            allSelected: newSelected.length === queue.length
+        })
 
     }
 
-    onDeleteItem = (id) => {
+    onDeleteItem = ({ id }) => {
         const { remove } = this.props
-        remove(id)
+        const { selected } = this.state
+
+        remove([id])
+        
+        this.setState({
+            selected: selected.filter(item => { return item.id !== id })
+        })
+    }
+    
+    onCancelEditing = () => {
+        const { navigation } = this.props
+        navigation.setParams({ editing: false })
+
+        const { selected } = this.state
+
+        LayoutAnimation.configureNext(CustomLayoutAnimation)
+
+        this.setState({
+            selected: [],
+            editing: false,
+        })
+    }
+
+    onConfirmEditing = () => {
+        const { remove, navigation } = this.props
+        const { selected } = this.state
+        const ids = selected.map(item => { return item.id })
+
+        this.setState({
+            selected: [],
+            editing: false,
+        })
+
+        navigation.setParams({
+            editing: false,
+        })
+
+        remove(ids)
+    }
+
+    onGlobalSelectionToggled = (all) => {
+        const { navigation, queue } = this.props
+
+        if (all) {
+            const items = queue.map((item, index) => {
+                return {
+                    name: item.name,
+                    id: item.songId
+                }
+            })
+
+            this.setState({
+                selected: items,
+            })
+
+            // Update navigation bar state.
+            navigation.setParams({
+                allSelected: true,
+            })
+        } else {
+            this.setState({
+                selected: [],
+            })
+
+            // Update navigation bar state.
+            navigation.setParams({
+                allSelected: false,
+            })
+        }
+    }
+
+    componentDidMount() {
+        if (Platform.OS === 'android') {
+            BackHandler.addEventListener('hardwareBackPress', this.handleBackPress)
+        }
+
+        this.props.navigation.setParams({
+            onCancelEditing: this.onCancelEditing,
+            onConfirmEditing: this.onConfirmEditing,
+            onGlobalSelectionToggled: this.onGlobalSelectionToggled,
+        })
+    }
+
+    componentWillUnmount() {
+        if (Platform.OS === 'android') {
+            BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress)
+        }
     }
 }
 
@@ -137,8 +294,11 @@ const mapDispatchToProps = dispatch => {
         playPause: (state) => {
             dispatch(playPause(state))
         },
-        remove: (songId) => {
-            dispatch(deleteSong(songId))
+        remove: (songIds) => {
+            dispatch(deleteSongs(songIds))
+        },
+        clear: () => {
+            dispatch(clear())
         }
     }
 }

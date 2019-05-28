@@ -18,7 +18,7 @@ class ForegroundView extends React.PureComponent {
     static propTypes = {
         name: PropTypes.string,
         id: PropTypes.string.isRequired,
-        status: PropTypes.string.isRequired,
+        status: PropTypes.string,
         subtitle: PropTypes.string,
     }
 
@@ -46,7 +46,7 @@ class ForegroundView extends React.PureComponent {
 
 const HighlightableForegroundView = HighlightableView(ForegroundView)
 
-export default class QueueListItem extends React.PureComponent {
+export default class QueueListItem extends React.Component {
     constructor(props) {
         super(props)
         
@@ -58,11 +58,28 @@ export default class QueueListItem extends React.PureComponent {
     }
 
     onDelete = () => {
+        const { item } = this.props
         this.props.onDeleteItem(item)
     }
 
     handleTouchStart = () => {
         // Nothing to do right now.
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        if (this.props.selected !== nextProps.selected) {
+            return true
+        }
+
+        if (this.props.item.id !== nextProps.item.id) {
+            return true
+        }
+
+        if (this.props.item.status !== nextProps.item.status) {
+            return true
+        }
+
+        return false
     }
 
     handleShouldHandle = ({ top, left }) => {
@@ -95,8 +112,23 @@ export default class QueueListItem extends React.PureComponent {
         }
     }
 
+    // Highlightable
+    
+    handleTap = () => {
+        const { item, onTap } = this.props
+        onTap(item)
+    }
+
+    handleLongTap = () => {
+        const { item, onLongTap } = this.props
+        onLongTap(item)
+    }
+
+    // Rendering.
+
     render() {
-        const { item: { name, status, id }, subtitle } = this.props
+        const { item, subtitle, selected } = this.props
+        const { name, status, id } = item
 
         return (
             <View>
@@ -117,22 +149,16 @@ export default class QueueListItem extends React.PureComponent {
 
                         return (
                             <Animated.View {...handlers} style={[styles.foreground, style]}>
-                                <View style={styles.container}>
-                                    {status !== null && (
-                                        <Text style={[styles.status, styles.statusActive]}>
-                                            <FontAwesome>{status === 'play' ? Icons.play : Icons.pause  }</FontAwesome>
-                                        </Text>
-                                    )}
-                                    {status === null && (
-                                        <Text style={[styles.status, styles.statusInactive]}>
-                                            {id}
-                                        </Text>
-                                    )}
-                                    <View style={styles.description}>
-                                        <Text style={styles.title} ellipsizeMode='tail' selectable={false} numberOfLines={1}>{name}</Text>
-                                        {subtitle && (<Text style={styles.subtitle}>{subtitle}</Text>)}
-                                    </View>
-                                </View>
+                                <HighlightableForegroundView
+                                    selected={selected}
+                                    item={item}
+                                    name={name}
+                                    status={status}
+                                    id={id}
+                                    subtitle={subtitle}
+                                    onTap={this.handleTap}
+                                    onLongTap={this.handleLongTap}
+                                />
                             </Animated.View>
                         )
                     }}

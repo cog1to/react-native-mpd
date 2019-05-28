@@ -24,7 +24,7 @@ const getTabBarIcon = icon => ({ tintColor }) => (
     <FontAwesome style={{ color: tintColor, fontSize: 20 }}>{Icons[icon]}</FontAwesome> 
 )
 
-const barOptionsFromState = ({ title, navigation }) => {
+const barOptionsFromState = ({ title, navigation, icon = 'add' }) => {
     let options = {
         title: title,
         headerStyle: {
@@ -48,7 +48,7 @@ const barOptionsFromState = ({ title, navigation }) => {
                     <Text style={styles.headerTextButton}>{globalSelectionText}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={navigation.getParam('onConfirmEditing')} style={styles.headerButton}>
-                    <Icon name='add' size={24} color='#000000' /> 
+                    <Icon name={icon} size={24} color='#000000' /> 
                 </TouchableOpacity>
             </View>
         )
@@ -79,12 +79,11 @@ const QueueNavigator = createStackNavigator(
     {
         Queue: {
             screen: Queue,
-            navigationOptions: ({ navigation }) => ({
+            params: { allSelected: false, },
+            navigationOptions: ({ navigation }) => barOptionsFromState({
                 title: 'Queue',
-                headerStyle: {
-                    paddingTop: 24,
-                    height: 56 + 24,
-                }
+                navigation: navigation,
+                icon: 'delete',
             })
         }
     },

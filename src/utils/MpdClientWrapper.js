@@ -190,6 +190,10 @@ export default class MpdClientWrapper {
         return this._sendCommand(cmd('addid', [uri, position]), mpd.parseKeyValueMessage)
     }
 
+    clear() {
+        return this._sendCommand(cmd('clear', []), mpd.parseKeyValueMessage)
+    }
+
     // MARK: - Event listeners
 
     _handleSystemUpdate(systemName) {

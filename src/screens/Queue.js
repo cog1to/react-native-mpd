@@ -8,9 +8,11 @@ import QueueList from '../components/QueueList'
 
 export default class Queue extends React.Component {
     render() {
+        const { navigation } = this.props
+
         return (
             <View style={styles.container}>
-                <QueueList />
+                <QueueList navigation={navigation}/>
             </View>
         )
     }

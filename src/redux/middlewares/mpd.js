@@ -270,8 +270,16 @@ export const mpdMiddleware = store => {
                 client.mpd.setCurrentSong(action.songId)
                 break
 
-            case types.DELETE_SONG:
-                client.mpd.deleteSongId(action.songId)
+            case types.DELETE_SONGS:
+                action.songIds.forEach(id => {
+                    client.mpd.deleteSongId(id)
+                })
+                break
+
+            case types.CLEAR_QUEUE:
+                client.mpd.clear().catch((e) => {
+                    store.dispatch(error(e, types.CLEAR_QUEUE))
+                })
                 break
 
             case types.START_PROGRESS_UPDATE:
