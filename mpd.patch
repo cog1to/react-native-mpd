@@ -1,0 +1,22 @@
+diff --git a/node_modules/mpd/index.js b/node_modules/mpd/index.js
+index 42886a3..3a2c01d 100644
+--- a/index.js
++++ b/index.js
+@@ -170,7 +170,7 @@ function parseKeyValueMessage(msg) {
+   return result;
+ }
+ 
+-function parseArrayMessage(msg) {
++function parseArrayMessage(msg, entries) {
+   var results = [];
+   var obj = {};
+ 
+@@ -183,7 +183,7 @@ function parseArrayMessage(msg) {
+       throw new Error('Could not parse entry "' + p + '"')
+     }
+ 
+-    if (obj[keyValue[1]] !== undefined) {
++    if (entries != null && entries.includes(keyValue[1]) || (obj[keyValue[1]] !== undefined)) {
+       results.push(obj);
+       obj = {};
+       obj[keyValue[1]] = keyValue[2];
