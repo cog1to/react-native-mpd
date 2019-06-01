@@ -5,6 +5,7 @@ import * as queueTypes from './reducers/queue/types'
 import * as statusTypes from './reducers/status/types'
 import * as browserTypes from './reducers/browser/types'
 import * as searchTypes from './reducers/search/types'
+import * as libraryTypes from './reducers/library/types'
 
 const types = {
     ...archiveTypes,
@@ -14,6 +15,7 @@ const types = {
     ...statusTypes,
     ...browserTypes,
     ...searchTypes,
+    ...libraryTypes,
 }
 
 export default types

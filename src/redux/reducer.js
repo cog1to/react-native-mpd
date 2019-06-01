@@ -7,6 +7,7 @@ import { currentSongReducer } from './reducers/currentsong/reducer'
 import { queueReducer } from './reducers/queue/reducer'
 import { browserReducer } from './reducers/browser/reducer'
 import { searchReducer } from './reducers/search/reducer'
+import { libraryReducer } from './reducers/library/reducer'
 
 const reducer = combineReducers({
     archive: archiveReducer,
@@ -15,6 +16,7 @@ const reducer = combineReducers({
     currentSong: currentSongReducer,
     browser: browserReducer,
     search: searchReducer,
+    library: libraryReducer,
 })
 
 export default reducer

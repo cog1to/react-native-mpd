@@ -19,9 +19,14 @@ import Queue from './screens/Queue'
 import Browse from './screens/Browse'
 import Search from './screens/Search'
 import SearchResults from './screens/SearchResults'
+import Library from './screens/Library'
 
 const getTabBarIcon = icon => ({ tintColor }) => (
     <FontAwesome style={{ color: tintColor, fontSize: 20 }}>{Icons[icon]}</FontAwesome> 
+)
+
+const getMaterialTabBarIcon = icon => ({ tintColor }) => (
+    <Icon name={icon} size={24} color={tintColor} /> 
 )
 
 const barOptionsFromState = ({ title, navigation, icon = 'add' }) => {
@@ -132,11 +137,7 @@ const SearchNavigator = createStackNavigator(
             screen: Search,
             navigationOptions: ({ navigation }) => ({
                 title: 'Search',
-                headerStyle: {
-                    paddingTop: 24,
-                    height: 56 + 24,
-                }
-            })
+           })
         },
         SearchResults: {
             screen: SearchResults,
@@ -161,9 +162,32 @@ const SearchNavigator = createStackNavigator(
     }
 )
 
+const LibraryNavigator = createStackNavigator(
+    {
+        Library: {
+            screen: Library,
+            navigationOptions: ({ navigation }) => ({
+                title: 'Library',
+           }),
+        } 
+    },
+    {
+        navigationOptions: {
+            tabBarIcon: getMaterialTabBarIcon('library-music')
+        },
+        defaultNavigationOptions: {
+            headerStyle: {
+                paddingTop: 24,
+                height: 56 + 24,
+            },
+        }
+    }
+)
+
 const TabNavigator = createBottomTabNavigator(
     {
         Browse: BrowseNavigator,
+        Library: LibraryNavigator,
         Player: PlayerNavigator,
         Queue: QueueNavigator,
         Search: SearchNavigator,

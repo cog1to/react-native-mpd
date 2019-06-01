@@ -1,0 +1,2 @@
+export const LOAD_LIBRARY = 'LOAD_LIBRARY'
+export const LIBRARY_LOADED = 'LIBRARY_LOADED'

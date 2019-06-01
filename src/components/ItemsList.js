@@ -10,6 +10,7 @@ import {
     UIManager,
     LayoutAnimation,
     Animated,
+    TouchableWithoutFeedback,
 } from 'react-native'
 import PropTypes from 'prop-types'
 
@@ -99,7 +100,7 @@ class BrowseListItem extends React.Component {
                     {icon}
                 </Text>
                 <View style={styles.description}>
-                    <Text style={styles.title}>{displayName}</Text>
+                    <Text style={styles.title} numberOfLines={1} ellipsizeMode='tail'>{displayName}</Text>
                     <Text style={styles.subtitle}>{displayType}</Text>
                 </View>
                 <TouchableOpacity

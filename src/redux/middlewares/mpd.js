@@ -271,9 +271,9 @@ export const mpdMiddleware = store => {
                 break
 
             case types.DELETE_SONGS:
-                action.songIds.forEach(id => {
-                    client.mpd.deleteSongId(id)
-                })
+                action.songIds.reduce((promiseChain, songId) => {
+                    return promiseChain.then(client.mpd.deleteSongId(songId))
+                }, Promise.resolve())
                 break
 
             case types.CLEAR_QUEUE:

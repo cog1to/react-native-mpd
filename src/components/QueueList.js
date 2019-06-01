@@ -70,10 +70,6 @@ class QueueList extends React.Component {
         queue: [],
     }
 
-    componentWillReceiveProps(nextProps) {
-        LayoutAnimation.configureNext(RowAnimation)
-    }
-
     render() {
         return (
             <FlatList 
@@ -105,6 +101,8 @@ class QueueList extends React.Component {
 
     onPressItem = ({ id, status, name }) => {
         const { editing, selected } = this.state
+        const { navigation, queue } = this.props
+
         if (editing) {
             let newSelected = selected.slice()
             if (selected.find(el => { return el.id === id }) != null) {
@@ -120,7 +118,7 @@ class QueueList extends React.Component {
 
                     // Update navigation bar state.
                     navigation.setParams({
-                        allSelected: newSelected.length === content.length
+                        allSelected: newSelected.length === queue.length
                     })
                 }
             } else {

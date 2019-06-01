@@ -9,14 +9,14 @@ import { albumArtMiddleware } from './middlewares/albumArt'
 import { loggerMiddleware } from './middlewares/logger'
 
 export const configureStore = () => {
-	const store = createStore(
-		reducer,
-		applyMiddleware(
-			mpdMiddleware,
-			albumArtMiddleware,
-//			loggerMiddleware,
-		)
-	)
+    const store = createStore(
+        reducer,
+            applyMiddleware(
+            mpdMiddleware,
+            albumArtMiddleware,
+            //loggerMiddleware,
+        )
+     )
 
-	return store
+     return store
 }
