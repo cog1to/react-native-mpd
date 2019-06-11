@@ -6,10 +6,13 @@ import { getQueue, queueUpdated } from '../reducers/queue/actions'
 import { getAlbumArt } from '../reducers/archive/actions'
 import { changeCurrentDir, treeUpdated, addToQueue } from '../reducers/browser/actions'
 import { searchUpdated } from '../reducers/search/actions'
+import { artistsLoaded, albumsLoaded, songsLoaded } from '../reducers/library/actions'
 
 import MpdClientWrapper from '../../utils/MpdClientWrapper'
 
 import { TreeNodeType } from '../reducers/browser/reducer'
+
+import { sanitize } from '../../utils/StringUtils'
 
 // MPD client singleton.
 const client = {
@@ -47,7 +50,7 @@ const handleClose = (store) => {
 }
 
 const songToState = (song) => {
-    const { 
+    const {
         Artist: artist = null,
         Album: album = null,
         AlbumArtist: albumArtist = null,
@@ -82,9 +85,9 @@ const queueToState = (queue, withId) => {
 }
 
 const listToChildren = (list) => {
-    return list.filter((el) => ('directory' in el || 'file' in el || 'playlist' in el)).map((element) => {        
+    return list.filter((el) => ('directory' in el || 'file' in el || 'playlist' in el)).map((element) => {
         let node = {}
-        
+
         let filename = null
         if ('directory' in element) {
             filename = element.directory
@@ -104,14 +107,14 @@ const listToChildren = (list) => {
 
         node.fullPath = filename
         node.children = []
-        
+
         return node
     })
 }
 
 const nodeFromPath = (path, tree) => {
     let node = tree
-   
+
     if (node === null) {
         return null
     }
@@ -129,7 +132,7 @@ const nodeFromPath = (path, tree) => {
 
 async function getContentRecursively(uri) {
     let nodes = listToChildren(await client.mpd.getList(uri))
-    
+
     let results = []
     for (let index = 0; index < nodes.length; index++) {
         const node = nodes[index]
@@ -223,18 +226,18 @@ export const mpdMiddleware = store => {
                })
                break
 
-            case types.CURRENT_SONG_UPDATED:
+            case types.CURRENT_SONG_UPDATED: {
                const { album, artist, albumArtist } = action.data
                const nextArtist = (albumArtist ? albumArtist : artist)
                const archive = store.getState().archive
-                
+
                if (album !== null && nextArtist !== null) {
                    if (!(nextArtist in archive) || !(album in archive[nextArtist])) {
                        store.dispatch(getAlbumArt(nextArtist, album))
                    }
                }
                break
-
+            }
             case types.PLAY_PAUSE:
                 const { state } = action
 
@@ -263,7 +266,7 @@ export const mpdMiddleware = store => {
                     store.dispatch(queueUpdated(queue))
                 }).catch((e) => {
                     store.dispatch(error(e, types.GET_QUEUE))
-                }) 
+                })
                 break
 
             case types.SET_CURRENT_SONG:
@@ -315,10 +318,10 @@ export const mpdMiddleware = store => {
                     })
                 }
                 break
-            
+
             case types.ADD_TO_QUEUE:
                 const { items, position } = action
-                
+
                 const handleFile = (uri, position) => {
                     return new Promise((resolve, reject) => {
                         client.mpd.addToQueue(uri, position).then((result) => {
@@ -358,7 +361,7 @@ export const mpdMiddleware = store => {
                 }
 
                 const handleEverything = (items, position) => {
-                    return items.reduce((promise, { path, type }) => { 
+                    return items.reduce((promise, { path, type }) => {
                         return promise.then((newPos) => {
                             if (type == TreeNodeType.DIRECTORY) {
                                 return handleDirectory(path, newPos)
@@ -376,7 +379,7 @@ export const mpdMiddleware = store => {
                     store.dispatch(error(e, types.ADD_TO_QUEUE))
                 })
                 break
-            
+
             case types.ADD_TO_QUEUE_PLAY:
                 const { uri: song, position: pos } = action
 
@@ -388,11 +391,11 @@ export const mpdMiddleware = store => {
                 })
                 break
 
-            case types.SEARCH:
+            case types.SEARCH: {
                 const { expression } = action
 
                 const searchExpressions = expression.map(({ tag, value }) => {
-                    return '(' + tag + ' contains \'' + value  + '\')'
+                    return '(' + tag + ' contains \'' + sanitize(value)  + '\')'
                 })
 
                 const combined = '(' + searchExpressions.join(' AND ')  + ')'
@@ -409,7 +412,49 @@ export const mpdMiddleware = store => {
                     store.dispatch(error(e, types.SEARCH))
                 })
                 break
+            }
+            case types.LOAD_ARTISTS: {
+                client.mpd.getArtists().then(result => {
+                    store.dispatch(artistsLoaded(result))
+                }).catch((e) => {
+                    console.log(e)
+                    store.dispatch(error(e, types.LOAD_ARTISTS))
+                })
+                break
+            }
+            case types.LOAD_ALBUMS: {
+                client.mpd.getAlbums(action.artist).then(result => {
+                    store.dispatch(albumsLoaded(action.artist, result))
+                }).catch((e) => {
+                    console.log(e)
+                    store.dispatch(error(e, types.LOAD_ALBUMS))
+                })
+                break
+            }
+            case types.LOAD_SONGS: {
+                const { artist, album } = action
 
+                const expression = [
+                    { tag: 'artist', value: artist },
+                    { tag: 'album', value: album },
+                ]
+
+                const searchExpressions = expression.map(({ tag, value }) => {
+                    return '(' + tag + ' == \'' + sanitize(value)  + '\')'
+                })
+
+                const combined = '(' + searchExpressions.join(' AND ')  + ')'
+
+                // Get search results.
+                client.mpd.search(combined).then(results => {
+                    var list = listToChildren(results, false)
+                    store.dispatch(songsLoaded(artist, album, list))
+                }).catch((e) => {
+                    console.log(e)
+                    store.dispatch(error(e, types.LOAD_SONGS))
+                })
+                break
+            }
             default:
                 break
         }

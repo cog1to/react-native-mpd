@@ -11,7 +11,7 @@ import { loggerMiddleware } from './middlewares/logger'
 export const configureStore = () => {
     const store = createStore(
         reducer,
-            applyMiddleware(
+        applyMiddleware(
             mpdMiddleware,
             albumArtMiddleware,
             //loggerMiddleware,

@@ -1,3 +1,5 @@
+import { sanitize } from './StringUtils'
+
 var mpd = require('mpd'), cmd = mpd.cmd
 const EventEmitter = require('events')
 
@@ -122,6 +124,7 @@ export default class MpdClientWrapper {
                 if (error) {
                     reject(error)
                 } else {
+                    //console.log(result)
                     resolve(parser(result))
                 }
             })
@@ -135,7 +138,7 @@ export default class MpdClientWrapper {
     }
 
     getStatus() {
-        return this._sendCommand(cmd('status', []), mpd.parseKeyValueMessage)        
+        return this._sendCommand(cmd('status', []), mpd.parseKeyValueMessage)
     }
 
     getQueue() {
@@ -192,6 +195,21 @@ export default class MpdClientWrapper {
 
     clear() {
         return this._sendCommand(cmd('clear', []), mpd.parseKeyValueMessage)
+    }
+
+    getArtists() {
+        return this._sendCommand(cmd('list', ['artist']), mpd.parseArrayMessage)
+    }
+
+    getAlbums(artist) {
+        return this._sendCommand(cmd('list', ['album', '(artist == "' + sanitize(artist) + '")']), mpd.parseArrayMessage)
+    }
+
+    getSongs(artist, album) {
+        return this._sendCommand(cmd('list', [
+            'title', 
+            '((artist == "' + sanitize(artist) + '") AND (album == "' + sanitize(album) + '"))'
+        ]), mpd.parseArrayMessage)
     }
 
     // MARK: - Event listeners

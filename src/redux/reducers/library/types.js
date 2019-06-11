@@ -1,2 +1,6 @@
-export const LOAD_LIBRARY = 'LOAD_LIBRARY'
-export const LIBRARY_LOADED = 'LIBRARY_LOADED'
+export const LOAD_ARTISTS = 'LOAD_ARTISTS'
+export const ARTISTS_LOADED = 'ARTISTS_LOADED'
+export const LOAD_ALBUMS = 'LOAD_ALBUMS'
+export const ALBUMS_LOADED = 'ALBUMS_LOADED'
+export const LOAD_SONGS = 'LOAD_SONGS'
+export const SONGS_LOADED = 'SONGS_LOADED'

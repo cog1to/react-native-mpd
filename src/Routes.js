@@ -20,6 +20,8 @@ import Browse from './screens/Browse'
 import Search from './screens/Search'
 import SearchResults from './screens/SearchResults'
 import Library from './screens/Library'
+import Artist from './screens/Artist'
+import Album from './screens/Album'
 
 const getTabBarIcon = icon => ({ tintColor }) => (
     <FontAwesome style={{ color: tintColor, fontSize: 20 }}>{Icons[icon]}</FontAwesome> 
@@ -29,9 +31,9 @@ const getMaterialTabBarIcon = icon => ({ tintColor }) => (
     <Icon name={icon} size={24} color={tintColor} /> 
 )
 
-const barOptionsFromState = ({ title, navigation, icon = 'add' }) => {
+const barOptionsFromState = ({ title, navigation, icon = 'add', hideTitle = false }) => {
     let options = {
-        title: title,
+        title: hideTitle && navigation.getParam('editing') === true ? null : title,
         headerStyle: {
             paddingTop: 24,
             height: 56 + 24,
@@ -169,7 +171,21 @@ const LibraryNavigator = createStackNavigator(
             navigationOptions: ({ navigation }) => ({
                 title: 'Library',
            }),
-        } 
+        },
+        Artist: {
+            screen: Artist,
+            navigationOptions: ({ navigation }) => ({
+                title: 'Artist: ' + navigation.getParam('name')
+            })
+        },
+        Album: {
+            screen: Album,
+            navigationOptions: ({ navigation }) => barOptionsFromState({
+                title: navigation.getParam('artist') + ' - ' + navigation.getParam('album'),
+                navigation: navigation,
+                hideTitle: true,
+            })
+        }
     },
     {
         navigationOptions: {
