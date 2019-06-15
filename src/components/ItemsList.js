@@ -201,7 +201,7 @@ class ItemsList extends React.Component {
         } else {
             if (item.type === 'FILE') {
                 addToQueuePlay(item.fullPath, queueSize)
-            } else {
+            } else if (item.type !== 'PLAYLIST') {
                 this.props.onNavigate(item)
             }
         }
