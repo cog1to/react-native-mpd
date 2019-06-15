@@ -6,6 +6,8 @@ export const TreeNodeType = {
     FILE: 'FILE',
     DIRECTORY: 'DIRECTORY',
     PLAYLIST: 'PLAYLIST',
+    ARTIST: 'ARTIST',
+    ALBUM: 'ALBUM',
 }
 
 function lazyFunction(f) {

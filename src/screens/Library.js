@@ -13,28 +13,8 @@ import { connect } from 'react-redux'
 // Actions.
 import { loadArtists } from '../redux/reducers/library/actions'
 
-// Highlightable view wrapper.
-import { HighlightableView } from '../components/common/HighlightableView'
-
-class ArtistView extends React.PureComponent {
-    render() {
-        const { index, name } = this.props.item
-
-        return (
-            <View style={styles.itemContainer}>
-                <Text style={styles.status}>
-                    {index}
-                </Text>
-                <View style={styles.description}>
-                    <Text style={styles.title} ellipsizeMode='tail' selectable={false} numberOfLines={1}>{name}</Text>
-                    <Text style={styles.subtitle}>Artist</Text>
-               </View>
-            </View>
-        )
-    }
-}
-
-const HighlightableArtistView = HighlightableView(ArtistView)
+// Items list.
+import ItemsList from '../components/ItemsList'
 
 class Library extends React.Component {
     componentDidMount() {
@@ -45,38 +25,19 @@ class Library extends React.Component {
         }
     }
 
-    renderItem = ({item}) => {
-        return (
-            <HighlightableArtistView 
-                item={item}
-                onTap={this.handleItemSelected}
-                onLongTap={this.handleItemLongTap} />
-        )
-    }
-
-    keyExtractor = (item) => {
-        return '' + item.index
-    }
-
-    handleItemSelected = (item) => {
-        this.onNavigate(item)
-    }
-
-    handleItemLongTap = (item) => {
-        // do nothing.
-    }
-
     render() {
-        const { content } = this.props
-        let artists = ((content !== null) ? Object.keys(content) : []).map((name, index) => ({index: index+1, name: name}))
+        const { content, navigation } = this.props
+        const artists = ((content !== null) ? Object.keys(content) : []).map((name, index) => ({
+            icon: index + 1,
+            name: name,
+            type: 'ARTIST',
+            fullPath: name,
+        }))
 
         return (
-            <FlatList 
-                style={styles.container}
-                data={artists}
-                renderItem={this.renderItem}
-                keyExtractor={this.keyExtractor}
-            />
+            <View style={styles.container}>
+                <ItemsList content={artists} onNavigate={this.onNavigate} navigation={navigation} />
+            </View>
          )
     }
 
@@ -111,32 +72,4 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
-    itemContainer: {
-        flexDirection: 'row',
-        flex: 1,
-        alignItems: 'center',
-    },
-    status: {
-        width: 60,
-        textAlign: 'center',
-        aspectRatio: 1,
-        alignSelf: 'stretch',
-        textAlignVertical: 'center',
-        fontSize: 12,
-        color: 'grey'
-    },
-    description: {
-        flex: 1,
-        flexDirection: 'column',
-        marginRight: 10,
-    },
-    title: {        
-        fontWeight: 'bold',
-        fontSize: 16,
-        color: 'black',     
-    },
-    subtitle: {
-        fontSize: 14,
-    },
 })
-

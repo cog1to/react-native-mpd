@@ -69,13 +69,14 @@ class BrowseListItem extends React.Component {
     }
 
     render() {
-        const { item: { name, type, artist, title, fullPath, id }, playing, editing, selected } = this.props
+        const { item, playing, editing, selected } = this.props
+        const { name, type, artist, title, fullPath, id, index } = item
 
         let displayName = title != null ? title : name
         let displayType = artist != null ? artist : type
         let menuOpacity = editing ? 0.0 : 1.0
 
-        let icon = null
+        let icon = item.icon
         switch (type) {
             case 'FILE':
                 if (playing) {
@@ -198,10 +199,10 @@ class ItemsList extends React.Component {
                 })
             }
         } else {
-            if (item.type === 'DIRECTORY') {
-                this.props.onNavigate(item)
-            } else {
+            if (item.type === 'FILE') {
                 addToQueuePlay(item.fullPath, queueSize)
+            } else {
+                this.props.onNavigate(item)
             }
         }
     }
@@ -282,6 +283,7 @@ class ItemsList extends React.Component {
             return {
                 path: content[item.index].fullPath,
                 type: content[item.index].type,
+                data: content[item.index].data,
             }
         })
 
@@ -392,7 +394,7 @@ class ItemsList extends React.Component {
         let enumerated = content.map((item, index) => {
             return {
                 ...item,
-                index: index,
+                index,
             }
         })
 

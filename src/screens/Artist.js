@@ -13,28 +13,8 @@ import { connect } from 'react-redux'
 // Actions.
 import { loadAlbums } from '../redux/reducers/library/actions'
 
-// Highlightable view wrapper.
-import { HighlightableView } from '../components/common/HighlightableView'
-
-class AlbumView extends React.PureComponent {
-    render() {
-        const { index, name } = this.props.item
-
-        return (
-            <View style={styles.itemContainer}>
-                <Text style={styles.status}>
-                    {index}
-                </Text>
-                <View style={styles.description}>
-                    <Text style={styles.title} ellipsizeMode='tail' selectable={false} numberOfLines={1}>{name}</Text>
-                    <Text style={styles.subtitle}>Album</Text>
-               </View>
-            </View>
-        )
-    }
-}
-
-const HighlightableAlbumView = HighlightableView(AlbumView)
+// Items list.
+import ItemsList from '../components/ItemsList'
 
 class Artist extends React.Component {
     componentWillMount() {
@@ -46,38 +26,24 @@ class Artist extends React.Component {
         }
     }
 
-    renderItem = ({item}) => {
-        return (
-            <HighlightableAlbumView 
-                item={item}
-                onTap={this.handleItemSelected}
-                onLongTap={this.handleItemLongTap} />
-        )
-    }
-
-    keyExtractor = (item) => {
-        return '' + item.index
-    }
-
-    handleItemSelected = (item) => {
-        this.onNavigate(item)
-    }
-
-    handleItemLongTap = (item) => {
-        // do nothing.
-    }
-
     render() {
-        const { content } = this.props
-        let albums = ((content !== null) ? Object.keys(content) : []).map((name, index) => ({index: index+1, name: name}))
-
+        const { content, navigation } = this.props
+        let albums = ((content !== null) ? Object.keys(content) : []).map((name, index) => ({ 
+            icon: index + 1,
+            name: name,
+            type: 'ALBUM',
+            fullPath: name,
+            data: { album: name, artist: navigation.state.params.name },
+        }))
+ 
         return (
-            <FlatList 
-                style={styles.container}
-                data={albums}
-                renderItem={this.renderItem}
-                keyExtractor={this.keyExtractor}
-            />
+            <View style={styles.container}>
+                <ItemsList
+                    content={albums}
+                    onNavigate={this.onNavigate}
+                    navigation={navigation}
+                />
+            </View>
          )
     }
 
@@ -115,33 +81,6 @@ export default connect(mapStateToProps, mapDispatchToProps)(Artist)
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-    },
-    itemContainer: {
-        flexDirection: 'row',
-        flex: 1,
-        alignItems: 'center',
-    },
-    status: {
-        width: 60,
-        textAlign: 'center',
-        aspectRatio: 1,
-        alignSelf: 'stretch',
-        textAlignVertical: 'center',
-        fontSize: 12,
-        color: 'grey'
-    },
-    description: {
-        flex: 1,
-        flexDirection: 'column',
-        marginRight: 10,
-    },
-    title: {        
-        fontWeight: 'bold',
-        fontSize: 16,
-        color: 'black',     
-    },
-    subtitle: {
-        fontSize: 14,
     },
 })
 

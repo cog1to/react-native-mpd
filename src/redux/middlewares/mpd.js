@@ -360,13 +360,49 @@ export const mpdMiddleware = store => {
                     })
                 }
 
+                const handleAlbum = (artist, album, position) => {
+                    const expression = [
+                        { tag: 'artist', value: artist },
+                        { tag: 'album', value: album },
+                    ]
+
+                    const searchExpressions = expression.map(({ tag, value }) => {
+                        return '(' + tag + ' == \'' + sanitize(value)  + '\')'
+                    })
+
+                    const combined = '(' + searchExpressions.join(' AND ')  + ')'
+
+                    // Get search results.
+                    return client.mpd.search(combined).then(results => {
+                        let list = listToChildren(results, false)
+                        let files = list.map((song) => { return song.fullPath })
+                        return handleFileList(files, position)
+                    })
+                }
+
+                const handleArtist = (artist, position) => {
+                    console.log('artist:' + artist)
+                    console.log('sanitized:' + sanitize(artist))
+                    const searchExpression = '(artist == \'' + sanitize(artist)  + '\')'
+
+                    // Get search results.
+                    return client.mpd.search(searchExpression).then(results => {
+                        let files = results.map((song) => { return song.file })
+                        return handleFileList(files, position)
+                    })
+                }
+
                 const handleEverything = (items, position) => {
-                    return items.reduce((promise, { path, type }) => {
+                    return items.reduce((promise, { path, type, data }) => {
                         return promise.then((newPos) => {
                             if (type == TreeNodeType.DIRECTORY) {
                                 return handleDirectory(path, newPos)
                             } else if (type == TreeNodeType.PLAYLIST) {
                                 return handlePlaylist(path, newPos)
+                            } else if (type == TreeNodeType.ARTIST) {
+                                return handleArtist(path, newPos)
+                            } else if (type == TreeNodeType.ALBUM) {
+                                return handleAlbum(data.artist, data.album, newPos)
                             } else {
                                 return handleFile(path, newPos)
                             }
