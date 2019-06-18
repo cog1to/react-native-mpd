@@ -10,25 +10,37 @@ import Input from '../components/common/Input'
 
 // Actions.
 import { connect } from '../redux/reducers/status/actions'
+import { saveAddress, loadSavedAddress } from '../redux/reducers/storage/actions'
 
 // Redux.
 import { connect as reduxConnect } from 'react-redux'
+import { bindActionCreators } from 'redux'
+
+// Storage.
+import LocalStorage from '../storage/LocalStorage'
 
 class Login extends React.Component {
-    static propTypes = {
-        error: PropTypes.object,
-    }
-    
-    static defaultProps = {
-        error: null,
-    }
-
     state = {
-        host: '10.0.2.2',
-        port: '6600',
+        host: null,
+        port: null,
         onSubmit: () => {}
     }
   
+    componentDidMount() {
+        this.props.loadSavedAddress()
+    }
+
+    componentDidUpdate() {
+        const { address } = this.props
+        const { host, port } = this.state
+        if (host == null && port == null && address != null) {
+            this.setState({
+                host: address.host,
+                port: address.port,
+            })
+        }
+    }
+
     handleHostChange = (host) => {
         this.setState({
             host
@@ -54,29 +66,37 @@ class Login extends React.Component {
 
     render() {
         const { port, host } = this.state
-        const { error } = this.props
+        const { error, address } = this.props
+
+        const displayHost = address != null ? address.host : host
+        const displayPort = address != null ? address.port : port
 
         return (
             <View style={styles.container}>        
-                {error && (
+                {error != null && (
                     <View style={styles.errorContainer}>
                         <Text style={styles.errorText}>{error.message}</Text>
                     </View>
                 )}
-                <Input placeholder="Host" onChangeText={this.handleHostChange} value={host} />
-                <Input placeholder="Port" onChangeText={this.handlePortChange} value={port} />
+                <Input placeholder='Host' onChangeText={this.handleHostChange} value={displayHost} />
+                <Input placeholder='Port' onChangeText={this.handlePortChange} value={displayPort} />
                 <View style={{marginVertical: 10}}>
-                    <Button title="Connect" onPress={this.handleSubmit} />
+                    <Button title='Connect' onPress={this.handleSubmit} />
                 </View>
             </View>
         )
     }
 }
 
-const mapStateToProps = state => ({})
+const mapStateToProps = state => {
+    const { address, error: storageError } = state.storage
+    const { error: connectionError } = state.status
+    return { address, error: (connectionError != null ? connectionError : storageError) }
+}
 
 const mapDispatchToProps = dispatch => ({
-    connect: (host, port) => dispatch(connect(host, port))
+    connect: (host, port) => dispatch(connect(host, port)),
+    loadSavedAddress: () => dispatch(loadSavedAddress()),
 })
 
 export default reduxConnect(mapStateToProps, mapDispatchToProps)(Login)

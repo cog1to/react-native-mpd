@@ -7,6 +7,7 @@ import { getAlbumArt } from '../reducers/archive/actions'
 import { changeCurrentDir, treeUpdated, addToQueue } from '../reducers/browser/actions'
 import { searchUpdated } from '../reducers/search/actions'
 import { artistsLoaded, albumsLoaded, songsLoaded } from '../reducers/library/actions'
+import { saveAddress } from '../reducers/storage/actions'
 
 import MpdClientWrapper from '../../utils/MpdClientWrapper'
 
@@ -173,6 +174,7 @@ export const mpdMiddleware = store => {
 
                     // Emit connected action.
                     store.dispatch(connected(true))
+                    store.dispatch(saveAddress({ host: action.host, port: action.port }))
                     store.dispatch(getStatus('status'))
                 }).catch((error) => {
                     store.dispatch(connectionError(error))

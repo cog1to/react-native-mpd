@@ -7,6 +7,7 @@ import reducer from './reducer'
 import { mpdMiddleware } from './middlewares/mpd'
 import { albumArtMiddleware } from './middlewares/albumArt'
 import { loggerMiddleware } from './middlewares/logger'
+import { localStorageMiddleware } from './middlewares/localStorage'
 
 export const configureStore = () => {
     const store = createStore(
@@ -14,6 +15,7 @@ export const configureStore = () => {
         applyMiddleware(
             mpdMiddleware,
             albumArtMiddleware,
+            localStorageMiddleware,
             //loggerMiddleware,
         )
      )

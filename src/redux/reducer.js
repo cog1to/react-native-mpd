@@ -8,6 +8,7 @@ import { queueReducer } from './reducers/queue/reducer'
 import { browserReducer } from './reducers/browser/reducer'
 import { searchReducer } from './reducers/search/reducer'
 import { libraryReducer } from './reducers/library/reducer'
+import { storageReducer } from './reducers/storage/reducer'
 
 const reducer = combineReducers({
     archive: archiveReducer,
@@ -17,6 +18,7 @@ const reducer = combineReducers({
     browser: browserReducer,
     search: searchReducer,
     library: libraryReducer,
+    storage: storageReducer,
 })
 
 export default reducer

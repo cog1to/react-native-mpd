@@ -6,6 +6,7 @@ import * as statusTypes from './reducers/status/types'
 import * as browserTypes from './reducers/browser/types'
 import * as searchTypes from './reducers/search/types'
 import * as libraryTypes from './reducers/library/types'
+import * as storageTypes from './reducers/storage/types'
 
 const types = {
     ...archiveTypes,
@@ -16,6 +17,7 @@ const types = {
     ...browserTypes,
     ...searchTypes,
     ...libraryTypes,
+    ...storageTypes,
 }
 
 export default types
