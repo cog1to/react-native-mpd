@@ -212,6 +212,10 @@ export default class MpdClientWrapper {
         ]), mpd.parseArrayMessage)
     }
 
+    setVolume(volume) {
+        return this._sendCommand(cmd('setvol', [volume]), mpd.parseKeyValueMessage)
+    }
+
     // MARK: - Event listeners
 
     _handleSystemUpdate(systemName) {

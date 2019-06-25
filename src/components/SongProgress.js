@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { 
-    View, 
+import {
+    View,
     StyleSheet,
     Slider,
     Text,
@@ -9,7 +9,7 @@ import {
 } from 'react-native'
 
 // Redux.
-import { connect } from 'react-redux';
+import { connect } from 'react-redux'
 
 import { seek, startProgressUpdate, stopProgressUpdate } from '../redux/reducers/player/actions'
 import { getStatus } from '../redux/reducers/status/actions'
@@ -73,12 +73,12 @@ class SongProgress extends React.Component {
 
         const minimumValue = 0
         const maximumValue = duration > 0 ? duration : 1
-        
+
         return (
             <Animated.View style={[this.props.style, styles.container]}>
-                <Slider 
+                <Slider
                     style={style}
-                    minimumValue={0} 
+                    minimumValue={0}
                     maximumValue={maximumValue}
                     step={0.5}
                     value={dragging ? value : elapsed}

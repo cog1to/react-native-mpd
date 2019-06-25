@@ -493,6 +493,10 @@ export const mpdMiddleware = store => {
                 })
                 break
             }
+            case types.SET_VOLUME: {
+                const { volume } = action
+                client.mpd.setVolume(volume)
+            }
             default:
                 break
         }

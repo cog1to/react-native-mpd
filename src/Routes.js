@@ -110,8 +110,13 @@ const PlayerNavigator = createStackNavigator(
                 headerStyle: {
                     paddingTop: 24,
                     height: 56 + 24,
-                }
-            })
+                },
+                headerRight: (
+                    <TouchableOpacity onPress={navigation.getParam('onVolumeToggle')} style={styles.headerButton}>
+                        <Icon name='volume-down' size={24} color='#000000'/> 
+                    </TouchableOpacity>
+                )
+            }),
         }
     },
     {
