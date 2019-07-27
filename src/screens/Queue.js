@@ -7,6 +7,15 @@ import {
 import QueueList from '../components/QueueList'
 
 export default class Queue extends React.Component {
+    handleMenuPress = () => {
+        const { navigation } = this.props
+        navigation.navigate('QueueSettings')
+    }
+
+    componentDidMount() {
+       this.props.navigation.setParams({ onMenu: this.handleMenuPress })
+    } 
+
     render() {
         const { navigation } = this.props
 

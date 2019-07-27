@@ -16,6 +16,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 import Login from './screens/Login'
 import Player from './screens/Player'
 import Queue from './screens/Queue'
+import QueueSettings from './screens/QueueSettings'
 import Browse from './screens/Browse'
 import Search from './screens/Search'
 import SearchResults from './screens/SearchResults'
@@ -31,7 +32,7 @@ const getMaterialTabBarIcon = icon => ({ tintColor }) => (
     <Icon name={icon} size={24} color={tintColor} /> 
 )
 
-const barOptionsFromState = ({ title, navigation, icon = 'add', hideTitle = false }) => {
+const barOptionsFromState = ({ title, navigation, icon = 'add', hideTitle = false, regularIcon }) => {
     let options = {
         title: hideTitle && navigation.getParam('editing') === true ? null : title,
         headerStyle: {
@@ -58,6 +59,12 @@ const barOptionsFromState = ({ title, navigation, icon = 'add', hideTitle = fals
                     <Icon name={icon} size={24} color='#000000' /> 
                 </TouchableOpacity>
             </View>
+        )
+    } else if (regularIcon != null) {
+        options.headerRight = (
+            <TouchableOpacity onPress={navigation.getParam('onMenu')} style={styles.headerButton}>
+                <Icon name={regularIcon} size={24} color='#000000' /> 
+            </TouchableOpacity>
         )
     }
 
@@ -91,7 +98,18 @@ const QueueNavigator = createStackNavigator(
                 title: 'Queue',
                 navigation: navigation,
                 icon: 'delete',
+                regularIcon: 'settings',
             })
+        },
+        QueueSettings: {
+            screen: QueueSettings,
+            navigationOptions: {
+                title: 'Settings',
+                headerStyle: {
+                    paddingTop: 24,
+                    height: 56 + 24,
+                },
+            }
         }
     },
     {

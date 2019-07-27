@@ -8,7 +8,6 @@ import {
     LayoutAnimation,
     Platform,
     UIManager,
-    BackHandler,
 } from 'react-native'
 
 // Song prop types.
@@ -239,21 +238,11 @@ class QueueList extends React.Component {
     }
 
     componentDidMount() {
-        if (Platform.OS === 'android') {
-            BackHandler.addEventListener('hardwareBackPress', this.handleBackPress)
-        }
-
-        this.props.navigation.setParams({
+       this.props.navigation.setParams({
             onCancelEditing: this.onCancelEditing,
             onConfirmEditing: this.onConfirmEditing,
             onGlobalSelectionToggled: this.onGlobalSelectionToggled,
         })
-    }
-
-    componentWillUnmount() {
-        if (Platform.OS === 'android') {
-            BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress)
-        }
     }
 }
 

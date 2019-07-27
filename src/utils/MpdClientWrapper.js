@@ -216,6 +216,34 @@ export default class MpdClientWrapper {
         return this._sendCommand(cmd('setvol', [volume]), mpd.parseKeyValueMessage)
     }
 
+    setConsume(enabled) {
+        return this._sendCommand(cmd('consume', [enabled ? '1' : '0']), mpd.parseKeyValueMessage)
+    }
+
+    setRandom(enabled) {
+        return this._sendCommand(cmd('random', [enabled ? '1' : '0']), mpd.parseKeyValueMessage)
+    }
+    
+    setRepeat(enabled) {
+        return this._sendCommand(cmd('repeat', [enabled ? '1' : '0']), mpd.parseKeyValueMessage)
+    }
+
+    crossfade(value) {
+        return this._sendCommand(cmd('crossfade', [value]), mpd.parseKeyValueMessage)
+    }
+
+    setSingle(value) {
+        return this._sendCommand(cmd('single', [value]), mpd.parseKeyValueMessage)
+    }
+
+    setReplayGain(value) {
+        return this._sendCommand(cmd('replay_gain_mode', [value]), mpd.parseKeyValueMessage)
+    }
+
+    getReplayGain() {
+        return this._sendCommand(cmd('replay_gain_status', []), mpd.parseKeyValueMessage)
+    }
+
     // MARK: - Event listeners
 
     _handleSystemUpdate(systemName) {

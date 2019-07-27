@@ -20,6 +20,7 @@ const initialState = {
     songid: null,
     player: 'stop',
     error: null,
+    replayGain: 'off',
 }
 
 export const statusReducer = (state = initialState, action) => {
@@ -39,6 +40,10 @@ export const statusReducer = (state = initialState, action) => {
         case types.ERROR:
             return {
                 ...state, error: action.error
+            }
+        case types.REPLAY_GAIN_STATUS_UPDATED:
+            return {
+                ...state, replayGain: action.status.replay_gain_mode
             }
         default:
             return state

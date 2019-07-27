@@ -1,12 +1,42 @@
 import types from '../types'
 
-import { connect, connected, connectionError, error, getStatus, statusUpdated } from '../reducers/status/actions'
-import { getCurrentSong, currentSongUpdated } from '../reducers/currentsong/actions'
-import { getQueue, queueUpdated } from '../reducers/queue/actions'
+import {
+    connect,
+    connected,
+    connectionError,
+    error,
+    getStatus,
+    statusUpdated,
+    getReplayGainStatus,
+    replayGainStatusUpdated,
+} from '../reducers/status/actions'
+
+import {
+    getCurrentSong,
+    currentSongUpdated
+} from '../reducers/currentsong/actions'
+
+import {
+    getQueue,
+    queueUpdated
+} from '../reducers/queue/actions'
+
 import { getAlbumArt } from '../reducers/archive/actions'
-import { changeCurrentDir, treeUpdated, addToQueue } from '../reducers/browser/actions'
+
+import {
+    changeCurrentDir,
+    treeUpdated,
+    addToQueue
+} from '../reducers/browser/actions'
+
 import { searchUpdated } from '../reducers/search/actions'
-import { artistsLoaded, albumsLoaded, songsLoaded } from '../reducers/library/actions'
+
+import {
+    artistsLoaded,
+    albumsLoaded,
+    songsLoaded
+} from '../reducers/library/actions'
+
 import { saveAddress } from '../reducers/storage/actions'
 
 import MpdClientWrapper from '../../utils/MpdClientWrapper'
@@ -73,9 +103,30 @@ const songToState = (song) => {
 }
 
 const statusToState = (status) => {
-    const { state, elapsed = 0, duration = 0, songid = null, volume = 0 } = status
+    const { 
+        state, 
+        elapsed = 0, 
+        duration = 0, 
+        songid = null, 
+        volume = 0, 
+        random = 0, 
+        repeat = 0, 
+        single = '0',
+        consume = 0,
+        xfade = 0,
+    } = status
+
     return {
-        player: state, elapsed: parseFloat(elapsed), duration: parseFloat(duration), songid: songid, volume: parseFloat(volume)
+        player: state, 
+        elapsed: parseFloat(elapsed), 
+        duration: parseFloat(duration), 
+        songid: songid, 
+        volume: parseFloat(volume),
+        random: parseFloat(random),
+        repeat: parseFloat(repeat),
+        consume: parseFloat(consume),
+        single: single,
+        crossfade: parseFloat(xfade),
     }
 }
 
@@ -158,7 +209,7 @@ async function getContentRecursively(uri) {
 export const mpdMiddleware = store => {
     return next => action => {
         switch (action.type) {
-            case types.CONNECT:
+            case types.CONNECT: {
                 client.mpd.connect(action.host, action.port).then(() => {
                     // Subscribe to player events.
                     client.disconnects.push(client.mpd.onPlayerUpdate(handlePlayerUpdate(store)))
@@ -180,8 +231,8 @@ export const mpdMiddleware = store => {
                     store.dispatch(connectionError(error))
                 })
                 break
-
-            case types.DISCONNECT:
+            }
+            case types.DISCONNECT: {
                 client.mpd.disconnect().then(() => {
                     // Unsubscribe from all events.
                     client.disconnects.forEach((callback) => {
@@ -194,8 +245,8 @@ export const mpdMiddleware = store => {
                     store.dispatch(connectionError(error))
                 })
                 break
-
-            case types.GET_STATUS:
+            }
+            case types.GET_STATUS: {
                client.mpd.getStatus().then((status) => {
                    const newState = statusToState(status)
                    store.dispatch(statusUpdated(newState, action.source))
@@ -203,8 +254,8 @@ export const mpdMiddleware = store => {
                    store.dispatch(error(e, types.GET_STATUS))
                })
                break
-
-            case types.STATUS_UPDATED:
+            }
+            case types.STATUS_UPDATED: {
                if (action.source === 'progress' && client.updatingProgress) {
                    client.progressTimeout = setTimeout(() => store.dispatch(getStatus('progress')), 1000)
                }
@@ -218,8 +269,8 @@ export const mpdMiddleware = store => {
                }
 
                break
-
-            case types.GET_CURRENT_SONG:
+            }
+            case types.GET_CURRENT_SONG: {
                client.mpd.getCurrentSong().then((result) => {
                    let song = songToState(result)
                    store.dispatch(currentSongUpdated(song))
@@ -227,7 +278,7 @@ export const mpdMiddleware = store => {
                    store.dispatch(error(e, types.GET_CURRENT_SONG))
                })
                break
-
+            }
             case types.CURRENT_SONG_UPDATED: {
                const { album, artist, albumArtist } = action.data
                const nextArtist = (albumArtist ? albumArtist : artist)
@@ -240,7 +291,7 @@ export const mpdMiddleware = store => {
                }
                break
             }
-            case types.PLAY_PAUSE:
+            case types.PLAY_PAUSE: {
                 const { state } = action
 
                 if (state === 'play') {
@@ -249,20 +300,20 @@ export const mpdMiddleware = store => {
                     client.mpd.pause()
                 }
                 break
-
-            case types.PLAY_NEXT:
+            }
+            case types.PLAY_NEXT: {
                 client.mpd.next()
                 break
-
-            case types.PLAY_PREVIOUS:
+            }
+            case types.PLAY_PREVIOUS: {
                 client.mpd.previous()
                 break
-
-            case types.SEEK:
+            }
+            case types.SEEK: {
                 client.mpd.seek(action.position)
                 break
-
-            case types.GET_QUEUE:
+            }
+            case types.GET_QUEUE: {
                 client.mpd.getQueue().then((result) => {
                     let queue = queueToState(result, true)
                     store.dispatch(queueUpdated(queue))
@@ -270,39 +321,39 @@ export const mpdMiddleware = store => {
                     store.dispatch(error(e, types.GET_QUEUE))
                 })
                 break
-
-            case types.SET_CURRENT_SONG:
+            }
+            case types.SET_CURRENT_SONG: {
                 client.mpd.setCurrentSong(action.songId)
                 break
-
-            case types.DELETE_SONGS:
+            }
+            case types.DELETE_SONGS: {
                 action.songIds.reduce((promiseChain, songId) => {
                     return promiseChain.then(client.mpd.deleteSongId(songId))
                 }, Promise.resolve())
                 break
-
-            case types.CLEAR_QUEUE:
+            }
+            case types.CLEAR_QUEUE: {
                 client.mpd.clear().catch((e) => {
                     store.dispatch(error(e, types.CLEAR_QUEUE))
                 })
                 break
-
-            case types.START_PROGRESS_UPDATE:
+            }
+            case types.START_PROGRESS_UPDATE: {
                 if (!client.updatingProgress) {
                     client.updatingProgress = true
                     store.dispatch(getStatus('progress'))
                 }
                 break
-
-            case types.STOP_PROGRESS_UPDATE:
+            }
+            case types.STOP_PROGRESS_UPDATE: {
                 client.updatingProgress = false
                 if (client.progressTimeout !== null) {
                     clearTimeout(client.progressTimeout)
                 }
 
                 break
-
-            case types.CHANGE_CURRENT_DIR:
+            }
+            case types.CHANGE_CURRENT_DIR: {
                 const { tree } = store.getState().browser
 
                 let node = nodeFromPath(action.path, tree)
@@ -320,8 +371,8 @@ export const mpdMiddleware = store => {
                     })
                 }
                 break
-
-            case types.ADD_TO_QUEUE:
+            }
+            case types.ADD_TO_QUEUE: {
                 const { items, position } = action
 
                 const handleFile = (uri, position) => {
@@ -383,8 +434,6 @@ export const mpdMiddleware = store => {
                 }
 
                 const handleArtist = (artist, position) => {
-                    console.log('artist:' + artist)
-                    console.log('sanitized:' + sanitize(artist))
                     const searchExpression = '(artist == \'' + sanitize(artist)  + '\')'
 
                     // Get search results.
@@ -417,8 +466,8 @@ export const mpdMiddleware = store => {
                     store.dispatch(error(e, types.ADD_TO_QUEUE))
                 })
                 break
-
-            case types.ADD_TO_QUEUE_PLAY:
+            }
+            case types.ADD_TO_QUEUE_PLAY: {
                 const { uri: song, position: pos } = action
 
                 client.mpd.addToQueue(song, pos).then(({ Id }) => {
@@ -428,7 +477,7 @@ export const mpdMiddleware = store => {
                     store.dispatch(error(e, types.ADD_TO_QUEUE_PLAY))
                 })
                 break
-
+            }
             case types.SEARCH: {
                 const { expression } = action
 
@@ -496,6 +545,48 @@ export const mpdMiddleware = store => {
             case types.SET_VOLUME: {
                 const { volume } = action
                 client.mpd.setVolume(volume)
+            }
+            case types.SET_CONSUME: {
+                client.mpd.setConsume(action.enabled).then((result) => {
+                    store.dispatch(getStatus())
+                })
+                break
+            }
+            case types.SET_REPEAT: {
+                client.mpd.setRepeat(action.enabled).then(() => {
+                    store.dispatch(getStatus())
+                })
+                break
+            }
+            case types.SET_RANDOM: {
+                client.mpd.setRandom(action.enabled).then(() => {
+                    store.dispatch(getStatus())
+                })
+                break
+            }
+            case types.CROSSFADE: {
+                client.mpd.crossfade(action.value).then(() => {
+                    store.dispatch(getStatus())
+                })
+                break
+            }
+            case types.SET_SINGLE: {
+                client.mpd.setSingle(action.value).then(() => {
+                    store.dispatch(getStatus())
+                })
+                break
+            }
+            case types.SET_REPLAY_GAIN_MODE: {
+                client.mpd.setReplayGain(action.value).then(() => {
+                    store.dispatch(getReplayGainStatus())
+                })
+                break
+            }
+            case types.GET_REPLAY_GAIN_STATUS: {
+                client.mpd.getReplayGain().then((status) => {
+                    store.dispatch(replayGainStatusUpdated(status))
+                })
+                break
             }
             default:
                 break

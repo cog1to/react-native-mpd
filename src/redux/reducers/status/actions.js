@@ -27,6 +27,15 @@ export const statusUpdated = (status, source) => ({
     source,
 })
 
+export const getReplayGainStatus = () => ({
+    type: types.GET_REPLAY_GAIN_STATUS,
+})
+
+export const replayGainStatusUpdated = (status) => ({
+    type: types.REPLAY_GAIN_STATUS_UPDATED,
+    status,
+})
+
 export const error = (error) => ({
     type: types.ERROR,
     error: error,
