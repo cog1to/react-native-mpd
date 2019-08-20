@@ -2,6 +2,7 @@ import { AsyncStorage } from 'react-native'
 
 const KEYS = {
     SAVED_ADDRESS: 'SAVED_ADDRESS',
+    CURRENT_THEME: 'CURRENT_THEME',
 }
 
 export default class LocalStorage {
@@ -36,6 +37,20 @@ export default class LocalStorage {
 
     setSavedAddress({ host, port }, callback) {
         this._setValue(KEYS.SAVED_ADDRESS, JSON.stringify({ host: host, port: port }), callback)
+    }
+
+    getTheme(callback) {
+        this._getValue(KEYS.CURRENT_THEME, (error, result) => {
+            if (error != null) {
+                callback(error, null)
+            }
+
+            callback(null, result)
+        })
+    }
+
+    setTheme(name, callback) {
+        this._setValue(KEYS.CURRENT_THEME, name, callback)
     }
 
     // Private stuff.
