@@ -29,11 +29,11 @@ import { addToQueue, addToQueuePlay } from '../redux/reducers/browser/actions'
 // Highlightable view wrapper.
 import { HighlightableView } from './common/HighlightableView'
 
-// Add menu.
-import { OPTIONS, BrowseAddMenu } from './BrowseAddMenu'
-
 // Theme manager.
 import ThemeManager from '../themes/ThemeManager'
+
+// On-screen list menu/dialog.
+import MenuDialog from './common/MenuDialog'
 
 // Enable animations on Android.
 if (Platform.OS === 'android') {
@@ -41,7 +41,7 @@ if (Platform.OS === 'android') {
 }
 
 const CustomLayoutAnimation = {
-    duration: 200,
+    duration: 250,
     create: {
         type: LayoutAnimation.Types.linear,
         property: LayoutAnimation.Properties.opacity,
@@ -49,6 +49,12 @@ const CustomLayoutAnimation = {
     update: {
         type: LayoutAnimation.Types.easeInEaseOut,
     },
+}
+
+const OPTIONS = { 
+    ADD_TO_QUEUE_BEGINNING: { value: 'ADD_TO_QUEUE_BEGINNING', title: 'At the beginning of queue' },
+    ADD_TO_QUEUE_END: { value: 'ADD_TO_QUEUE_END', title: 'At the end of queue' },
+    ADD_TO_QUEUE_AFTER_CURRENT_SONG: { value: 'ADD_TO_QUEUE_AFTER_CURRENT_SONG', title: 'After current song' },
 }
 
 class BrowseListItem extends React.Component {
@@ -98,9 +104,11 @@ class BrowseListItem extends React.Component {
                 break
         }
 
+        const theme = ThemeManager.instance().getCurrentTheme()
+
         let iconColor = playing 
-            ? ThemeManager.instance().getCurrentTheme().activeColor
-            : ThemeManager.instance().getCurrentTheme().lightTextColor
+            ? theme.activeColor
+            : theme.lightTextColor
 
         return (
             <View style={styles.itemContainer}>
@@ -115,10 +123,10 @@ class BrowseListItem extends React.Component {
                     onPress={this.handleMenuPress}
                     disabled={editing}>
                     {!editing && (
-                        <Icon name='more-horiz' color='#000000' style={{...styles.status, fontSize: 20}} />
+                        <Icon name='more-horiz' color={theme.mainTextColor} style={{...styles.status, fontSize: 20}} />
                     )}
                     {editing && selected && (
-                        <Icon name='check' color='#000000' style={{...styles.status, fontSize: 20}} />
+                        <Icon name='check' color={theme.mainTextColor} style={{...styles.status, fontSize: 20}} />
                     )}
                     {editing && !selected && 
                         // Placeholder view to keep the text layout the same.
@@ -246,6 +254,7 @@ class ItemsList extends React.Component {
         let newSelected = selected.slice()
         newSelected.push({name: item.name, index: item.index })
 
+        LayoutAnimation.configureNext(CustomLayoutAnimation)
         this.setState({
             showingMenu: true,
             selected: newSelected,
@@ -262,6 +271,7 @@ class ItemsList extends React.Component {
                 newSelected = []
             }
 
+            LayoutAnimation.configureNext(CustomLayoutAnimation)
             this.setState({
                 showingMenu: false,
                 selected: newSelected,
@@ -278,7 +288,7 @@ class ItemsList extends React.Component {
         return false
     }
 
-    onOptionSelected = (option) => {
+    onOptionSelected = (opt) => {
         const { addToQueue, content, queueSize, position = null } = this.props
 
         const sorted = this.state.selected.slice()
@@ -294,14 +304,14 @@ class ItemsList extends React.Component {
             }
         })
 
-        switch (option) {
-            case OPTIONS.ADD_TO_QUEUE_BEGINNING:
+        switch (opt.value) {
+            case OPTIONS.ADD_TO_QUEUE_BEGINNING.value:
                 addToQueue(paths, 0)
                 break
-            case OPTIONS.ADD_TO_QUEUE_END:
+            case OPTIONS.ADD_TO_QUEUE_END.value:
                 addToQueue(paths, queueSize)
                 break
-            case OPTIONS.ADD_TO_QUEUE_AFTER_CURRENT_SONG:
+            case OPTIONS.ADD_TO_QUEUE_AFTER_CURRENT_SONG.value:
                 addToQueue(paths, position + 1)
                 break
         }
@@ -319,7 +329,6 @@ class ItemsList extends React.Component {
         const { selected } = this.state
 
         LayoutAnimation.configureNext(CustomLayoutAnimation)
-
         this.setState({
             selected: [],
             editing: false,
@@ -415,17 +424,13 @@ class ItemsList extends React.Component {
                     extraData={{file, editing, selected}}
                 />
                 {showingMenu && (
-                    <View style={styles.menuWrapper}>
-                        <TouchableWithoutFeedback onPress={this.handleBackPress}>
-                            <View style={styles.menuContainer}>
-                                <BrowseAddMenu 
-                                    options={options}
-                                    onOptionSelected={this.onOptionSelected}
-                                />
-                            </View>
-                        </TouchableWithoutFeedback>
-                    </View>
-               )}
+                    <MenuDialog
+                         title='Add items...'
+                         options={options}
+                         onHide={this.handleBackPress}
+                         onOptionSelected={this.onOptionSelected}
+                    />
+                 )}
             </View>
        )
     }

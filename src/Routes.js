@@ -194,15 +194,17 @@ const LibraryNavigator = createStackNavigator(
     {
         Library: {
             screen: Library,
-            navigationOptions: ({ navigation }) => ({
+            navigationOptions: ({ navigation }) => barOptionsFromState({
                 title: 'Library',
-           }),
+                navigation: navigation,
+            }),
         },
         Artist: {
             screen: Artist,
-            navigationOptions: ({ navigation }) => ({
-                title: 'Artist: ' + navigation.getParam('name')
-            })
+            navigationOptions: ({ navigation }) => barOptionsFromState({
+                title: 'Artist: ' + navigation.getParam('name'),
+                navigation: navigation,
+            }),
         },
         Album: {
             screen: Album,
