@@ -120,14 +120,18 @@ export default class MpdClientWrapper {
     // Sends a command to the player.
     _sendCommand(command, parser, callback) {
         return new Promise((resolve, reject) => {
-            this._client.sendCommand(command, (error, result) => {
-                if (error) {
-                    reject(error)
-                } else {
-                    //console.log(result)
-                    resolve(parser(result))
-                }
-            })
+            try {
+                this._client.sendCommand(command, (error, result) => {
+                    if (error) {
+                        reject(error)
+                    } else {
+                        resolve(parser(result))
+                    }
+                })
+            } catch (ex) {
+                console.log('Error: ' + JSON.stringify(ex))
+                reject(ex)
+            }
         })
     }
 

@@ -26,6 +26,9 @@ import QueueListItem from './QueueListItem'
 // Highlightable wrapper.
 import { HighlightableView } from './common/HighlightableView'
 
+// Themes.
+import ThemeManager from '../themes/ThemeManager'
+
 if (Platform.OS === 'android') {
     UIManager.setLayoutAnimationEnabledExperimental(true);
 }

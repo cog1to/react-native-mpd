@@ -1,11 +1,14 @@
-import LocalStorage from '../storage/LocalStorage.js'
+import LocalStorage from '../storage/LocalStorage'
+import LightTheme from './Light'
 
 export default class ThemeManager {
   constructor(getter, setter) {
     this.getter = getter
     this.setter = setter
     this.currentTheme = 'Light'
-    this.themes = {}
+    this.themes = {
+      'Light': LightTheme
+    }
   }
 
   static instance() {

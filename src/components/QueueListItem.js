@@ -13,6 +13,8 @@ import { Dimensions } from 'react-native'
 
 import { HighlightableView } from './common/HighlightableView'
 
+import ThemeManager from '../themes/ThemeManager'
+
 class ForegroundView extends React.PureComponent {
 
     static propTypes = {
@@ -191,10 +193,10 @@ const styles = StyleSheet.create({
         fontSize: 12,
     },
     statusActive: {
-        color: 'black',
+        color: ThemeManager.instance().getCurrentTheme().activeColor,
     },
     statusInactive: {
-        color: 'grey',
+        color: ThemeManager.instance().getCurrentTheme().lightTextColor,
     },
     description: {
         flex: 1,
@@ -203,22 +205,23 @@ const styles = StyleSheet.create({
     },
     title: {        
         fontWeight: 'bold',
-        fontSize: 16,
-        color: 'black',     
+        fontSize: ThemeManager.instance().getCurrentTheme().mainTextSize,
+        color: ThemeManager.instance().getCurrentTheme().mainTextColor,
     },
     subtitle: {
-        fontSize: 14,
+        fontSize: ThemeManager.instance().getCurrentTheme().subTextSize,
+        color: ThemeManager.instance().getCurrentTheme().lightTextColor,
     },
     foreground: {
         zIndex: 2, 
-        backgroundColor: 'white'
+        backgroundColor: ThemeManager.instance().getCurrentTheme().backgroundColor,
     },
     background: {
         zIndex: 1,
         position: 'absolute',
         height: '100%',
         width: '100%',
-        backgroundColor: '#AAAAAA',
+        backgroundColor: ThemeManager.instance().getCurrentTheme().accentBackgroundColor,
         flexDirection: 'row',
         justifyContent: 'space-between'
     },

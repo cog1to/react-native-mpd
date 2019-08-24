@@ -6,6 +6,9 @@ import {
 } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
+// Themes.
+import ThemeManager from '../themes/ThemeManager'
+
 export default class VolumeControl extends React.Component {
 
     state = { 
@@ -34,9 +37,11 @@ export default class VolumeControl extends React.Component {
 
         const actualVolume = dragging ? currentValue : volume
 
+        const theme = ThemeManager.instance().getCurrentTheme()
+
         return (
             <View style={styles.volumeBar}>
-                <Icon name='volume-mute' size={24} color='#000000' />
+                <Icon name='volume-mute' size={24} color={theme.mainTextColor} />
                 <Slider 
                     style={styles.slider}
                     value={actualVolume}
@@ -45,8 +50,10 @@ export default class VolumeControl extends React.Component {
                     step={1}
                     onValueChange={this.handleValueChange}
                     onSlidingComplete={this.onSlidingComplete}
+                    minimumTrackTintColor={theme.activeColor}
+                    thumbTintColor={theme.accentColor}
                 />
-                <Icon name='volume-up' size={24} color='#000000' />
+                <Icon name='volume-up' size={24} color={theme.mainTextColor} />
             </View>
         )
     }
@@ -60,7 +67,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 0,
         padding: 16,
-        backgroundColor: 'white',
+        backgroundColor: ThemeManager.instance().getCurrentTheme().toolbarColor,
         left: 0,
         right: 0,
         elevation: 1,

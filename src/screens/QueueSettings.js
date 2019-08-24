@@ -16,6 +16,7 @@ import {
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 
+// Queue settings actions.
 import { 
     setConsume,
     setRepeat,
@@ -25,13 +26,19 @@ import {
     setReplayGain,
 } from '../redux/reducers/player/actions'
 
+// Replay gain status actions.
 import {
     getReplayGainStatus,
 } from '../redux/reducers/status/actions'
 
+// Queue options.
 import { REPLAY_GAIN, REPLAY_GAIN_TITLES, SINGLE, SINGLE_TITLES } from '../utils/QueueOptions.js'
 
+// On-screen list menu/dialog.
 import MenuDialog from '../components/common/MenuDialog'
+
+// Themes.
+import ThemeManager from '../themes/ThemeManager'
 
 // Enable animations on Android.
 if (Platform.OS === 'android') {
@@ -50,6 +57,7 @@ const FadeLayoutAnimation = {
        type: LayoutAnimation.Types.easeOut,
     },
 }
+
 class ToggleRow extends React.Component {
     handleOnPress = () => {
         const { onTapped } = this.props
@@ -63,6 +71,8 @@ class ToggleRow extends React.Component {
     render() {
         const { title, subtitle, value, lastRow } = this.props
 
+        const theme = ThemeManager.instance().getCurrentTheme()
+
         let style = styles.rowContent
         if (!lastRow) {
             style = {...style, ...styles.bottomBorder}
@@ -71,7 +81,7 @@ class ToggleRow extends React.Component {
         return (
             <TouchableHighlight 
                 onPress={this.handleOnPress} 
-                underlayColor='#DDDDDD'>
+                underlayColor={theme.accentColor+'30'}>
                 <View style={styles.row}>
                     <View style={style}>
                         <View style={styles.rowText}>
@@ -82,6 +92,8 @@ class ToggleRow extends React.Component {
                             <Switch 
                                 value={value == 0 ? false : true}
                                 disabled={false}
+                                trackColor={{true:theme.activeColor+'70'}}
+                                thumbColor={value == 0 ? null : theme.activeColor}
                             />
                         </View>
                     </View>
@@ -125,6 +137,8 @@ class SliderRow extends React.Component {
 
         const displayValue = newValue != null ? newValue : value
 
+        const theme = ThemeManager.instance().getCurrentTheme()
+
         let style = styles.rowSlider
         if (!lastRow) {
             style = {...style, ...styles.bottomBorder}
@@ -142,6 +156,8 @@ class SliderRow extends React.Component {
                         value={displayValue}
                         onValueChange={this.onValueChange}
                         onSlidingComplete={this.onSlidingComplete}
+                        minimumTrackTintColor={theme.activeColor}
+                        thumbTintColor={theme.accentColor}
                     />            
                 </View>
             </View>
@@ -375,14 +391,14 @@ export default connect(mapStateToProps, mapDispatchToProps)(QueueSettings)
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#AAAAAA',
+        backgroundColor: ThemeManager.instance().getCurrentTheme().tableBackgroundColor,
     },
     rowGroup: {
         marginVertical: 10,
         marginTop: 20,
-        backgroundColor: '#FFFFFF',
         flexDirection: 'column',
         elevation: 2,
+        backgroundColor: ThemeManager.instance().getCurrentTheme().backgroundColor,
     },
     row: {
         paddingLeft: 20,
@@ -402,11 +418,12 @@ const styles = StyleSheet.create({
     },
     title: {        
         fontWeight: 'bold',
-        fontSize: 16,
-        color: 'black',     
+        fontSize: ThemeManager.instance().getCurrentTheme().mainTextSize,
+        color: ThemeManager.instance().getCurrentTheme().mainTextColor,
     },
     subtitle: {
-        fontSize: 14,
+        fontSize: ThemeManager.instance().getCurrentTheme().subTextSize,
+        color: ThemeManager.instance().getCurrentTheme().lightTextColor,
     },
     switchContainer: {
         flexDirection: 'row',

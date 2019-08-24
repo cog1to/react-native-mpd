@@ -6,6 +6,8 @@ import {
 } from 'react-native'
 import PropTypes from 'prop-types'
 
+import ThemeManager from '../../themes/ThemeManager'
+
 export const HighlightableView = (WrappedComponent) => {
     return class extends React.Component {
         state = {
@@ -27,7 +29,7 @@ export const HighlightableView = (WrappedComponent) => {
         }
 
         static defaultProps = {
-            highlightColor: '#00000033',
+            highlightColor: ThemeManager.instance().getCurrentTheme().accentColor + '50',
             duration: 200,
         }
         

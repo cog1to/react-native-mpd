@@ -12,6 +12,7 @@ import {
 } from 'react-navigation'
 import FontAwesome, { Icons } from 'react-native-fontawesome'
 import Icon from 'react-native-vector-icons/MaterialIcons'
+import ThemeManager from './themes/ThemeManager'
 
 import Login from './screens/Login'
 import Player from './screens/Player'
@@ -24,6 +25,21 @@ import Library from './screens/Library'
 import Artist from './screens/Artist'
 import Album from './screens/Album'
 
+const iconColor = ThemeManager.instance().getCurrentTheme().navigationBarIconColor
+const textColor = ThemeManager.instance().getCurrentTheme().navigationBarTextColor
+
+const navigationHeader = {
+    headerStyle: {
+        paddingTop: 24,
+        height: 56 + 24,
+        backgroundColor: ThemeManager.instance().getCurrentTheme().accentColor,
+    },
+    headerTitleStyle: {
+        color: ThemeManager.instance().getCurrentTheme().navigationBarIconColor
+    },
+    headerTintColor: ThemeManager.instance().getCurrentTheme().navigationBarIconColor,
+}
+
 const getTabBarIcon = icon => ({ tintColor }) => (
     <FontAwesome style={{ color: tintColor, fontSize: 20 }}>{Icons[icon]}</FontAwesome> 
 )
@@ -35,11 +51,8 @@ const getMaterialTabBarIcon = icon => ({ tintColor }) => (
 const barOptionsFromState = ({ title, navigation, icon = 'add', hideTitle = false, regularIcon }) => {
     let options = {
         title: hideTitle && navigation.getParam('editing') === true ? null : title,
-        headerStyle: {
-            paddingTop: 24,
-            height: 56 + 24,
-        }
-    }
+        ...navigationHeader
+   }
 
     const allSelected = navigation.getParam('allSelected')
     let globalSelectionText = allSelected ? 'DESELECT ALL' : 'SELECT ALL'
@@ -47,7 +60,7 @@ const barOptionsFromState = ({ title, navigation, icon = 'add', hideTitle = fals
     if (navigation.getParam('editing') === true) {
         options.headerLeft = (
             <TouchableOpacity onPress={navigation.getParam('onCancelEditing')} style={styles.headerButton}>
-                <Icon name='clear' size={24} color='#000000' /> 
+                <Icon name='clear' size={24} color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor} /> 
             </TouchableOpacity>
         )
         options.headerRight = (
@@ -56,14 +69,14 @@ const barOptionsFromState = ({ title, navigation, icon = 'add', hideTitle = fals
                     <Text style={styles.headerTextButton}>{globalSelectionText}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={navigation.getParam('onConfirmEditing')} style={styles.headerButton}>
-                    <Icon name={icon} size={24} color='#000000' /> 
+                    <Icon name={icon} size={24} color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor} /> 
                 </TouchableOpacity>
             </View>
         )
     } else if (regularIcon != null) {
         options.headerRight = (
             <TouchableOpacity onPress={navigation.getParam('onMenu')} style={styles.headerButton}>
-                <Icon name={regularIcon} size={24} color='#000000' /> 
+                <Icon name={regularIcon} size={24} color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor} /> 
             </TouchableOpacity>
         )
     }
@@ -84,8 +97,9 @@ const BrowseNavigator = createStackNavigator(
     },
     {
         navigationOptions: {
-            tabBarIcon: getTabBarIcon('folderOpen')
-        }
+            tabBarIcon: getTabBarIcon('folderOpen'),
+        },
+        defaultNavigationOptions: navigationHeader,
     }
 )
 
@@ -105,17 +119,14 @@ const QueueNavigator = createStackNavigator(
             screen: QueueSettings,
             navigationOptions: {
                 title: 'Settings',
-                headerStyle: {
-                    paddingTop: 24,
-                    height: 56 + 24,
-                },
             }
         }
     },
     {
         navigationOptions: {
-            tabBarIcon: getTabBarIcon('listUl')
-        }
+            tabBarIcon: getTabBarIcon('listUl'),
+        },
+        defaultNavigationOptions: navigationHeader,
     }
 )
 
@@ -124,14 +135,11 @@ const PlayerNavigator = createStackNavigator(
         Player: {
             screen: Player,
             navigationOptions: ({ navigation }) => ({
+                ...navigationHeader,
                 title: 'Now Playing',
-                headerStyle: {
-                    paddingTop: 24,
-                    height: 56 + 24,
-                },
                 headerRight: (
                     <TouchableOpacity onPress={navigation.getParam('onVolumeToggle')} style={styles.headerButton}>
-                        <Icon name='volume-down' size={24} color='#000000'/> 
+                        <Icon name='volume-down' size={24} color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor}/> 
                     </TouchableOpacity>
                 )
             }),
@@ -139,8 +147,9 @@ const PlayerNavigator = createStackNavigator(
     },
     {
         navigationOptions: {
-            tabBarIcon: getTabBarIcon('playCircle')
-        }
+            tabBarIcon: getTabBarIcon('playCircle'),
+        },
+        defaultNavigationOptions: navigationHeader,
     }
 )
 
@@ -176,14 +185,8 @@ const SearchNavigator = createStackNavigator(
     {
         navigationOptions: {
             tabBarIcon: getTabBarIcon('search'),
-             
         },
-        defaultNavigationOptions: {
-            headerStyle: {
-                paddingTop: 24,
-                height: 56 + 24,
-            },
-        }
+        defaultNavigationOptions: navigationHeader,
     }
 )
 
@@ -214,12 +217,7 @@ const LibraryNavigator = createStackNavigator(
         navigationOptions: {
             tabBarIcon: getMaterialTabBarIcon('library-music')
         },
-        defaultNavigationOptions: {
-            headerStyle: {
-                paddingTop: 24,
-                height: 56 + 24,
-            },
-        }
+        defaultNavigationOptions: navigationHeader,
     }
 )
 
@@ -236,7 +234,9 @@ const TabNavigator = createBottomTabNavigator(
             showLabel: false,
             style: {
                 elevation: 20,
-            }
+                backgroundColor: ThemeManager.instance().getCurrentTheme().toolbarColor,
+            },
+            activeTintColor: ThemeManager.instance().getCurrentTheme().accentColor,
         }
     }
 )
@@ -275,7 +275,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     headerTextButton: {
-        color: 'black',
+        color: ThemeManager.instance().getCurrentTheme().navigationBarTextColor,
         fontWeight: 'bold',
         fontSize: 18,
     }

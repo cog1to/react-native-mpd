@@ -16,6 +16,9 @@ import { search } from '../redux/reducers/search/actions'
 // Input control.
 import Input from '../components/common/Input'
 
+// Themes.
+import ThemeManager from '../themes/ThemeManager'
+
 Fields = [
     { ID: 'TITLE', title: 'Title', tag: 'title', },
     { ID: 'ARTIST', title: 'Artist', tag: 'artist', },
@@ -99,7 +102,11 @@ class Search extends React.Component {
                         )
                     })}
                    <View style={styles.search}>
-                        <Button title="Search" onPress={this.onSearch} />
+                        <Button 
+                            title="Search"
+                            onPress={this.onSearch}
+                            color={ThemeManager.instance().getCurrentTheme().accentColor}
+                        />
                     </View>
                 </ScrollView>
             </View>

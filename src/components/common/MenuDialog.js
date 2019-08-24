@@ -8,6 +8,9 @@ import {
 } from 'react-native'
 import PropTypes from 'prop-types'
 
+// Theme manager.
+import ThemeManager from '../../themes/ThemeManager'
+
 export default class MenuDialog extends React.Component {
     static propTypes = {
         options: PropTypes.arrayOf(PropTypes.shape({
@@ -61,26 +64,26 @@ const styles = StyleSheet.create({
    header: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: 'black',
+        color: ThemeManager.instance().getCurrentTheme().mainTextColor,
         margin: 15,
         marginBottom: 20,
         textAlign: 'center',
     },
     option: {
-        color: 'black',
+        color: ThemeManager.instance().getCurrentTheme().mainTextColor,
         fontSize: 16,
         paddingHorizontal: 20,
         paddingVertical: 15,
     },
     selected: {
-        color: 'black',
+        color: ThemeManager.instance().getCurrentTheme().mainTextColor,
         fontSize: 16,
         paddingHorizontal: 20,
         paddingVertical: 15,
         fontWeight: 'bold',
     },
     menuContainer: {
-        backgroundColor: 'white',
+        backgroundColor: ThemeManager.instance().getCurrentTheme().backgroundColor,
         shadowColor: 'black',
         shadowRadius: 10,
         shadowOpacity: 0.5,

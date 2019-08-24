@@ -32,6 +32,9 @@ import { HighlightableView } from './common/HighlightableView'
 // Add menu.
 import { OPTIONS, BrowseAddMenu } from './BrowseAddMenu'
 
+// Theme manager.
+import ThemeManager from '../themes/ThemeManager'
+
 // Enable animations on Android.
 if (Platform.OS === 'android') {
     UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -95,9 +98,13 @@ class BrowseListItem extends React.Component {
                 break
         }
 
+        let iconColor = playing 
+            ? ThemeManager.instance().getCurrentTheme().activeColor
+            : ThemeManager.instance().getCurrentTheme().lightTextColor
+
         return (
             <View style={styles.itemContainer}>
-                <Text style={styles.status}>
+                <Text style={{...styles.status, color: iconColor}}>
                     {icon}
                 </Text>
                 <View style={styles.description}>
@@ -494,11 +501,12 @@ const styles = StyleSheet.create({
     },
     title: {
         fontWeight: 'bold',
-        fontSize: 16,
-        color: 'black',
+        fontSize: ThemeManager.instance().getCurrentTheme().mainTextSize,
+        color: ThemeManager.instance().getCurrentTheme().mainTextColor,
     },
     subtitle: {
         fontSize: 14,
+        color: '#666666'
     },
     menuWrapper: {
         position: 'absolute',

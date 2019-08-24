@@ -1,7 +1,7 @@
 // Basic react stuff.
 import React, { Component } from 'react'
 import { connect as reduxConnect } from 'react-redux'
-import { NavigationActions } from 'react-navigation'
+import { NavigationActions, StackActions } from 'react-navigation'
 import { View, StatusBar } from 'react-native'
 
 // Screens.
@@ -16,6 +16,9 @@ import { connect } from './redux/reducers/status/actions'
 // Navigator.
 import AppContainer from './Routes'
 
+// Themes.
+import ThemeManager from './themes/ThemeManager'
+
 class Root extends Component {
     constructor(props) {
         super(props)
@@ -29,16 +32,18 @@ class Root extends Component {
                 )
             } else {
                 this.navigator && this.navigator.dispatch(
-                    NavigationActions.back({})
+                    StackActions.popToTop()
                 )
             }
         }
     }
 
     render() {
+        const navColor = ThemeManager.instance().getCurrentTheme().accentColor
+
         return (
             <View style={{flex: 1}}>
-                <StatusBar translucent={true} backgroundColor="#FFFFFF" barStyle="dark-content" />
+                <StatusBar translucent={true} backgroundColor={navColor} barStyle="light-content" />
                 <AppContainer
                     ref={ nav => { this.navigator = nav } }
                 />

@@ -11,8 +11,12 @@ import {
 // Redux.
 import { connect } from 'react-redux'
 
+// Actions.
 import { seek, startProgressUpdate, stopProgressUpdate } from '../redux/reducers/player/actions'
 import { getStatus } from '../redux/reducers/status/actions'
+
+// Themes.
+import ThemeManager from '../themes/ThemeManager'
 
 class SongProgress extends React.Component {
     static defaultProps = {
@@ -74,6 +78,8 @@ class SongProgress extends React.Component {
         const minimumValue = 0
         const maximumValue = duration > 0 ? duration : 1
 
+        const theme = ThemeManager.instance().getCurrentTheme()
+
         return (
             <Animated.View style={[this.props.style, styles.container]}>
                 <Slider
@@ -85,6 +91,8 @@ class SongProgress extends React.Component {
                     disabled={disabled}
                     onValueChange={this.onValueChange}
                     onSlidingComplete={this.onSlidingComplete}
+                    minimumTrackTintColor={theme.activeColor}
+                    thumbTintColor={theme.accentColor}
                 />
                 {!disabled && (
                     <View style={styles.time}>

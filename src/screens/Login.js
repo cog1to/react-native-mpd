@@ -19,6 +19,9 @@ import { bindActionCreators } from 'redux'
 // Storage.
 import LocalStorage from '../storage/LocalStorage'
 
+// Themes.
+import ThemeManager from '../themes/ThemeManager'
+
 class Login extends React.Component {
     state = {
         host: null,
@@ -81,7 +84,11 @@ class Login extends React.Component {
                 <Input placeholder='Host' onChangeText={this.handleHostChange} value={displayHost} />
                 <Input placeholder='Port' onChangeText={this.handlePortChange} value={displayPort} />
                 <View style={{marginVertical: 10}}>
-                    <Button title='Connect' onPress={this.handleSubmit} />
+                    <Button
+                        title='Connect'
+                        onPress={this.handleSubmit}
+                        color={ThemeManager.instance().getCurrentTheme().accentColor}
+                    />
                 </View>
             </View>
         )
