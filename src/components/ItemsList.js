@@ -49,6 +49,10 @@ const CustomLayoutAnimation = {
     update: {
         type: LayoutAnimation.Types.easeInEaseOut,
     },
+    delete: {
+        type: LayoutAnimation.Types.linear,
+        property: LayoutAnimation.Properties.opacity,
+    }
 }
 
 const OPTIONS = { 
@@ -316,10 +320,11 @@ class ItemsList extends React.Component {
                 break
         }
 
+        LayoutAnimation.configureNext(CustomLayoutAnimation, this.onCancelEditing)
         this.setState({
             showingMenu: false,
             selected: [],
-        }, this.onCancelEditing)
+        })
     }
 
     onCancelEditing = () => {

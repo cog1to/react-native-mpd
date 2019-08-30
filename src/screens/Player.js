@@ -5,28 +5,47 @@ import {
     Button,
     Text,
     Image,
+    UIManager,
+    Animated,
+    Platform,
 } from 'react-native'
 import _ from 'lodash'
 
 // Redux.
 import { connect } from 'react-redux'
 
+// Sub-controls.
 import SongProgress from '../components/SongProgress'
 import Controls from '../components/Controls'
 import AlbumArt from '../components/AlbumArt'
 import CurrentSong from '../components/CurrentSong'
 import VolumeControl from '../components/VolumeControl'
 
+// Player actions.
 import { setVolume } from '../redux/reducers/player/actions'
 
-class Player extends React.Component {
+// Enable animations on Android.
+if (Platform.OS === 'android') {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+}
+
+// Volume bar height.
+const volumeBarHeight = 60
+
+class Player extends React.Component {    
     constructor(props) {
         super(props)
         this.handleVolumeChangeThrottled = _.throttle(this.handleVolumeChange, 200)
+
+        // Contains last invoked animation.
+        this.lastAnimation = null
+
+        // Current animation type.
+        this.slidingIn = false
     }
 
     state = {
-        volumeVisible: false,
+        volumeSliderOffset: new Animated.Value(0),
     }
 
     componentDidMount() {
@@ -37,21 +56,46 @@ class Player extends React.Component {
     }
 
     onVolumeToggle = () => {
-        const { volumeVisible } = this.state
+        this.slidingIn = !this.slidingIn
 
-        this.setState({
-            volumeVisible: !volumeVisible,
+        if (this.lastAnimation != null) {
+            this.lastAnimation.stop()
+        }
+
+        this.lastAnimation = Animated.spring(this.state.volumeSliderOffset, {
+            toValue: this.slidingIn ? 1 : 0,
+            duration: 250,
+        })
+
+        this.lastAnimation.start(() => {
+            this.lastAnimation = null
         })
     }
 
     handleVolumeChange = (newValue) => {
-        const { setVolume } = this.props
+        const { setVolume, navigation } = this.props
         setVolume(newValue)
     }
 
     render() {
-        const { volumeVisible } = this.state
+        const { volumeSliderOffset } = this.state
         const { volume } = this.props
+
+        const volumeBarStyle = {
+            flex: 1,
+            position: 'absolute',
+            left: 0,
+            right: 0,
+            elevation: 1,
+            height: volumeBarHeight,
+            top: 0,
+            transform: [{
+                translateY: volumeSliderOffset.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [-volumeBarHeight, 0]
+                })
+            }]
+        }
 
         return (
             <View style={styles.container}>
@@ -59,21 +103,11 @@ class Player extends React.Component {
                 <CurrentSong />
                 <SongProgress />
                 <Controls />
-                {volumeVisible && (<VolumeControl volume={volume} onChange={this.handleVolumeChangeThrottled} />)}
+                <Animated.View style={volumeBarStyle}>
+                    <VolumeControl volume={volume} onChange={this.handleVolumeChangeThrottled} />
+                </Animated.View>
             </View>
         )
-    }
-
-    getVolumeIcon = () => {
-        const { volume } = this.props
-
-        if (volume < 33) {
-            return 'volume-mute'
-        } else if (volume < 66) {
-            return 'volume-down'
-        } else {
-            return 'volume-up'
-        }
     }
 }
 
@@ -94,4 +128,5 @@ const styles = StyleSheet.create({
         justifyContent: 'space-evenly', 
         padding: 20,
     },
+    
 })

@@ -139,7 +139,11 @@ const PlayerNavigator = createStackNavigator(
                 title: 'Now Playing',
                 headerRight: (
                     <TouchableOpacity onPress={navigation.getParam('onVolumeToggle')} style={styles.headerButton}>
-                        <Icon name='volume-down' size={24} color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor}/> 
+                        <Icon 
+                            name='volume-down'
+                            size={24}
+                            color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor}
+                        />
                     </TouchableOpacity>
                 )
             }),

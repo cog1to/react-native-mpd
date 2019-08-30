@@ -16,6 +16,15 @@ class CurrentSong extends React.Component {
 
         const { title, album, artist, file } = currentSong              
 
+        // Construct the title.
+        let actualTitle = title
+        if (!actualTitle) {
+            actualTitle = file
+        }
+        if (!actualTitle) {
+            actualTitle = '---'
+        }
+
         if (state === 'stop') {
             return (
                 <View style={styles.container}>
@@ -25,12 +34,9 @@ class CurrentSong extends React.Component {
         } else {
             return (
                 <View style={styles.container}>                                 
-                    {title && (<Text style={styles.songName}>{title}</Text>)}
-                    {!title && file && (<Text style={styles.songName}>{file}</Text>)}
-                    {!title && !file && (<Text style={styles.songName}>---</Text>)}
-                             
-                    {artist && (<Text style={styles.albumName}>{artist} - {album ? album : '[Unknown album]'}</Text>)}
-                    {!artist && (<Text style={styles.albumName}>---</Text>)}
+                    <Text style={styles.songName} numberOfLines={1}>{actualTitle}</Text>
+                    {artist && (<Text numberOfLines={1} style={styles.albumName}>{artist} - {album ? album : '[Unknown album]'}</Text>)}
+                    {!artist && (<Text numberOfLines={1} style={styles.albumName}>---</Text>)}
                 </View>
             )
         }
