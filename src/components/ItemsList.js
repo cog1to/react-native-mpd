@@ -116,9 +116,11 @@ class BrowseListItem extends React.Component {
 
         return (
             <View style={styles.itemContainer}>
-                <Text style={{...styles.status, color: iconColor}}>
-                    {icon}
-                </Text>
+                <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                    <Text style={{...styles.status, color: iconColor}}>
+                        {icon}
+                    </Text>
+                </View>
                 <View style={styles.description}>
                     <Text style={styles.title} numberOfLines={1} ellipsizeMode='tail'>{displayName}</Text>
                     <Text style={styles.subtitle}>{displayType}</Text>
@@ -510,9 +512,10 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     title: {
-        fontWeight: 'bold',
+        fontWeight: Platform.OS === 'android' ? 'bold' : '500',
         fontSize: ThemeManager.instance().getCurrentTheme().mainTextSize,
         color: ThemeManager.instance().getCurrentTheme().mainTextColor,
+        marginBottom: Platform.OS === 'android' ? 0 : 2,
     },
     subtitle: {
         fontSize: 14,

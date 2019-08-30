@@ -4,6 +4,7 @@ import {
     StyleSheet,
     Text,
     View,
+    Platform,
 } from 'react-native'
 import {
     createStackNavigator,
@@ -30,8 +31,8 @@ const textColor = ThemeManager.instance().getCurrentTheme().navigationBarTextCol
 
 const navigationHeader = {
     headerStyle: {
-        paddingTop: 24,
-        height: 56 + 24,
+        paddingTop: Platform.OS === 'android' ? 24 : 12,
+        height: Platform.OS === 'android' ? 56 + 24 : 44,
         backgroundColor: ThemeManager.instance().getCurrentTheme().accentColor,
     },
     headerTitleStyle: {
@@ -92,6 +93,7 @@ const BrowseNavigator = createStackNavigator(
             navigationOptions: ({ navigation }) => barOptionsFromState({
                 title: navigation.state.params.name,
                 navigation: navigation,
+                hideTitle: true,
             })
         }
     },

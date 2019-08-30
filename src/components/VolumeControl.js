@@ -41,7 +41,7 @@ export default class VolumeControl extends React.Component {
 
         return (
             <View style={styles.volumeBar}>
-                <Icon name='volume-mute' size={24} color={theme.mainTextColor} />
+                <Icon name='volume-mute' size={24} color={theme.mainTextColor} style={styles.volumeIcon} />
                 <Slider 
                     style={styles.slider}
                     value={actualVolume}
@@ -53,7 +53,7 @@ export default class VolumeControl extends React.Component {
                     minimumTrackTintColor={theme.activeColor}
                     thumbTintColor={theme.accentColor}
                 />
-                <Icon name='volume-up' size={24} color={theme.mainTextColor} />
+                <Icon name='volume-up' size={24} color={theme.mainTextColor} style={styles.volumeIcon} />
             </View>
         )
     }
@@ -71,6 +71,10 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         elevation: 1,
+        alignItems: 'center',
+    },
+    volumeIcon: {
+        paddingHorizontal: 4,
     },
     slider: {
         flexGrow: 1

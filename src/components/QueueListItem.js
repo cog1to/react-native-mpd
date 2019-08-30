@@ -6,6 +6,7 @@ import {
   Text,
   Animated,
   TouchableWithoutFeedback,
+  Platform,
 } from 'react-native'
 import FontAwesome, { Icons } from 'react-native-fontawesome'
 import Draggable from './common/Draggable'
@@ -27,22 +28,28 @@ class ForegroundView extends React.PureComponent {
     render() {
         const { status, subtitle, id, name } = this.props
 
-        return (<View style={styles.container}>
-            {status !== null && (
-                <Text style={[styles.status, styles.statusActive]}>
-                    <FontAwesome>{status === 'play' ? Icons.play : Icons.pause  }</FontAwesome>
-                </Text>
-            )}
-            {status === null && (
-                <Text style={[styles.status, styles.statusInactive]}>
-                    {id}
-                </Text>
-            )}
-            <View style={styles.description}>
-                <Text style={styles.title} ellipsizeMode='tail' selectable={false} numberOfLines={1}>{name}</Text>
-                {subtitle && (<Text style={styles.subtitle}>{subtitle}</Text>)}
-           </View>
-        </View>)
+        return (
+            <View style={styles.container}>
+                {status !== null && (
+                    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                        <Text style={[styles.status, styles.statusActive]}>
+                            <FontAwesome>{status === 'play' ? Icons.play : Icons.pause  }</FontAwesome>
+                        </Text>
+                    </View>
+                )}
+                {status === null && (
+                    <View style={{ alignItems: 'center', justifyContent: 'center' }}>
+                        <Text style={[styles.status, styles.statusInactive]}>
+                            {id}
+                        </Text>
+                    </View>
+                )}
+                <View style={styles.description}>
+                    <Text style={styles.title} ellipsizeMode='tail' selectable={false} numberOfLines={1}>{name}</Text>
+                    {subtitle && (<Text style={styles.subtitle}>{subtitle}</Text>)}
+                </View>
+            </View>
+        )
     } 
 }
 
@@ -166,12 +173,16 @@ export default class QueueListItem extends React.Component {
                     }}
                 </Draggable>
                 <View style={styles.background}>
-                    <Text style={styles.deleteText} ref={component => this.leftIcon = component}>
-                        <FontAwesome>{Icons.trash}</FontAwesome>
-                    </Text>
-                    <Text style={styles.deleteText} ref={component => this.rightIcon = component}>
-                        <FontAwesome>{Icons.trash}</FontAwesome>
-                    </Text>
+                    <View style={styles.centeredTextContainer}>
+                        <Text style={styles.deleteText} ref={component => this.leftIcon = component}>
+                            <FontAwesome>{Icons.trash}</FontAwesome>
+                        </Text>
+                    </View>
+                    <View style={styles.centeredTextContainer}>
+                        <Text style={styles.deleteText} ref={component => this.rightIcon = component}>
+                            <FontAwesome>{Icons.trash}</FontAwesome>
+                        </Text>
+                    </View>
                 </View>
             </View>
         )
@@ -183,11 +194,11 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         flex: 1,
         alignItems: 'center',
+        marginVertical: 8,
     },
     status: {
         width: 60,
         textAlign: 'center',
-        aspectRatio: 1,
         alignSelf: 'stretch',
         textAlignVertical: 'center',
         fontSize: 12,
@@ -204,9 +215,10 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     title: {        
-        fontWeight: 'bold',
+        fontWeight: Platform.OS === 'android' ? 'bold' : '500',
         fontSize: ThemeManager.instance().getCurrentTheme().mainTextSize,
         color: ThemeManager.instance().getCurrentTheme().mainTextColor,
+        marginBottom: Platform.OS === 'android' ? 0 : 2,
     },
     subtitle: {
         fontSize: ThemeManager.instance().getCurrentTheme().subTextSize,
@@ -223,14 +235,20 @@ const styles = StyleSheet.create({
         width: '100%',
         backgroundColor: ThemeManager.instance().getCurrentTheme().accentBackgroundColor,
         flexDirection: 'row',
-        justifyContent: 'space-between'
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    centeredTextContainer: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100%',
+        aspectRatio: 1.5
     },
     deleteText: {
-        height: '100%',
-        aspectRatio: 1.5,
         fontSize: 16,
         color: 'white',
         textAlign: 'center',
         textAlignVertical: 'center',
+        alignSelf: 'stretch',
     }
 })
