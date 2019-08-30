@@ -86,7 +86,9 @@ class ToggleRow extends React.Component {
                     <View style={style}>
                         <View style={styles.rowText}>
                             <Text style={styles.title}>{title}</Text>
-                            <Text style={styles.subtitle}>{subtitle}</Text>
+                            <View style={{ flex: 1, flexDirection: 'row' }}>
+                                <Text style={styles.subtitle}>{subtitle}</Text>
+                            </View>
                         </View>
                         <View pointerEvents='none' style={styles.switchContainer}>
                             <Switch 
@@ -149,7 +151,7 @@ class SliderRow extends React.Component {
                 <View style={style}>
                     <Text style={{...styles.title, marginBottom: 8}}>{title + ': ' + displayValue + 's'}</Text>
                     <Slider 
-                        style={{marginLeft: -10}} 
+                        style={{marginLeft: Platform.OS === 'android' ? -10 : -2}} 
                         minimumValue={0.0}
                         maximumValue={60.0} 
                         step={1}
@@ -388,16 +390,26 @@ const mapDispatchToProps = dispatch => ({
 
 export default connect(mapStateToProps, mapDispatchToProps)(QueueSettings)
 
+function elevationShadowStyle(elevation) {
+  return {
+    elevation,
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 0.5 * elevation },
+    shadowOpacity: 0.3,
+    shadowRadius: 0.8 * elevation
+  };
+}
+
 const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: ThemeManager.instance().getCurrentTheme().tableBackgroundColor,
     },
     rowGroup: {
+        ...elevationShadowStyle(2),
         marginVertical: 10,
         marginTop: 20,
         flexDirection: 'column',
-        elevation: 2,
         backgroundColor: ThemeManager.instance().getCurrentTheme().backgroundColor,
     },
     row: {
@@ -411,15 +423,19 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
     },
     bottomBorder: {
-        borderBottomWidth: StyleSheet.hairlineWidth
+        borderBottomWidth: StyleSheet.hairlineWidth,
+        borderColor: "#ABABAB",
     },
     rowText: {
         flexDirection: 'column',
+        marginVertical: 2,
+        flex: 1,
     },
     title: {        
         fontWeight: 'bold',
         fontSize: ThemeManager.instance().getCurrentTheme().mainTextSize,
         color: ThemeManager.instance().getCurrentTheme().mainTextColor,
+        marginBottom: Platform.OS === 'android' ? 0 : 2,
     },
     subtitle: {
         fontSize: ThemeManager.instance().getCurrentTheme().subTextSize,
@@ -430,6 +446,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         minWidth: 50,
+        marginLeft: 16,
     },
     rowSlider: {
         paddingVertical: 8,

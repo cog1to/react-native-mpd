@@ -16,9 +16,6 @@ import { saveAddress, loadSavedAddress } from '../redux/reducers/storage/actions
 import { connect as reduxConnect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
-// Storage.
-import LocalStorage from '../storage/LocalStorage'
-
 // Themes.
 import ThemeManager from '../themes/ThemeManager'
 
@@ -33,10 +30,9 @@ class Login extends React.Component {
         this.props.loadSavedAddress()
     }
 
-    componentDidUpdate() {
+    componentDidUpdate(prevProps, prevState) {
         const { address } = this.props
-        const { host, port } = this.state
-        if (host == null && port == null && address != null) {
+        if (prevProps.address == null && this.props.address != null) {
             this.setState({
                 host: address.host,
                 port: address.port,
@@ -46,13 +42,13 @@ class Login extends React.Component {
 
     handleHostChange = (host) => {
         this.setState({
-            host
+            host: host,
         })
     }
     
     handlePortChange = (port) => {
         this.setState({
-            port
+            port: port,
         })
     }
 
@@ -71,9 +67,6 @@ class Login extends React.Component {
         const { port, host } = this.state
         const { error, address } = this.props
 
-        const displayHost = address != null ? address.host : host
-        const displayPort = address != null ? address.port : port
-
         return (
             <View style={styles.container}>        
                 {error != null && (
@@ -81,8 +74,8 @@ class Login extends React.Component {
                         <Text style={styles.errorText}>{error.message}</Text>
                     </View>
                 )}
-                <Input placeholder='Host' onChangeText={this.handleHostChange} value={displayHost} />
-                <Input placeholder='Port' onChangeText={this.handlePortChange} value={displayPort} />
+                <Input placeholder='Host' onChangeText={this.handleHostChange} value={host} />
+                <Input placeholder='Port' onChangeText={this.handlePortChange} value={port} />
                 <View style={{marginVertical: 10}}>
                     <Button
                         title='Connect'
@@ -98,7 +91,7 @@ class Login extends React.Component {
 const mapStateToProps = state => {
     const { address, error: storageError } = state.storage
     const { error: connectionError } = state.status
-    return { address, error: (connectionError != null ? connectionError : storageError) }
+    return { address: address, error: (connectionError != null ? connectionError : storageError) }
 }
 
 const mapDispatchToProps = dispatch => ({
