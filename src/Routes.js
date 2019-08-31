@@ -232,7 +232,7 @@ const LibraryNavigator = createStackNavigator(
         Artist: {
             screen: Artist,
             navigationOptions: ({ navigation }) => barOptionsFromState({
-                title: 'Artist: ' + navigation.getParam('name'),
+                title: navigation.getParam('name'),
                 navigation: navigation,
                 showExit: false,
             }),
