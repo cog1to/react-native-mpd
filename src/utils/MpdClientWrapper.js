@@ -106,13 +106,27 @@ export default class MpdClientWrapper {
     }
 
     disconnect() {
-        if (this.client != null) {
+        if (this._client != null) {
             return this._sendCommand(cmd('close', []))
         } else {
             return new Promise((resolve) => {
                 resolve()
             })
         }
+    }
+
+    password(pwd) {
+        if (this._client != null) {
+            return this._sendCommand(cmd('password', [pwd]), mpd.parseKeyValueMessage)
+        } else {
+            return new Promise((resolve, reject) => {
+                reject()
+            })
+        }
+    }
+
+    commands() {
+        return this._sendCommand(cmd('commands', []), mpd.parseArrayMessage)
     }
 
     // MARK: - Commands

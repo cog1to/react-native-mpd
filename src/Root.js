@@ -25,16 +25,14 @@ class Root extends Component {
     }
     
     componentWillUpdate(nextProps, nextState) {
-        if (nextProps && nextProps.connected != this.props.connected) {
-            if (nextProps.connected) {
-                this.navigator && this.navigator.dispatch(
+        if (nextProps && nextProps.connected && nextProps.commands != null) {
+            this.navigator && this.navigator.dispatch(
                     NavigationActions.navigate({ routeName: 'Home' })
-                )
-            } else {
-                this.navigator && this.navigator.dispatch(
-                    StackActions.popToTop()
-                )
-            }
+            )
+        } else if (this.props.connected && !nextProps.connected) {
+            this.navigator && this.navigator.dispatch(
+                StackActions.popToTop()
+            )
         }
     }
 
@@ -53,9 +51,9 @@ class Root extends Component {
 }
 
 const mapStateToProps = state => {
-    let connected = state.status.connected
     return {
-        connected: connected
+        connected: state.status.connected,
+        commands: state.status.commands,
     }
 }
 

@@ -4,6 +4,8 @@ import {
     connect,
     connected,
     connectionError,
+    commandsReceived,
+    commands,
     error,
     getStatus,
     statusUpdated,
@@ -211,6 +213,12 @@ export const mpdMiddleware = store => {
         switch (action.type) {
             case types.CONNECT: {
                 client.mpd.connect(action.host, action.port).then(() => {
+                    if (action.password !== null) {
+                        return client.mpd.password(action.password)
+                    } else {
+                        return new Promise((resolve, reject) => { resolve() })
+                    }
+                }).then(() => {
                     // Subscribe to player events.
                     client.disconnects.push(client.mpd.onPlayerUpdate(handlePlayerUpdate(store)))
 
@@ -227,6 +235,7 @@ export const mpdMiddleware = store => {
                     store.dispatch(connected(true))
                     store.dispatch(saveAddress({ host: action.host, port: action.port }))
                     store.dispatch(getStatus('status'))
+                    store.dispatch(commands())
                 }).catch((error) => {
                     store.dispatch(connectionError(error))
                 })
@@ -262,6 +271,14 @@ export const mpdMiddleware = store => {
                    store.dispatch(error(e, types.GET_STATUS))
                })
                break
+            }
+            case types.COMMANDS: {
+                client.mpd.commands().then((commands) => {
+                    let mapped = commands.map((command) => { return command.command })
+                    store.dispatch(commandsReceived(commands))
+                }).catch((e) => {
+                    store.dispatch(connectionError(error))
+                })
             }
             case types.STATUS_UPDATED: {
                if (action.source === 'progress' && client.updatingProgress) {

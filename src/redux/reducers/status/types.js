@@ -1,6 +1,9 @@
 // Connection status.
 export const CONNECT = 'CONNECT'
 export const DISCONNECT = 'DISCONNECT'
+export const COMMANDS = 'COMMANDS'
+export const COMMANDS_RECEIVED = 'COMMANDS_RECEIVED'
+
 export const CONNECTED = 'CONNECTED'
 export const CONNECTION_ERROR = 'CONNECTION_ERROR'
 

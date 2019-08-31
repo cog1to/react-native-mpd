@@ -23,6 +23,7 @@ class Login extends React.Component {
     state = {
         host: null,
         port: null,
+        password: null,
         onSubmit: () => {}
     }
   
@@ -52,19 +53,25 @@ class Login extends React.Component {
         })
     }
 
-    connectToMpd = (host, port) => {
+    handlePasswordChange = (password) => {
+        this.setState({
+            password: password,
+        })   
+    }
+
+    connectToMpd = (host, port, password = null) => {
         const { connect } = this.props
-        connect(host, port)
+        connect(host, port, password)
     }
 
     handleSubmit = () => {
-        const { port, host } = this.state
+        const { port, host, password } = this.state
 
-        this.connectToMpd(host, port)
+        this.connectToMpd(host, port, password != null && password.length > 0 ? password : null)
     }
 
     render() {
-        const { port, host } = this.state
+        const { port, host, password } = this.state
         const { error, address } = this.props
 
         return (
@@ -76,6 +83,13 @@ class Login extends React.Component {
                 )}
                 <Input placeholder='Host' onChangeText={this.handleHostChange} value={host} />
                 <Input placeholder='Port' onChangeText={this.handlePortChange} value={port} />
+                <Input 
+                    placeholder='Password (optional)' 
+                    onChangeText={this.handlePasswordChange} 
+                    value={password} 
+                    autoCapitalize='none'
+                    autoCompleteType='off'
+                    autoCorrect={false} />
                 <View style={{marginVertical: 10}}>
                     <Button
                         title='Connect'
@@ -90,12 +104,12 @@ class Login extends React.Component {
 
 const mapStateToProps = state => {
     const { address, error: storageError } = state.storage
-    const { error: connectionError } = state.status
+    const { connectionError } = state.status
     return { address: address, error: (connectionError != null ? connectionError : storageError) }
 }
 
 const mapDispatchToProps = dispatch => ({
-    connect: (host, port) => dispatch(connect(host, port)),
+    connect: (host, port, password) => dispatch(connect(host, port, password)),
     loadSavedAddress: () => dispatch(loadSavedAddress()),
 })
 

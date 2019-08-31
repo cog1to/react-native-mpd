@@ -21,6 +21,7 @@ const initialState = {
     player: 'stop',
     error: null,
     replayGain: 'off',
+    commands: null,
 }
 
 export const statusReducer = (state = initialState, action) => {
@@ -31,11 +32,13 @@ export const statusReducer = (state = initialState, action) => {
             }
         case types.CONNECTED:
             return {
-                ...state, connected: action.connected
+                ...state, 
+                connected: action.connected,
+                commands: action.connected ? state.commands : null,
             }
         case types.CONNECTION_ERROR:
             return {
-                ...state, error: action.error
+                ...state, connectionError: action.error
             }
         case types.ERROR:
             return {
@@ -44,6 +47,10 @@ export const statusReducer = (state = initialState, action) => {
         case types.REPLAY_GAIN_STATUS_UPDATED:
             return {
                 ...state, replayGain: action.status.replay_gain_mode
+            }
+        case types.COMMANDS_RECEIVED:
+            return {
+                ...state, commands: action.commands
             }
         default:
             return state

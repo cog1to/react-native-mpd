@@ -1,13 +1,23 @@
 import * as types from './types'
 
-export const connect = (host, port) => ({
+export const connect = (host, port, password = null) => ({
     type: types.CONNECT,
     host,
     port,
+    password,
 })
 
 export const disconnect = () => ({
     type: types.DISCONNECT,
+})
+
+export const commands = () => ({
+    type: types.COMMANDS,
+})
+
+export const commandsReceived = (commands) => ({
+    type: types.COMMANDS_RECEIVED,
+    commands,
 })
 
 export const connected = (status) => ({
