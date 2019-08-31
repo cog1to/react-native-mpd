@@ -13,6 +13,7 @@ import {
 } from 'react-navigation'
 import FontAwesome, { Icons } from 'react-native-fontawesome'
 import Icon from 'react-native-vector-icons/MaterialIcons'
+import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons'
 import ThemeManager from './themes/ThemeManager'
 
 import Login from './screens/Login'
@@ -49,14 +50,14 @@ const getMaterialTabBarIcon = icon => ({ tintColor }) => (
     <Icon name={icon} size={24} color={tintColor} /> 
 )
 
-const barOptionsFromState = ({ title, navigation, icon = 'add', hideTitle = false, regularIcon }) => {
+const barOptionsFromState = ({ title, navigation, icon = 'add', hideTitle = false, regularIcon, showExit = true }) => {
     let options = {
         title: hideTitle && navigation.getParam('editing') === true ? null : title,
         ...navigationHeader
    }
 
     const allSelected = navigation.getParam('allSelected')
-    let globalSelectionText = allSelected ? 'DESELECT ALL' : 'SELECT ALL'
+    let globalSelectionIcon = allSelected ? 'checkbox-multiple-blank-outline' : 'checkbox-multiple-marked-outline'
 
     if (navigation.getParam('editing') === true) {
         options.headerLeft = (
@@ -67,19 +68,29 @@ const barOptionsFromState = ({ title, navigation, icon = 'add', hideTitle = fals
         options.headerRight = (
             <View style={styles.rightEditingHeader}>
                 <TouchableOpacity onPress={() => navigation.getParam('onGlobalSelectionToggled')(!allSelected)}>
-                    <Text style={styles.headerTextButton}>{globalSelectionText}</Text>
+                    <MaterialCommunityIcon name={globalSelectionIcon} size={24} color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={navigation.getParam('onConfirmEditing')} style={styles.headerButton}>
-                    <Icon name={icon} size={24} color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor} /> 
+                    <Icon name={icon} size={24} color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor} />
                 </TouchableOpacity>
             </View>
         )
-    } else if (regularIcon != null) {
-        options.headerRight = (
-            <TouchableOpacity onPress={navigation.getParam('onMenu')} style={styles.headerButton}>
-                <Icon name={regularIcon} size={24} color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor} /> 
-            </TouchableOpacity>
-        )
+    } else {
+        if (regularIcon != null) {
+            options.headerRight = (
+                <TouchableOpacity onPress={navigation.getParam('onMenu')} style={styles.headerButton}>
+                    <Icon name={regularIcon} size={24} color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor} />
+                </TouchableOpacity>
+            )
+        }
+
+        if (showExit) {
+            options.headerLeft = (
+                <TouchableOpacity onPress={navigation.getParam('onExit')} style={styles.headerButton}>
+                    <Icon name='exit-to-app' size={24} color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor} /> 
+                </TouchableOpacity>
+            )
+        }
     }
 
     return options
@@ -89,11 +100,13 @@ const BrowseNavigator = createStackNavigator(
     {
         Browse: {
             screen: Browse,
-            params: { name: 'Browse', dir: [''], allSelected: false, },
+            params: { name: null, dir: [''], allSelected: false, },
             navigationOptions: ({ navigation }) => barOptionsFromState({
-                title: navigation.state.params.name,
+                title: navigation.state.params.name == null ? 'Browse' : navigation.state.params.name,
                 navigation: navigation,
                 hideTitle: true,
+                regularIcon: null,
+                showExit: navigation.state.params.name == null,
             })
         }
     },
@@ -147,6 +160,11 @@ const PlayerNavigator = createStackNavigator(
                             color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor}
                         />
                     </TouchableOpacity>
+                ),
+                headerLeft: (
+                    <TouchableOpacity onPress={navigation.getParam('onExit')} style={styles.headerButton}>
+                        <Icon name='exit-to-app' size={24} color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor} /> 
+                    </TouchableOpacity>
                 )
             }),
         }
@@ -177,6 +195,11 @@ const SearchNavigator = createStackNavigator(
             screen: Search,
             navigationOptions: ({ navigation }) => ({
                 title: 'Search',
+                headerLeft: (
+                    <TouchableOpacity onPress={navigation.getParam('onExit')} style={styles.headerButton}>
+                        <Icon name='exit-to-app' size={24} color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor} /> 
+                    </TouchableOpacity>
+                ),
            })
         },
         SearchResults: {
@@ -185,6 +208,7 @@ const SearchNavigator = createStackNavigator(
             navigationOptions: ({ navigation }) => barOptionsFromState({
                 title: searchResultsTitleFromLength(navigation.state.params.content.length),
                 navigation: navigation,
+                showExit: false,
             })
         }
     },
@@ -210,6 +234,7 @@ const LibraryNavigator = createStackNavigator(
             navigationOptions: ({ navigation }) => barOptionsFromState({
                 title: 'Artist: ' + navigation.getParam('name'),
                 navigation: navigation,
+                showExit: false,
             }),
         },
         Album: {
@@ -218,6 +243,7 @@ const LibraryNavigator = createStackNavigator(
                 title: navigation.getParam('artist') + ' - ' + navigation.getParam('album'),
                 navigation: navigation,
                 hideTitle: true,
+                showExit: false,
             })
         }
     },

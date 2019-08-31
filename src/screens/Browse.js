@@ -5,6 +5,9 @@ import {
 } from 'react-native'
 import { NavigationActions } from 'react-navigation'
 
+// Main screen features.
+import MainScreen from './MainScreen'
+
 // Redux.
 import { connect } from 'react-redux'
 
@@ -14,7 +17,7 @@ import { changeCurrentDir } from '../redux/reducers/browser/actions'
 // Items list.
 import ItemsList from '../components/ItemsList'
 
-class Browse extends React.Component {
+class Browse extends MainScreen {
     
     static defaultProps = {
         content: [],
@@ -39,6 +42,8 @@ class Browse extends React.Component {
     }
 
     componentDidMount() {
+        super.componentDidMount()
+
         const { navigation, loadCurrentDir } = this.props
         const { state: { params: { dir } } } = navigation
         loadCurrentDir(dir)

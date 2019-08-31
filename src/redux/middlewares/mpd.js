@@ -233,6 +233,14 @@ export const mpdMiddleware = store => {
                 break
             }
             case types.DISCONNECT: {
+                // Stop progress update.
+                if (client.updatingProgress) {
+                    client.updatingProgress = false
+                    if (client.progressTimeout !== null) {
+                        clearTimeout(client.progressTimeout)
+                    }
+                }
+
                 client.mpd.disconnect().then(() => {
                     // Unsubscribe from all events.
                     client.disconnects.forEach((callback) => {

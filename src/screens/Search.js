@@ -7,6 +7,9 @@ import {
 } from 'react-native'
 import { NavigationActions } from 'react-navigation'
 
+// Main screen features.
+import MainScreen from './MainScreen'
+
 // Redux.
 import { connect } from 'react-redux'
 
@@ -29,11 +32,15 @@ Fields = [
     { ID: 'FILENAME', title: 'Filename', tag: 'filename', },
 ]
 
-class Search extends React.Component {
+class Search extends MainScreen {
 
     state = { 
         dirty: false,
         criteria: {},
+    }
+
+    componentDidMount() {
+        super.componentDidMount()
     }
 
     showResults = (content) => {

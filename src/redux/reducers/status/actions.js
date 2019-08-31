@@ -6,6 +6,10 @@ export const connect = (host, port) => ({
     port,
 })
 
+export const disconnect = () => ({
+    type: types.DISCONNECT,
+})
+
 export const connected = (status) => ({
     type: types.CONNECTED,
     connected: status

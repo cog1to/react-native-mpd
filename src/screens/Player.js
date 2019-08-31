@@ -11,6 +11,9 @@ import {
 } from 'react-native'
 import _ from 'lodash'
 
+// Main screen features.
+import MainScreen from './MainScreen'
+
 // Redux.
 import { connect } from 'react-redux'
 
@@ -19,7 +22,7 @@ import SongProgress from '../components/SongProgress'
 import Controls from '../components/Controls'
 import AlbumArt from '../components/AlbumArt'
 import CurrentSong from '../components/CurrentSong'
-import VolumeControl from '../components/VolumeControl'
+import VolumeControl, { VolumeBarHeight } from '../components/VolumeControl'
 
 // Player actions.
 import { setVolume } from '../redux/reducers/player/actions'
@@ -29,12 +32,10 @@ if (Platform.OS === 'android') {
     UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-// Volume bar height.
-const volumeBarHeight = 60
-
-class Player extends React.Component {    
+class Player extends MainScreen {    
     constructor(props) {
         super(props)
+
         this.handleVolumeChangeThrottled = _.throttle(this.handleVolumeChange, 200)
 
         // Contains last invoked animation.
@@ -50,6 +51,9 @@ class Player extends React.Component {
 
     componentDidMount() {
         const { navigation } = this.props
+
+        super.componentDidMount()
+
         navigation.setParams({
             onVolumeToggle: this.onVolumeToggle,
         })
@@ -87,12 +91,12 @@ class Player extends React.Component {
             left: 0,
             right: 0,
             elevation: 1,
-            height: volumeBarHeight,
+            height: VolumeBarHeight,
             top: 0,
             transform: [{
                 translateY: volumeSliderOffset.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [-volumeBarHeight, 0]
+                    outputRange: [-VolumeBarHeight, 0]
                 })
             }]
         }

@@ -3,12 +3,17 @@ import {
     View,
     Slider,
     StyleSheet,
+    Platform,
 } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 
 // Themes.
 import ThemeManager from '../themes/ThemeManager'
 
+// Volume bar height.
+export const VolumeBarHeight = Platform.OS === 'android' ? 60 : 66
+
+// Volume control.
 export default class VolumeControl extends React.Component {
 
     state = { 
@@ -67,6 +72,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         top: 0,
         padding: 16,
+        paddingVertical: Platform.OS === 'android' ? 16 : 8,
         backgroundColor: ThemeManager.instance().getCurrentTheme().toolbarColor,
         left: 0,
         right: 0,
@@ -75,6 +81,7 @@ const styles = StyleSheet.create({
     },
     volumeIcon: {
         paddingHorizontal: 4,
+        width: 30,
     },
     slider: {
         flexGrow: 1
