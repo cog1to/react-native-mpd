@@ -285,7 +285,7 @@ export const mpdMiddleware = store => {
                    client.progressTimeout = setTimeout(() => store.dispatch(getStatus('progress')), 1000)
                }
 
-               if (action.status.songid != store.getState().status.songid) {
+               if ('status' in action && 'songid' in action.status && action.status.songid != store.getState().status.songid) {
                    store.dispatch(getCurrentSong())
                }
 
@@ -391,7 +391,6 @@ export const mpdMiddleware = store => {
                         let children = listToChildren(result)
                         store.dispatch(treeUpdated(action.path, children))
                     }).catch((e) => {
-                        console.log(e)
                         store.dispatch(error(e, types.CHANGE_CURRENT_DIR))
                     })
                 }
@@ -487,7 +486,6 @@ export const mpdMiddleware = store => {
                 }
 
                 handleEverything(items, position).catch((e) => {
-                    console.log(e)
                     store.dispatch(error(e, types.ADD_TO_QUEUE))
                 })
                 break

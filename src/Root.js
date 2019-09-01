@@ -19,6 +19,9 @@ import AppContainer from './Routes'
 // Themes.
 import ThemeManager from './themes/ThemeManager'
 
+// Global error banner.
+import ErrorBanner from './components/ErrorBanner'
+
 class Root extends Component {
     constructor(props) {
         super(props)
@@ -45,6 +48,7 @@ class Root extends Component {
                 <AppContainer
                     ref={ nav => { this.navigator = nav } }
                 />
+                <ErrorBanner />
             </View>
         )
     }
