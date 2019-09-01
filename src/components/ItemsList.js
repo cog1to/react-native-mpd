@@ -159,6 +159,8 @@ class ItemsList extends React.Component {
         queueSize: 0,
         position: null,
         onNavigate: () => {},
+        onReload: null,
+        refreshing: false,
     }
 
     renderItem = ({ item }) => {
@@ -399,7 +401,7 @@ class ItemsList extends React.Component {
 
     render() {
         const { showingMenu, selected, editing } = this.state
-        const { queueSize = 0, position = null, content, file = null } = this.props
+        const { queueSize = 0, position = null, content, file = null, refreshing, onReload } = this.props
         
         // Populating options.
         const options = [OPTIONS.ADD_TO_QUEUE_BEGINNING]
@@ -409,17 +411,29 @@ class ItemsList extends React.Component {
             options.push(OPTIONS.ADD_TO_QUEUE_AFTER_CURRENT_SONG)
         }
 
-        // If queue is not empty, we can add at the and as well as beginning.
+        // If queue is not empty, we can add at the and as well as the beginning.
         if (queueSize > 0) {
             options.push(OPTIONS.ADD_TO_QUEUE_END)
         }
 
+        // Add index value to each item.
         let enumerated = content.map((item, index) => {
             return {
                 ...item,
                 index,
             }
         })
+
+        // Pull-to-refresh is enabled when we provide onRefresh prop to the flatlist
+        // To prevent adding refresh control that does nothing, we check if we actually
+        // have onReload prop provided.
+        let refreshingProps = {}
+        if (onReload !== null) {
+            refreshingProps = {
+                onRefresh: onReload,
+                refreshing,
+            }
+        }
 
         return (
             <View style={styles.container}>
@@ -429,6 +443,7 @@ class ItemsList extends React.Component {
                     keyExtractor={this.keyExtractor}
                     renderItem={this.renderItem}
                     extraData={{file, editing, selected}}
+                    {...refreshingProps}
                 />
                 {showingMenu && (
                     <MenuDialog

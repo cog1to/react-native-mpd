@@ -30,6 +30,7 @@ export const TreeType = PropTypes.shape({
 const initialState = {
     tree: null,
     currentDir: [''],
+    refreshing: false,
 }
 
 const nodeFromPath = (path, tree) => {
@@ -51,6 +52,14 @@ export const browserReducer = (state = initialState, action) => {
         case types.TREE_UPDATED:
             const { path, content } = action
             
+            // If there's no content, we just flip the refreshing flag back to false.
+            if (content == null) {
+                return {
+                    ...state,
+                    refreshing: false,
+                }
+            }
+
             let root = state.tree
 
             let parent = root
@@ -71,7 +80,14 @@ export const browserReducer = (state = initialState, action) => {
             return {
                 currentDir: path,
                 tree: root,
-            }             
+                refreshing: false,
+            }
+        case types.SET_REFRESHING:
+            return {
+                ...state,
+                refreshing: action.refreshing,
+            }
+
         default:
             return state
     }

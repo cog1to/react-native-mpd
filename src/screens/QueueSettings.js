@@ -40,6 +40,9 @@ import MenuDialog from '../components/common/MenuDialog'
 // Themes.
 import ThemeManager from '../themes/ThemeManager'
 
+// Shadow style that works on both iOS and Android.
+import { elevationShadowStyle } from '../utils/Styles'
+
 // Enable animations on Android.
 if (Platform.OS === 'android') {
     UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -389,16 +392,6 @@ const mapDispatchToProps = dispatch => ({
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(QueueSettings)
-
-function elevationShadowStyle(elevation) {
-  return {
-    elevation,
-    shadowColor: 'black',
-    shadowOffset: { width: 0, height: 0.5 * elevation },
-    shadowOpacity: 0.3,
-    shadowRadius: 0.8 * elevation
-  };
-}
 
 const styles = StyleSheet.create({
     container: {

@@ -18,9 +18,9 @@ import { changeCurrentDir } from '../redux/reducers/browser/actions'
 import ItemsList from '../components/ItemsList'
 
 class Browse extends MainScreen {
-    
     static defaultProps = {
         content: [],
+        refreshing: false,
     }
 
     onNavigate = (item) => {
@@ -49,13 +49,25 @@ class Browse extends MainScreen {
         loadCurrentDir(dir)
     }
 
+    reload = () => {
+        const { navigation, loadCurrentDir } = this.props
+        const { state: { params: { dir } } } = navigation
+        loadCurrentDir(dir, true)
+    }
+
     render() {
-        const { content, navigation } = this.props
+        const { content, navigation, refreshing } = this.props
         const { state: { params } } = navigation
 
         return (
             <View style={styles.container}>
-                <ItemsList content={content} onNavigate={this.onNavigate} navigation={navigation} />
+                <ItemsList
+                    content={content}
+                    onNavigate={this.onNavigate}
+                    navigation={navigation}
+                    onReload={this.reload}
+                    refreshing={refreshing}
+                />
             </View>
         )
     }
@@ -77,20 +89,21 @@ const nodeFromPath = (path, tree) => {
 
 const mapStateToProps = (state, ownProps) => {
     const { navigation: { state: { params: { dir = [''] } } } } = ownProps
-    const { tree } = state.browser
+    const { tree, refreshing } = state.browser
 
     let content = tree != null ? nodeFromPath(dir, tree).children : []
 
     return {
         ...ownProps,
         content: content,
+        refreshing: refreshing,
     }
 }
 
 const mapDispatchToProps = dispatch => {
     return {
-        loadCurrentDir: (path) => {
-            dispatch(changeCurrentDir(path))
+        loadCurrentDir: (path, force = false) => {
+            dispatch(changeCurrentDir(path, force))
         },
     }
 }

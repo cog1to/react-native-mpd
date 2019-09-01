@@ -1,8 +1,9 @@
 import * as types from './types'
 
-export const changeCurrentDir = (path) => ({
+export const changeCurrentDir = (path, force) => ({
     type: types.CHANGE_CURRENT_DIR,
     path: path,
+    force: force,
 })
 
 export const treeUpdated = (path, content) => ({
@@ -23,3 +24,7 @@ export const addToQueuePlay = (uri, position) => ({
     position: position,
 })
 
+export const setRefreshing = (refreshing) => ({
+    type: types.SET_REFRESHING,
+    refreshing,
+})

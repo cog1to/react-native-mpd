@@ -10,6 +10,9 @@ import {
 // Redux.
 import { connect } from 'react-redux'
 
+// Shadow style that works on both iOS and Android.
+import { elevationShadowStyle } from '../utils/Styles'
+
 // Global error banner.
 class ErrorBanner extends React.Component {
     constructor(props) {
@@ -91,7 +94,7 @@ class ErrorBanner extends React.Component {
         }
 
         return (            
-            <Animated.View style={{...styles.errorContainer, opacity: opacityAnimated}}>
+            <Animated.View style={{...styles.errorContainer, opacity: opacityAnimated}} pointerEvents='none'>
                 <Text style={styles.errorText}>{error}</Text>
             </Animated.View>
         )
@@ -101,7 +104,17 @@ class ErrorBanner extends React.Component {
 const mapStateToProps = state => {
     const { error: storageError } = state.storage
     const { error } = state.status
-    return { error: (error != null ? error : storageError) }
+
+    let actualError = error != null ? error : storageError
+    
+    // Pre-formatting for MPD errors.
+    let mpdError = /\[\d+@\d+\] \{.*\} (.*)/
+    if (actualError != null && mpdError.test(actualError)) {
+        let match = mpdError.exec(actualError)
+        actualError = match[1]
+    }
+
+    return { error: actualError }
 }
 
 export default connect(mapStateToProps)(ErrorBanner)
@@ -113,6 +126,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     errorContainer: {
+        ...elevationShadowStyle(2),
         position: 'absolute',
         padding: 10,
         backgroundColor: 'red',

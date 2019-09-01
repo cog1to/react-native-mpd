@@ -28,7 +28,8 @@ import { getAlbumArt } from '../reducers/archive/actions'
 import {
     changeCurrentDir,
     treeUpdated,
-    addToQueue
+    addToQueue,
+    setRefreshing,
 } from '../reducers/browser/actions'
 
 import { searchUpdated } from '../reducers/search/actions'
@@ -382,7 +383,12 @@ export const mpdMiddleware = store => {
                 const { tree } = store.getState().browser
 
                 let node = nodeFromPath(action.path, tree)
-                if (node !== null && node.children.length > 0) {
+
+                // First we need to set 'refreshing' flag.
+                // This ensures that refresh state won't get canceled before update is finished. 
+                store.dispatch(setRefreshing(true))
+
+                if (!action.force && node !== null && node.children.length > 0) {
                     store.dispatch(treeUpdated(action.path, node.children))
                 } else {
                     const path = action.path.length < 2 ? '/' : action.path.slice(1).reduce((result, item) => result + '/' + item)
@@ -392,6 +398,7 @@ export const mpdMiddleware = store => {
                         store.dispatch(treeUpdated(action.path, children))
                     }).catch((e) => {
                         store.dispatch(error(e, types.CHANGE_CURRENT_DIR))
+                        store.dispatch(setRefreshing(false))
                     })
                 }
                 break
@@ -496,7 +503,6 @@ export const mpdMiddleware = store => {
                 client.mpd.addToQueue(song, pos).then(({ Id }) => {
                     client.mpd.setCurrentSong(Id)
                 }).catch((e) => {
-                    console.log(e)
                     store.dispatch(error(e, types.ADD_TO_QUEUE_PLAY))
                 })
                 break
@@ -518,7 +524,6 @@ export const mpdMiddleware = store => {
                     var list = listToChildren(results, false)
                     store.dispatch(searchUpdated(list))
                 }).catch((e) => {
-                    console.log(e)
                     store.dispatch(error(e, types.SEARCH))
                 })
                 break
@@ -527,7 +532,6 @@ export const mpdMiddleware = store => {
                 client.mpd.getArtists().then(result => {
                     store.dispatch(artistsLoaded(result))
                 }).catch((e) => {
-                    console.log(e)
                     store.dispatch(error(e, types.LOAD_ARTISTS))
                 })
                 break
@@ -536,7 +540,6 @@ export const mpdMiddleware = store => {
                 client.mpd.getAlbums(action.artist).then(result => {
                     store.dispatch(albumsLoaded(action.artist, result))
                 }).catch((e) => {
-                    console.log(e)
                     store.dispatch(error(e, types.LOAD_ALBUMS))
                 })
                 break
@@ -560,7 +563,6 @@ export const mpdMiddleware = store => {
                     var list = listToChildren(results, false)
                     store.dispatch(songsLoaded(artist, album, list))
                 }).catch((e) => {
-                    console.log(e)
                     store.dispatch(error(e, types.LOAD_SONGS))
                 })
                 break
