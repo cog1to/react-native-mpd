@@ -1,5 +1,10 @@
 import * as types from './types'
 
+export const setLibraryLoading = (loading) => ({
+    type: types.SET_LIBRARY_LOADING,
+    loading,
+})
+
 export const loadArtists = () => ({
     type: types.LOAD_ARTISTS,
 })

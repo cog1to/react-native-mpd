@@ -43,10 +43,7 @@ class Browse extends MainScreen {
 
     componentDidMount() {
         super.componentDidMount()
-
-        const { navigation, loadCurrentDir } = this.props
-        const { state: { params: { dir } } } = navigation
-        loadCurrentDir(dir)
+        this.reload()
     }
 
     reload = () => {

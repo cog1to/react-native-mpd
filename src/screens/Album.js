@@ -16,21 +16,32 @@ import { loadSongs } from '../redux/reducers/library/actions'
 
 class Album extends React.Component {
     componentDidMount() {
-        const { loadSongs, content } = this.props
-        const { artist, album } = this.props.navigation.state.params
+        const { content } = this.props
 
         if (content == null) {
-            loadSongs(artist, album)
+            this.reload()
         }
     }
 
+    reload = () => {
+        const { loadSongs, content } = this.props
+        const { artist, album } = this.props.navigation.state.params
+        loadSongs(artist, album)
+    }
+
     render() {
-        const { navigation, content } = this.props
+        const { navigation, content, loading } = this.props
         const songs = (content != null) ? content : []
 
         return (
             <View style={styles.container}>
-                <ItemsList content={songs} onNavigate={this.onNavigate} navigation={navigation} />
+                <ItemsList
+                    content={songs}
+                    onNavigate={this.onNavigate}
+                    navigation={navigation}
+                    refreshing={loading}
+                    onReload={this.reload}
+                />
             </View>
         )
     }
@@ -40,7 +51,8 @@ const mapStateToProps = (state, ownProps) => {
     const { navigation: { state: { params: { artist, album } } } } = ownProps
 
     return {
-        content: state.library[artist][album],
+        content: state.library.library[artist][album],
+        loading: state.library.loading,
     }
 }
 

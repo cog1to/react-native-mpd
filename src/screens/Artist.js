@@ -18,16 +18,22 @@ import ItemsList from '../components/ItemsList'
 
 class Artist extends React.Component {
     componentWillMount() {
-        const { content, loadAlbums, navigation } = this.props
-        const artistName = navigation.state.params.name
-
+        const { content } = this.props
         if (content == null) {
-            loadAlbums(artistName)
+            this.reload()
         }
     }
 
+    reload = () => {
+        const { content, loadAlbums, navigation } = this.props
+        const artistName = navigation.state.params.name
+
+        loadAlbums(artistName)
+    }
+
     render() {
-        const { content, navigation } = this.props
+        const { content, navigation, loading } = this.props
+
         let albums = ((content !== null) ? Object.keys(content) : []).map((name, index) => ({ 
             icon: index + 1,
             name: name,
@@ -42,6 +48,8 @@ class Artist extends React.Component {
                     content={albums}
                     onNavigate={this.onNavigate}
                     navigation={navigation}
+                    refreshing={loading}
+                    onReload={this.reload}
                 />
             </View>
          )
@@ -66,7 +74,8 @@ const mapStateToProps = (state, ownProps) => {
     const { navigation: { state: { params: { name } } } } = ownProps
     
     return {
-        content: state.library[name],
+        content: state.library.library[name],
+        loading: state.library.loading,
     }
 }
 

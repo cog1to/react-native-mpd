@@ -35,6 +35,7 @@ import {
 import { searchUpdated } from '../reducers/search/actions'
 
 import {
+    setLibraryLoading,
     artistsLoaded,
     albumsLoaded,
     songsLoaded
@@ -529,17 +530,21 @@ export const mpdMiddleware = store => {
                 break
             }
             case types.LOAD_ARTISTS: {
+                store.dispatch(setLibraryLoading(true))
                 client.mpd.getArtists().then(result => {
                     store.dispatch(artistsLoaded(result))
                 }).catch((e) => {
+                    store.dispatch(setLibraryLoading(false))
                     store.dispatch(error(e, types.LOAD_ARTISTS))
                 })
                 break
             }
             case types.LOAD_ALBUMS: {
+                store.dispatch(setLibraryLoading(true))
                 client.mpd.getAlbums(action.artist).then(result => {
                     store.dispatch(albumsLoaded(action.artist, result))
                 }).catch((e) => {
+                    store.dispatch(setLibraryLoading(false))
                     store.dispatch(error(e, types.LOAD_ALBUMS))
                 })
                 break
@@ -559,10 +564,12 @@ export const mpdMiddleware = store => {
                 const combined = '(' + searchExpressions.join(' AND ')  + ')'
 
                 // Get search results.
+                store.dispatch(setLibraryLoading(true))
                 client.mpd.search(combined).then(results => {
                     var list = listToChildren(results, false)
                     store.dispatch(songsLoaded(artist, album, list))
                 }).catch((e) => {
+                    store.dispatch(setLibraryLoading(false))
                     store.dispatch(error(e, types.LOAD_SONGS))
                 })
                 break

@@ -21,17 +21,22 @@ import ItemsList from '../components/ItemsList'
 
 class Library extends MainScreen {
     componentDidMount() {
-        const { content, loadArtists } = this.props
+        const { content } = this.props
 
         if (content === null) {
-            loadArtists()
+            this.reload()
         }
 
         super.componentDidMount()
     }
 
+    reload = () => {
+        const { loadArtists } = this.props
+        loadArtists()
+    }
+
     render() {
-        const { content, navigation } = this.props
+        const { content, navigation, loading } = this.props
         const artists = ((content !== null) ? Object.keys(content) : []).map((name, index) => ({
             icon: index + 1,
             name: name,
@@ -41,7 +46,13 @@ class Library extends MainScreen {
 
         return (
             <View style={styles.container}>
-                <ItemsList content={artists} onNavigate={this.onNavigate} navigation={navigation} />
+                <ItemsList
+                    content={artists}
+                    onNavigate={this.onNavigate}
+                    navigation={navigation}
+                    onReload={this.reload}
+                    refreshing={loading}
+                />
             </View>
          )
     }
@@ -60,8 +71,11 @@ class Library extends MainScreen {
 }
 
 const mapStateToProps = (state, ownProps) => {
+    const { library, loading } = state.library
+
     return {
-        content: state.library,
+        content: library,
+        loading: loading,
     }
 }
 
