@@ -27,6 +27,10 @@ class Root extends Component {
         super(props)
     }
     
+    static defaultProps = {
+        error: null,
+    }
+
     componentWillUpdate(nextProps, nextState) {
         if (nextProps && nextProps.connected && nextProps.commands != null) {
             this.navigator && this.navigator.dispatch(
@@ -40,6 +44,7 @@ class Root extends Component {
     }
 
     render() {
+        const { error } = this.props
         const navColor = ThemeManager.instance().getCurrentTheme().accentColor
 
         return (
@@ -48,14 +53,27 @@ class Root extends Component {
                 <AppContainer
                     ref={ nav => { this.navigator = nav } }
                 />
-                <ErrorBanner />
+                <ErrorBanner error={error} />
             </View>
         )
     }
 }
 
 const mapStateToProps = state => {
+    const { error: storageError } = state.storage
+    const { error } = state.status
+
+    let actualError = error != null ? error : storageError
+    
+    // Pre-formatting for MPD errors.
+    let mpdError = /\[\d+@\d+\] \{.*\} (.*)/
+    if (actualError != null && mpdError.test(actualError)) {
+        let match = mpdError.exec(actualError)
+        actualError = match[1]
+    }
+
     return {
+        error: actualError,
         connected: state.status.connected,
         commands: state.status.commands,
     }
