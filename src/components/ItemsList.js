@@ -129,7 +129,7 @@ class BrowseListItem extends React.Component {
                     onPress={this.handleMenuPress}
                     disabled={editing}>
                     {!editing && (
-                        <Icon name='more-horiz' color={theme.mainTextColor} style={{...styles.status, fontSize: 20}} />
+                        <Icon name='more-vert' color={theme.mainTextColor} style={{...styles.status, fontSize: 20}} />
                     )}
                     {editing && selected && (
                         <Icon name='check' color={theme.mainTextColor} style={{...styles.status, fontSize: 20}} />
