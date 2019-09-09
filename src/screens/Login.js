@@ -91,21 +91,23 @@ class Login extends React.Component {
         return (
             <SafeAreaView style={styles.container}>
                 <KeyboardAvoidingView style={styles.credentialsContainer} behavior="padding">
-                    <Image source={require('../../assets/images/yamp_big_logo.png')} style={{resizeMode: 'contain', width: imageHeight, height: imageHeight }} />
+                    <Image
+                        source={require('../../assets/images/yamp_big_logo.png')}
+                        style={{resizeMode: 'contain', width: imageHeight, height: imageHeight }} />
                     <Input
-                        color={ThemeManager.instance().getCurrentTheme().activeColor}
+                        style={styles.input}
                         placeholderTextColor={placeholderTextColor}
                         placeholder='Host'
                         onChangeText={this.handleHostChange}
                         value={host} />
                     <Input
-                        color={ThemeManager.instance().getCurrentTheme().activeColor}
+                        style={styles.input}
                         placeholderTextColor={placeholderTextColor}
                         placeholder='Port'
                         onChangeText={this.handlePortChange}
                         value={port} />
                     <Input
-                        color={ThemeManager.instance().getCurrentTheme().activeColor}
+                        style={styles.input}
                         placeholderTextColor={placeholderTextColor}
                         placeholder='Password (optional)' 
                         onChangeText={this.handlePasswordChange} 
@@ -180,5 +182,9 @@ const styles = StyleSheet.create({
     disclaimer: {
         alignItems: 'center',
         marginBottom: 8,
+    },
+    input: {
+        color:ThemeManager.instance().getCurrentTheme().activeColor,
+        flex: 1,
     }
 })
