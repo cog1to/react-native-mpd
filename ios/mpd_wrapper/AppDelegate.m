@@ -14,6 +14,8 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [[UIView appearanceWhenContainedInInstancesOfClasses: @[[UIAlertController class]]] setTintColor:[UIColor colorWithRed:64.0/255.0 green:69.0/255.0 blue:80.0/255.0 alpha:1.0]];
+  
   NSURL *jsCodeLocation;
 
   jsCodeLocation = [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];

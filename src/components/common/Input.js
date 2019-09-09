@@ -23,10 +23,10 @@ export default class Input extends React.Component {
     render() {
         return (
             <View style={styles.inputContainer}>
-                <TextInput 
-                    style={styles.textInput}
-                    underlineColorAndroid='transparent'
+                <TextInput
                     {...this.props}
+                    style={{...this.props.style, ...styles.textInput}}
+                    underlineColorAndroid='transparent'
                 />
             </View>
         )
