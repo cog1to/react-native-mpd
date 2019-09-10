@@ -10,7 +10,7 @@ const LightTheme = {
   navigationBarTextColor: '#FFFFFF',
   navigationBarIconColor: '#FFFFFF',
   toolbarColor: '#F5F5F5',
-  tableBackgroundColor: '#AAAAAA',
+  tableBackgroundColor: '#AEAEAE',
   rowSelectionColor: '#4C515D',
   separatorColor: '#666666',
 }
