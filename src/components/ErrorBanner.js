@@ -32,7 +32,7 @@ class ErrorBanner extends React.Component {
     }
 
     shouldComponentUpdate(nextProps, nextState) {
-        if (this.props.error != nextProps.error) {
+        if (this.props.error != nextProps.error && nextProps.error != null) {
             return true
         }
 
@@ -101,23 +101,7 @@ class ErrorBanner extends React.Component {
     }
 }
 
-const mapStateToProps = state => {
-    const { error: storageError } = state.storage
-    const { error } = state.status
-
-    let actualError = error != null ? error : storageError
-    
-    // Pre-formatting for MPD errors.
-    let mpdError = /\[\d+@\d+\] \{.*\} (.*)/
-    if (actualError != null && mpdError.test(actualError)) {
-        let match = mpdError.exec(actualError)
-        actualError = match[1]
-    }
-
-    return { error: actualError }
-}
-
-export default connect(mapStateToProps)(ErrorBanner)
+export default ErrorBanner
 
 const styles = StyleSheet.create({
     errorText: {

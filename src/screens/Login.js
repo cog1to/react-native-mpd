@@ -5,6 +5,11 @@ import {
     StyleSheet,
     Button,
     Text,
+    Image,
+    KeyboardAvoidingView,
+    Platform,
+    Dimensions,
+    SafeAreaView,
 } from 'react-native';
 import Input from '../components/common/Input'
 
@@ -18,6 +23,9 @@ import { bindActionCreators } from 'redux'
 
 // Themes.
 import ThemeManager from '../themes/ThemeManager'
+
+// Global error banner.
+import ErrorBanner from '../components/ErrorBanner'
 
 class Login extends React.Component {
     state = {
@@ -74,30 +82,54 @@ class Login extends React.Component {
         const { port, host, password } = this.state
         const { error, address } = this.props
 
+        // Placeholder text color.
+        const placeholderTextColor = ThemeManager.instance().getCurrentTheme().activeColor + '55'
+
+        // Image size.
+        const imageHeight = Dimensions.get('window').height / 7
+
         return (
-            <View style={styles.container}>        
-                {error != null && (
-                    <View style={styles.errorContainer}>
-                        <Text style={styles.errorText}>{error.message}</Text>
+            <SafeAreaView style={styles.container}>
+                <KeyboardAvoidingView style={styles.credentialsContainer} behavior="padding">
+                    <Image
+                        source={require('../../assets/images/yamp_big_logo.png')}
+                        style={{resizeMode: 'contain', width: imageHeight, height: imageHeight }} />
+                    <Input
+                        style={styles.input}
+                        placeholderTextColor={placeholderTextColor}
+                        placeholder='Host'
+                        onChangeText={this.handleHostChange}
+                        value={host} />
+                    <Input
+                        style={styles.input}
+                        placeholderTextColor={placeholderTextColor}
+                        placeholder='Port'
+                        onChangeText={this.handlePortChange}
+                        value={port} />
+                    <Input
+                        style={styles.input}
+                        placeholderTextColor={placeholderTextColor}
+                        placeholder='Password (optional)' 
+                        onChangeText={this.handlePasswordChange} 
+                        value={password} 
+                        autoCapitalize='none'
+                        autoCompleteType='off'
+                        autoCorrect={false} />
+                    <View style={{marginVertical: 10}}>
+                        <Button
+                            title='Connect'
+                            onPress={this.handleSubmit}
+                            color={ThemeManager.instance().getCurrentTheme().activeColor}
+                        />
                     </View>
-                )}
-                <Input placeholder='Host' onChangeText={this.handleHostChange} value={host} />
-                <Input placeholder='Port' onChangeText={this.handlePortChange} value={port} />
-                <Input 
-                    placeholder='Password (optional)' 
-                    onChangeText={this.handlePasswordChange} 
-                    value={password} 
-                    autoCapitalize='none'
-                    autoCompleteType='off'
-                    autoCorrect={false} />
-                <View style={{marginVertical: 10}}>
-                    <Button
-                        title='Connect'
-                        onPress={this.handleSubmit}
-                        color={ThemeManager.instance().getCurrentTheme().accentColor}
-                    />
+                </KeyboardAvoidingView>
+                <View style={styles.disclaimer}>
+                    <Text style={{color: placeholderTextColor, textAlign: 'center', fontSize: 11}}>
+                        © 2019{'\n'}Cover art powered by Last.fm
+                    </Text>
                 </View>
-            </View>
+                <ErrorBanner error={error} />
+            </SafeAreaView>
         )
     }
 }
@@ -105,7 +137,17 @@ class Login extends React.Component {
 const mapStateToProps = state => {
     const { address, error: storageError } = state.storage
     const { connectionError } = state.status
-    return { address: address, error: (connectionError != null ? connectionError : storageError) }
+
+    let actualError = (connectionError != null ? connectionError.message : (storageError != null ? storageError.message : null))
+    
+    // Pre-formatting for MPD errors.
+    let mpdError = /\[\d+@\d+\] \{.*\} (.*)/
+    if (actualError != null && mpdError.test(actualError)) {
+        let match = mpdError.exec(actualError)
+        actualError = match[1]
+    }
+
+    return { address: address, error: actualError }
 }
 
 const mapDispatchToProps = dispatch => ({
@@ -118,9 +160,15 @@ export default reduxConnect(mapStateToProps, mapDispatchToProps)(Login)
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        alignItems: 'center',
+        backgroundColor: ThemeManager.instance().getCurrentTheme().accentColor,
+    },
+    credentialsContainer: {
+        flex: 1,
         padding: 20,
         alignItems: 'center',
         justifyContent: 'center',
+        flexGrow: 1,
     },
     errorText: {
         color: 'white',
@@ -130,5 +178,13 @@ const styles = StyleSheet.create({
         backgroundColor: 'red',
         borderRadius: 5,
         marginBottom: 10,
+    },
+    disclaimer: {
+        alignItems: 'center',
+        marginBottom: 8,
+    },
+    input: {
+        color:ThemeManager.instance().getCurrentTheme().activeColor,
+        flex: 1,
     }
 })

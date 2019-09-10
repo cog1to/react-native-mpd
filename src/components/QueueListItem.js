@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     title: {        
-        fontWeight: Platform.OS === 'android' ? 'bold' : '500',
+        fontWeight: Platform.OS === 'android' ? 'normal' : '500',
         fontSize: ThemeManager.instance().getCurrentTheme().mainTextSize,
         color: ThemeManager.instance().getCurrentTheme().mainTextColor,
         marginBottom: Platform.OS === 'android' ? 0 : 2,

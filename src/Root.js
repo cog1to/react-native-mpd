@@ -11,7 +11,7 @@ import Queue from './screens/Queue'
 import Browse from './screens/Browse'
 
 // Actions.
-import { connect } from './redux/reducers/status/actions'
+import { connect, error, disconnect } from './redux/reducers/status/actions'
 
 // Navigator.
 import AppContainer from './Routes'
@@ -25,21 +25,34 @@ import ErrorBanner from './components/ErrorBanner'
 class Root extends Component {
     constructor(props) {
         super(props)
+
+        if (ErrorUtils._globalHandler) {
+            this.defaultHandler = (ErrorUtils.getGlobalHandler && ErrorUtils.getGlobalHandler()) || ErrorUtils._globalHandler
+            ErrorUtils.setGlobalHandler(this.wrapGlobalHandler)
+        }
     }
     
+    static defaultProps = {
+        error: null,
+    }
+
     componentWillUpdate(nextProps, nextState) {
         if (nextProps && nextProps.connected && nextProps.commands != null) {
             this.navigator && this.navigator.dispatch(
                     NavigationActions.navigate({ routeName: 'Home' })
             )
         } else if (this.props.connected && !nextProps.connected) {
-            this.navigator && this.navigator.dispatch(
-                StackActions.popToTop()
-            )
+            const navigateAction = NavigationActions.navigate({
+                routeName: 'Login',
+                params: {},
+            })
+
+            this.navigator && this.navigator.dispatch(navigateAction)
         }
     }
 
     render() {
+        const { error } = this.props
         const navColor = ThemeManager.instance().getCurrentTheme().accentColor
 
         return (
@@ -48,16 +61,46 @@ class Root extends Component {
                 <AppContainer
                     ref={ nav => { this.navigator = nav } }
                 />
-                <ErrorBanner />
+                <ErrorBanner error={error} />
             </View>
         )
+    }
+
+     wrapGlobalHandler = (err, isFatal) => {
+        if (!this.props.connected) {
+            // If we're already disconnected, just display the error.
+            this.props.onError(err)
+        } else {
+            // If we're not disconnected, disconnect. Global error most likely means a socket connection error.
+            this.props.disconnect()
+        }
     }
 }
 
 const mapStateToProps = state => {
+    const { error: storageError } = state.storage
+    const { error } = state.status
+
+    let actualError = (error != null ? error.message : (storageError != null ? storageError.message : null))
+    
+    // Pre-formatting for MPD errors.
+    let mpdError = /\[\d+@\d+\] \{.*\} (.*)/
+    if (actualError != null && mpdError.test(actualError)) {
+        let match = mpdError.exec(actualError)
+        actualError = match[1]
+    }
+
     return {
+        error: actualError,
         connected: state.status.connected,
         commands: state.status.commands,
+    }
+}
+
+const mapDispatchToProps = dispatch => {
+    return {
+        onError: (err) => dispatch(error(err)),
+        disconnect: () => dispatch(disconnect()),
     }
 }
 

@@ -35,6 +35,7 @@ export const statusReducer = (state = initialState, action) => {
                 ...state, 
                 connected: action.connected,
                 commands: action.connected ? state.commands : null,
+                connectionError: null,
             }
         case types.CONNECTION_ERROR:
             return {
