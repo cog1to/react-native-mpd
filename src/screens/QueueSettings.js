@@ -425,7 +425,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     title: {        
-        fontWeight: 'bold',
+        fontWeight: Platform.OS === 'android' ? 'bold' : '500',
         fontSize: ThemeManager.instance().getCurrentTheme().mainTextSize,
         color: ThemeManager.instance().getCurrentTheme().mainTextColor,
         marginBottom: Platform.OS === 'android' ? 0 : 2,
