@@ -94,13 +94,15 @@ class Search extends MainScreen {
 
     render() {
         const { criteria } = this.state
+        const borderBottomColor = ThemeManager.instance().getCurrentTheme().accentColor
 
         return (
             <View style={styles.container}>
-                <ScrollView>
+                <ScrollView keyboardShouldPersistTaps='always'>
                     {Fields.map(({ ID, title, tag }) => {
                         return (
-                            <Input 
+                            <Input
+                                borderBottomColor={borderBottomColor}
                                 key={ID}
                                 placeholder={title}
                                 onChangeText={(text) => this.onChangeText(text, tag)}

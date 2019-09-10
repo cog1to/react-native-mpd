@@ -11,18 +11,29 @@ export default class Input extends React.Component {
         onChangeText: PropTypes.func.isRequired,
         value: PropTypes.string,
         placeholder: PropTypes.string,
-        keyboardType: PropTypes.string
+        keyboardType: PropTypes.string,
+        borderBottomColor: PropTypes.string,
     }
 
     static defaultProps = {
         keyboardType: 'default',
         value: '',
-        placeholder: ''
+        placeholder: '',
+        borderBottomColor: ThemeManager.instance().getCurrentTheme().activeColor,
     }
 
     render() {
+        const { borderBottomColor } = this.props
+
+        let style = {
+            flexDirection: 'row',
+            borderBottomWidth: StyleSheet.hairlineWidth,
+            borderBottomColor: borderBottomColor,
+            marginVertical: 5
+        }
+
         return (
-            <View style={styles.inputContainer}>
+            <View style={style}>
                 <TextInput
                     {...this.props}
                     style={{...this.props.style, ...styles.textInput}}
