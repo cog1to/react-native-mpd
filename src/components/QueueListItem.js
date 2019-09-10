@@ -23,13 +23,14 @@ class ForegroundView extends React.PureComponent {
         id: PropTypes.string.isRequired,
         status: PropTypes.string,
         subtitle: PropTypes.string,
+        height: PropTypes.number,
     }
 
     render() {
-        const { status, subtitle, id, name } = this.props
+        const { status, subtitle, id, name, height } = this.props
 
         return (
-            <View style={styles.container}>
+            <View style={{...styles.container, height: height}}>
                 {status !== null && (
                     <View style={{ alignItems: 'center', justifyContent: 'center' }}>
                         <Text style={[styles.status, styles.statusActive]}>
@@ -45,7 +46,14 @@ class ForegroundView extends React.PureComponent {
                     </View>
                 )}
                 <View style={styles.description}>
-                    <Text style={styles.title} ellipsizeMode='tail' selectable={false} numberOfLines={1}>{name}</Text>
+                    <Text
+                        style={status === 'play' ? styles.titlePlay : styles.title}
+                        ellipsizeMode='tail'
+                        selectable={false}
+                        numberOfLines={1}
+                    >
+                        {name}
+                    </Text>
                     {subtitle && (<Text style={styles.subtitle}>{subtitle}</Text>)}
                 </View>
             </View>
@@ -216,6 +224,12 @@ const styles = StyleSheet.create({
     },
     title: {        
         fontWeight: Platform.OS === 'android' ? 'normal' : '500',
+        fontSize: ThemeManager.instance().getCurrentTheme().mainTextSize,
+        color: ThemeManager.instance().getCurrentTheme().mainTextColor,
+        marginBottom: Platform.OS === 'android' ? 0 : 2,
+    },
+    titlePlay: {        
+        fontWeight: 'bold',
         fontSize: ThemeManager.instance().getCurrentTheme().mainTextSize,
         color: ThemeManager.instance().getCurrentTheme().mainTextColor,
         marginBottom: Platform.OS === 'android' ? 0 : 2,

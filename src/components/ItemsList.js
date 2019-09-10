@@ -114,6 +114,10 @@ class BrowseListItem extends React.Component {
             ? theme.activeColor
             : theme.lightTextColor
 
+        let titleStyle = playing
+            ? styles.titlePlaying
+            : styles.title
+
         return (
             <View style={styles.itemContainer}>
                 <View style={{ alignItems: 'center', justifyContent: 'center' }}>
@@ -122,7 +126,7 @@ class BrowseListItem extends React.Component {
                     </Text>
                 </View>
                 <View style={styles.description}>
-                    <Text style={styles.title} numberOfLines={1} ellipsizeMode='tail'>{displayName}</Text>
+                    <Text style={titleStyle} numberOfLines={1} ellipsizeMode='tail'>{displayName}</Text>
                     <Text style={styles.subtitle}>{displayType}</Text>
                 </View>
                 <TouchableOpacity
@@ -148,6 +152,8 @@ const HighlightableBrowseListItem = HighlightableView(BrowseListItem)
 
 class ItemsList extends React.Component {
     
+    static ITEM_HEIGHT = 58
+
     state = {
         showingMenu: false,
         selected: [],
@@ -162,6 +168,8 @@ class ItemsList extends React.Component {
         onReload: null,
         refreshing: false,
     }
+
+    // Rendering.
 
     renderItem = ({ item }) => {
         const { file } = this.props
@@ -178,6 +186,7 @@ class ItemsList extends React.Component {
                 onLongTap={this.onItemLongTap}
                 editing={editing}
                 selected={isSelected}
+                height={ItemsList.ITEM_HEIGHT}
             />
         )
     }
@@ -185,6 +194,14 @@ class ItemsList extends React.Component {
     keyExtractor = (item) => {
         return item.fullPath
     }
+
+    getItemLayout = (data, index) => ({
+        length: ItemsList.ITEM_HEIGHT,
+        offset: index * ItemsList.ITEM_HEIGHT,
+        index,
+    })
+
+    // Events.
 
     onItemTap = (item) => {
         const { addToQueuePlay, queueSize, navigation, content } = this.props
@@ -381,6 +398,8 @@ class ItemsList extends React.Component {
         }
     }
 
+    // Layout.
+
     componentDidMount() {
         if (Platform.OS === 'android') {
             BackHandler.addEventListener('hardwareBackPress', this.handleBackPress)
@@ -443,6 +462,7 @@ class ItemsList extends React.Component {
                     keyExtractor={this.keyExtractor}
                     renderItem={this.renderItem}
                     extraData={{file, editing, selected}}
+                    getItemLayout={this.getItemLayout}
                     {...refreshingProps}
                 />
                 {showingMenu && (
@@ -528,6 +548,12 @@ const styles = StyleSheet.create({
     },
     title: {
         fontWeight: Platform.OS === 'android' ? 'normal' : '500',
+        fontSize: ThemeManager.instance().getCurrentTheme().mainTextSize,
+        color: ThemeManager.instance().getCurrentTheme().mainTextColor,
+        marginBottom: Platform.OS === 'android' ? 0 : 2,
+    },
+    titlePlaying: {
+        fontWeight: 'bold',
         fontSize: ThemeManager.instance().getCurrentTheme().mainTextSize,
         color: ThemeManager.instance().getCurrentTheme().mainTextColor,
         marginBottom: Platform.OS === 'android' ? 0 : 2,

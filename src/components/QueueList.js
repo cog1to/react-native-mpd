@@ -54,6 +54,9 @@ const CustomLayoutAnimation = {
 const HighlightableQueueListItem = HighlightableView(QueueListItem)
 
 class QueueList extends React.Component {
+
+    static ITEM_HEIGHT = 58
+
     state = {
         selected: [],
         editing: false,
@@ -80,6 +83,7 @@ class QueueList extends React.Component {
                 keyExtractor={this.keyExtractor}
                 renderItem={this.renderItem}
                 extraData={this.state.selected}
+                getItemLayout={this.getItemLayout}
             />
         )
     }
@@ -98,8 +102,15 @@ class QueueList extends React.Component {
             onTap={this.onPressItem}
             onLongTap={this.onLongPressItem}
             onDeleteItem={this.onDeleteItem}
+            height={QueueList.ITEM_HEIGHT}
         />
     }
+
+    getItemLayout = (data, index) => ({
+        length: QueueList.ITEM_HEIGHT,
+        offset: index * QueueList.ITEM_HEIGHT,
+        index,
+    })
 
     onPressItem = ({ id, status, name }) => {
         const { editing, selected } = this.state

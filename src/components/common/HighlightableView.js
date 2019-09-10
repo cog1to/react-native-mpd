@@ -26,11 +26,13 @@ export const HighlightableView = (WrappedComponent) => {
             duration: PropTypes.number.isRequired,
             onTap: PropTypes.func.isRequired,
             onLongTap: PropTypes.func.isRequired,
+            height: PropTypes.number,
         }
 
         static defaultProps = {
             highlightColor: ThemeManager.instance().getCurrentTheme().accentColor + '50',
             duration: 200,
+            height: null,
         }
         
         // State manipulation.
@@ -103,7 +105,7 @@ export const HighlightableView = (WrappedComponent) => {
         // Rendering.
 
         render() {
-            const { highlightColor } = this.props
+            const { highlightColor, height } = this.props
             
             const opacity = this.animatedValue.interpolate({
                 inputRange: [0, 1],
@@ -119,13 +121,15 @@ export const HighlightableView = (WrappedComponent) => {
                 zIndex: -1,
             }
 
+            const containerStyle = height != null ? { height: height } : {}
+
             return (
                 <TouchableWithoutFeedback
                     onPressIn={this.handlePressIn}
                     onPressOut={this.handlePressOut}
                     onPress={this.handlePress}
                     onLongPress={this.handleLongPress}>
-                    <View>
+                    <View style={containerStyle}>
                         <WrappedComponent {...this.props} />
                         <Animated.View style={highlightViewStyle} />
                     </View>
