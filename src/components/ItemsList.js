@@ -527,14 +527,14 @@ const styles = StyleSheet.create({
         marginRight: 10,
     },
     title: {
-        fontWeight: Platform.OS === 'android' ? 'bold' : '500',
+        fontWeight: Platform.OS === 'android' ? 'normal' : '500',
         fontSize: ThemeManager.instance().getCurrentTheme().mainTextSize,
         color: ThemeManager.instance().getCurrentTheme().mainTextColor,
         marginBottom: Platform.OS === 'android' ? 0 : 2,
     },
     subtitle: {
-        fontSize: 14,
-        color: '#666666'
+        fontSize: 13,
+        color: ThemeManager.instance().getCurrentTheme().lightTextColor,
     },
     menuWrapper: {
         position: 'absolute',

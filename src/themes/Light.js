@@ -6,7 +6,7 @@ const LightTheme = {
   accentBackgroundColor: '#676C78',
   activeColor: '#DEA942',
   mainTextSize: 16,
-  subTextSite: 14,
+  subTextSize: 14,
   navigationBarTextColor: '#FFFFFF',
   navigationBarIconColor: '#FFFFFF',
   toolbarColor: '#F5F5F5',
