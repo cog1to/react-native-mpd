@@ -33,7 +33,7 @@ const textColor = ThemeManager.instance().getCurrentTheme().navigationBarTextCol
 const navigationHeader = {
     headerStyle: {
         paddingTop: Platform.OS === 'android' ? 24 : 12,
-        height: Platform.OS === 'android' ? 56 + 24 : 44,
+        height: Platform.OS === 'android' ? 56 + 24 : 40,
         backgroundColor: ThemeManager.instance().getCurrentTheme().accentColor,
     },
     headerTitleStyle: {
