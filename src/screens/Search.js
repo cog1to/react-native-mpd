@@ -4,7 +4,9 @@ import {
     ScrollView,
     Button,
     StyleSheet,
+    Platform,
 } from 'react-native'
+import PropTypes from 'prop-types'
 import { NavigationActions } from 'react-navigation'
 
 // Main screen features.
@@ -18,9 +20,14 @@ import { search } from '../redux/reducers/search/actions'
 
 // Input control.
 import Input from '../components/common/Input'
+import KeyboardState from '../components/common/KeyboardState'
+import MeasureLayout from '../components/common/MeasureLayout'
 
 // Themes.
 import ThemeManager from '../themes/ThemeManager'
+
+// Safe area check.
+import { isIphoneX } from '../utils/IsIphoneX';
 
 Fields = [
     { ID: 'TITLE', title: 'Title', tag: 'title', },
@@ -31,6 +38,50 @@ Fields = [
     { ID: 'GENRE', title: 'Genre', tag: 'genre', },
     { ID: 'FILENAME', title: 'Filename', tag: 'filename', },
 ]
+
+class SearchForm extends React.Component {
+    static propTypes = {
+        // From `KeyboardState`
+        containerHeight: PropTypes.number.isRequired,
+        contentHeight: PropTypes.number.isRequired,
+        keyboardHeight: PropTypes.number.isRequired,
+        keyboardVisible: PropTypes.bool.isRequired,
+        keyboardWillShow: PropTypes.bool.isRequired,
+        keyboardWillHide: PropTypes.bool.isRequired,
+        keyboardAnimationDuration: PropTypes.number.isRequired,
+
+        // Rendering content
+        children: PropTypes.node,
+    }
+
+    static defaultProps = {
+        children: null,
+    }
+
+    render() {
+        const {
+            children,
+            containerHeight,
+            contentHeight,
+            keyboardHeight,
+            keyboardVisible,
+            containerY
+        } = this.props
+
+        const useContentHeight = keyboardVisible
+
+        console.log('content = ' + contentHeight + ', container = ' + containerHeight + ', useContent = ' + useContentHeight + ', ly = ' + containerY)
+        console.log(JSON.stringify(Platform))
+
+        const containerStyle = { height: useContentHeight ? (contentHeight - (isIphoneX() ? 24 : 0)) : containerHeight, backgroundColor: 'blue' }
+        
+        return (
+            <View style={containerStyle}>
+                {children}
+            </View>
+        )
+    }
+}
 
 class Search extends MainScreen {
 
@@ -98,26 +149,36 @@ class Search extends MainScreen {
 
         return (
             <View style={styles.container}>
-                <ScrollView keyboardShouldPersistTaps='always'>
-                    {Fields.map(({ ID, title, tag }) => {
-                        return (
-                            <Input
-                                borderBottomColor={borderBottomColor}
-                                key={ID}
-                                placeholder={title}
-                                onChangeText={(text) => this.onChangeText(text, tag)}
-                                value={criteria[tag]}
-                            />
-                        )
-                    })}
-                   <View style={styles.search}>
-                        <Button 
-                            title="Search"
-                            onPress={this.onSearch}
-                            color={ThemeManager.instance().getCurrentTheme().accentColor}
-                        />
-                    </View>
-                </ScrollView>
+                <MeasureLayout>
+                    {layout => (
+                        <KeyboardState layout={layout}>
+                            {keyboardInfo => (
+                                <SearchForm {...keyboardInfo}>
+                                    <ScrollView keyboardShouldPersistTaps='always'>
+                                        {Fields.map(({ ID, title, tag }) => {
+                                            return (
+                                                <Input
+                                                    borderBottomColor={borderBottomColor}
+                                                    key={ID}
+                                                    placeholder={title}
+                                                    onChangeText={(text) => this.onChangeText(text, tag)}
+                                                    value={criteria[tag]}
+                                                />
+                                            )
+                                        })}
+                                       <View style={styles.search}>
+                                            <Button 
+                                                title="Search"
+                                                onPress={this.onSearch}
+                                                color={ThemeManager.instance().getCurrentTheme().accentColor}
+                                            />
+                                        </View>
+                                    </ScrollView>
+                                </SearchForm>
+                            )}
+                        </KeyboardState>
+                    )}
+                </MeasureLayout>
             </View>
         )
     }
@@ -148,6 +209,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     search: {
+        backgroundColor: 'red',
         marginTop: 10,
         alignSelf: 'flex-end',
     },
