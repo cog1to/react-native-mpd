@@ -39,7 +39,7 @@ Fields = [
     { ID: 'FILENAME', title: 'Filename', tag: 'filename', },
 ]
 
-class SearchForm extends React.Component {
+class KeyboardAwareSearchForm extends React.Component {
     static propTypes = {
         // From `KeyboardState`
         containerHeight: PropTypes.number.isRequired,
@@ -70,10 +70,9 @@ class SearchForm extends React.Component {
 
         const useContentHeight = keyboardVisible
 
-        console.log('content = ' + contentHeight + ', container = ' + containerHeight + ', useContent = ' + useContentHeight + ', ly = ' + containerY)
-        console.log(JSON.stringify(Platform))
-
-        const containerStyle = { height: useContentHeight ? (contentHeight - (isIphoneX() ? 24 : 0)) : containerHeight, backgroundColor: 'blue' }
+        const containerStyle = Platform.OS === 'ios' 
+            ? { height: useContentHeight ? (contentHeight - (isIphoneX() ? 24 : 0)) : containerHeight } 
+            : {}
         
         return (
             <View style={containerStyle}>
@@ -153,7 +152,7 @@ class Search extends MainScreen {
                     {layout => (
                         <KeyboardState layout={layout}>
                             {keyboardInfo => (
-                                <SearchForm {...keyboardInfo}>
+                                <KeyboardAwareSearchForm {...keyboardInfo}>
                                     <ScrollView keyboardShouldPersistTaps='always'>
                                         {Fields.map(({ ID, title, tag }) => {
                                             return (
@@ -174,7 +173,7 @@ class Search extends MainScreen {
                                             />
                                         </View>
                                     </ScrollView>
-                                </SearchForm>
+                                </KeyboardAwareSearchForm>
                             )}
                         </KeyboardState>
                     )}
