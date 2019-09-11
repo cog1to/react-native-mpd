@@ -9,9 +9,6 @@ import {
 import PropTypes from 'prop-types'
 import { NavigationActions } from 'react-navigation'
 
-// Main screen features.
-import MainScreen from './MainScreen'
-
 // Redux.
 import { connect } from 'react-redux'
 
@@ -82,15 +79,10 @@ class KeyboardAwareSearchForm extends React.Component {
     }
 }
 
-class Search extends MainScreen {
-
+class Search extends React.Component {
     state = { 
         dirty: false,
         criteria: {},
-    }
-
-    componentDidMount() {
-        super.componentDidMount()
     }
 
     showResults = (content) => {

@@ -26,6 +26,8 @@ import SearchResults from './screens/SearchResults'
 import Library from './screens/Library'
 import Artist from './screens/Artist'
 import Album from './screens/Album'
+import More from './screens/More'
+import Playlists from './screens/Playlists'
 
 const iconColor = ThemeManager.instance().getCurrentTheme().navigationBarIconColor
 const textColor = ThemeManager.instance().getCurrentTheme().navigationBarTextColor
@@ -50,7 +52,7 @@ const getMaterialTabBarIcon = icon => ({ tintColor }) => (
     <Icon name={icon} size={24} color={tintColor} /> 
 )
 
-const barOptionsFromState = ({ title, navigation, icon = 'add', hideTitle = false, regularIcon, showExit = true }) => {
+const barOptionsFromState = ({ title, navigation, icon = 'add', hideTitle = false, regularIcon }) => {
     let options = {
         title: hideTitle && navigation.getParam('editing') === true ? null : title,
         ...navigationHeader
@@ -83,14 +85,6 @@ const barOptionsFromState = ({ title, navigation, icon = 'add', hideTitle = fals
                 </TouchableOpacity>
             )
         }
-
-        if (showExit) {
-            options.headerLeft = (
-                <TouchableOpacity onPress={navigation.getParam('onExit')} style={styles.headerButton}>
-                    <Icon name='exit-to-app' size={24} color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor} /> 
-                </TouchableOpacity>
-            )
-        }
     }
 
     return options
@@ -106,7 +100,6 @@ const BrowseNavigator = createStackNavigator(
                 navigation: navigation,
                 hideTitle: true,
                 regularIcon: null,
-                showExit: navigation.state.params.name == null,
             })
         }
     },
@@ -161,11 +154,6 @@ const PlayerNavigator = createStackNavigator(
                         />
                     </TouchableOpacity>
                 ),
-                headerLeft: (
-                    <TouchableOpacity onPress={navigation.getParam('onExit')} style={styles.headerButton}>
-                        <Icon name='exit-to-app' size={24} color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor} /> 
-                    </TouchableOpacity>
-                )
             }),
         }
     },
@@ -189,18 +177,19 @@ const searchResultsTitleFromLength = (length) => {
     return prefix
 }
 
-const SearchNavigator = createStackNavigator(
+const MoreNavigator = createStackNavigator(
     {
+        More: {
+            screen: More,
+            navigationOptions: ({ navigation }) => ({
+                title: 'More',
+            })
+        },
         Search: {
             screen: Search,
             navigationOptions: ({ navigation }) => ({
                 title: 'Search',
-                headerLeft: (
-                    <TouchableOpacity onPress={navigation.getParam('onExit')} style={styles.headerButton}>
-                        <Icon name='exit-to-app' size={24} color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor} /> 
-                    </TouchableOpacity>
-                ),
-           })
+            })
         },
         SearchResults: {
             screen: SearchResults,
@@ -208,16 +197,22 @@ const SearchNavigator = createStackNavigator(
             navigationOptions: ({ navigation }) => barOptionsFromState({
                 title: searchResultsTitleFromLength(navigation.state.params.content.length),
                 navigation: navigation,
-                showExit: false,
+            })
+        },
+        Playlists: {
+            screen: Playlists,
+            navigationOptions: ({ navigation }) => ({
+                title: 'Playlists',
             })
         }
     },
     {
         navigationOptions: {
-            tabBarIcon: getTabBarIcon('search'),
+            tabBarIcon: getTabBarIcon('ellipsis-h'),
         },
         defaultNavigationOptions: navigationHeader,
     }
+
 )
 
 const LibraryNavigator = createStackNavigator(
@@ -234,7 +229,6 @@ const LibraryNavigator = createStackNavigator(
             navigationOptions: ({ navigation }) => barOptionsFromState({
                 title: navigation.getParam('name'),
                 navigation: navigation,
-                showExit: false,
             }),
         },
         Album: {
@@ -243,7 +237,6 @@ const LibraryNavigator = createStackNavigator(
                 title: navigation.getParam('artist') + ' - ' + navigation.getParam('album'),
                 navigation: navigation,
                 hideTitle: true,
-                showExit: false,
             })
         }
     },
@@ -261,7 +254,7 @@ const TabNavigator = createBottomTabNavigator(
         Library: LibraryNavigator,
         Player: PlayerNavigator,
         Queue: QueueNavigator,
-        Search: SearchNavigator,
+        More: MoreNavigator,
     },
     {
         tabBarOptions: {

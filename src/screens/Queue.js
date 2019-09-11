@@ -4,20 +4,16 @@ import {
     StyleSheet,
 } from 'react-native'
 
-// Main screen features.
-import MainScreen from './MainScreen'
-
 // Queue List component.
 import QueueList from '../components/QueueList'
 
-export default class Queue extends MainScreen {
+export default class Queue extends React.Component {
     handleMenuPress = () => {
         const { navigation } = this.props
         navigation.navigate('QueueSettings')
     }
 
     componentDidMount() {
-        super.componentDidMount()
         this.props.navigation.setParams({ onMenu: this.handleMenuPress })
     } 
 

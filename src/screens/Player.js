@@ -11,9 +11,6 @@ import {
 } from 'react-native'
 import _ from 'lodash'
 
-// Main screen features.
-import MainScreen from './MainScreen'
-
 // Redux.
 import { connect } from 'react-redux'
 
@@ -32,7 +29,7 @@ if (Platform.OS === 'android') {
     UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-class Player extends MainScreen {    
+class Player extends React.Component {    
     constructor(props) {
         super(props)
 
@@ -51,8 +48,6 @@ class Player extends MainScreen {
 
     componentDidMount() {
         const { navigation } = this.props
-
-        super.componentDidMount()
 
         navigation.setParams({
             onVolumeToggle: this.onVolumeToggle,

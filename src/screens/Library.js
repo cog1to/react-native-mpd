@@ -7,9 +7,6 @@ import {
 } from 'react-native'
 import { NavigationActions } from 'react-navigation'
 
-// Main screen features.
-import MainScreen from './MainScreen'
-
 // Redux.
 import { connect } from 'react-redux'
 
@@ -19,15 +16,13 @@ import { loadArtists } from '../redux/reducers/library/actions'
 // Items list.
 import ItemsList from '../components/ItemsList'
 
-class Library extends MainScreen {
+class Library extends React.Component {
     componentDidMount() {
         const { content } = this.props
 
         if (content === null) {
             this.reload()
         }
-
-        super.componentDidMount()
     }
 
     reload = () => {

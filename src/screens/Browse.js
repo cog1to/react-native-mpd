@@ -5,9 +5,6 @@ import {
 } from 'react-native'
 import { NavigationActions } from 'react-navigation'
 
-// Main screen features.
-import MainScreen from './MainScreen'
-
 // Redux.
 import { connect } from 'react-redux'
 
@@ -17,7 +14,7 @@ import { changeCurrentDir } from '../redux/reducers/browser/actions'
 // Items list.
 import ItemsList from '../components/ItemsList'
 
-class Browse extends MainScreen {
+class Browse extends React.Component {
     static defaultProps = {
         content: [],
         refreshing: false,
@@ -42,7 +39,6 @@ class Browse extends MainScreen {
     }
 
     componentDidMount() {
-        super.componentDidMount()
         this.reload()
     }
 
