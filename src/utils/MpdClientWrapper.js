@@ -107,7 +107,8 @@ export default class MpdClientWrapper {
 
     disconnect() {
         if (this._client != null) {
-            return this._sendCommand(cmd('close', []))
+            this._sendCommand(cmd('close', []))
+            return Promise.resolve()
         } else {
             return new Promise((resolve) => {
                 resolve()

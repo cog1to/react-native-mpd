@@ -257,17 +257,18 @@ export const mpdMiddleware = store => {
                 // Stop progress update.
                 if (client.updatingProgress) {
                     client.updatingProgress = false
-                    if (client.progressTimeout !== null) {
-                        clearTimeout(client.progressTimeout)
-                    }
                 }
 
-                client.mpd.disconnect().then(() => {
-                    // Unsubscribe from all events.
-                    client.disconnects.forEach((callback) => {
-                        callback()
-                    })
+                if (client.progressTimeout !== null) {
+                    clearTimeout(client.progressTimeout)
+                }
+ 
+                // Unsubscribe from all events.
+                client.disconnects.forEach((callback) => {
+                    callback()
+                })
 
+                client.mpd.disconnect().then(() => {
                     // Emit disconnected action.
                     store.dispatch(connected(false))
                 }).catch((error) => {
@@ -283,7 +284,7 @@ export const mpdMiddleware = store => {
             }
             case types.GET_STATUS: {
                 if (!client.mpd.connected) {
-                    return
+                    break
                 }
 
                 client.mpd.getStatus().then((status) => {
