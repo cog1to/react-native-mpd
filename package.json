@@ -23,6 +23,7 @@
     "querystring-es3": "^0.2.1",
     "react": "16.6.3",
     "react-native": "0.58.5",
+    "react-native-cli": "^2.0.1",
     "react-native-crypto": "^2.1.2",
     "react-native-fontawesome": "^6.0.1",
     "react-native-gesture-handler": "^1.1.0",
@@ -54,7 +55,9 @@
   },
   "jest": {
     "preset": "react-native",
-    "transformIgnorePatterns": [ "node_modules/(?!react-native|native-base|react-clone-referenced-element|react-navigation-stack|react-native-crypto|react-native-os|react-native-fontawesome|react-native-gesture-handler|react-native-level-fs|react-native-randombytes|react-native-tcp|react-native-udp|react-native-vector-icons|react-navigation)/" ],
+    "transformIgnorePatterns": [
+      "node_modules/(?!react-native|native-base|react-clone-referenced-element|react-navigation-stack|react-native-crypto|react-native-os|react-native-fontawesome|react-native-gesture-handler|react-native-level-fs|react-native-randombytes|react-native-tcp|react-native-udp|react-native-vector-icons|react-navigation)/"
+    ],
     "setupFiles": [
       "./jest.setup.js"
     ]
