@@ -69,8 +69,21 @@ class BrowseListItem extends React.Component {
     }
 
     shouldComponentUpdate(nextProps) {
-        const { item: nextItem, playing: nextPlaying, editing: nextEditing, selected: nextSelected } = nextProps
-        const { item, playing, editing, selected } = this.props
+        const {
+            item: nextItem,
+            playing: nextPlaying,
+            editing: nextEditing,
+            selected: nextSelected,
+            subtitle: nextSubtitle
+        } = nextProps
+        
+        const {
+            item,
+            playing,
+            editing,
+            selected,
+            subtitle,
+        } = this.props
 
         return item.name != nextItem.name
             || item.type != nextItem.type
@@ -79,10 +92,11 @@ class BrowseListItem extends React.Component {
             || playing != nextPlaying
             || editing != nextEditing
             || selected != nextSelected
+            || subtitle != nextSubtitle
     }
 
     render() {
-        const { item, playing, editing, selected } = this.props
+        const { item, playing, editing, selected, subtitle } = this.props
         const { name, type, artist, title, fullPath, id, index } = item
 
         let displayName = title != null ? title : name
@@ -105,6 +119,9 @@ class BrowseListItem extends React.Component {
                 break
             case 'PLAYLIST':
                 icon = <FontAwesome>{Icons.fileAlt}</FontAwesome>
+                if (subtitle != null) {
+                    displayType = subtitle
+                }
                 break
         }
 
@@ -167,12 +184,13 @@ class ItemsList extends React.Component {
         onNavigate: () => {},
         onReload: null,
         refreshing: false,
+        subtitle: null,
     }
 
     // Rendering.
 
     renderItem = ({ item }) => {
-        const { file } = this.props
+        const { file, subtitle } = this.props
         const { editing, selected } = this.state
         const key = this.keyExtractor(item)
         const isSelected = (selected.find((el) => { return el.name == item.name }) != null)
@@ -187,6 +205,7 @@ class ItemsList extends React.Component {
                 editing={editing}
                 selected={isSelected}
                 height={ItemsList.ITEM_HEIGHT}
+                subtitle={subtitle != null ? subtitle(item) : null}
             />
         )
     }
@@ -241,7 +260,7 @@ class ItemsList extends React.Component {
         } else {
             if (item.type === 'FILE') {
                 addToQueuePlay(item.fullPath, queueSize)
-            } else if (item.type !== 'PLAYLIST') {
+            } else {
                 this.props.onNavigate(item)
             }
         }
@@ -343,9 +362,11 @@ class ItemsList extends React.Component {
 
         LayoutAnimation.configureNext(CustomLayoutAnimation, this.onCancelEditing)
         this.setState({
+            editing: false,
             showingMenu: false,
             selected: [],
         })
+        this.props.navigation.setParams({ editing: false })
     }
 
     onCancelEditing = () => {

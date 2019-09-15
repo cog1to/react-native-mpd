@@ -31,10 +31,12 @@ class OptionRow extends React.Component {
 
     static defaultProps = {
         lastRow: false,
+        textStyle: null,
+        leftPadding: true,
     }
 
     render() {
-        const { title, lastRow } = this.props
+        const { title, lastRow, textStyle, leftPadding } = this.props
 
         const theme = ThemeManager.instance().getCurrentTheme()
 
@@ -43,14 +45,21 @@ class OptionRow extends React.Component {
             style = {...style, ...styles.bottomBorder}
         }
 
+        let rowStyle = styles.row
+        if (!leftPadding) {
+            rowStyle = {...rowStyle, paddingLeft: 0}
+        }
+
+        let textStyleResolved = textStyle != null ? textStyle : styles.title
+
         return (
             <TouchableHighlight 
                 onPress={this.handleOnPress} 
                 underlayColor={theme.accentColor+'30'}>
-                <View style={styles.row}>
+                <View style={rowStyle}>
                     <View style={style}>
                         <View style={styles.rowText}>
-                            <Text style={styles.title}>{title}</Text>
+                            <Text style={textStyleResolved}>{title}</Text>
                         </View>
                     </View>
                 </View>
@@ -112,9 +121,11 @@ class More extends React.Component {
                     </View>
                     <View style={styles.rowGroup}>
                         <OptionRow 
-                            title='Log out'
+                            title='Log Out'
                             onTapped={() => this.handleLogout()}
                             lastRow={true}
+                            textStyle={styles.logoutTitle}
+                            leftPadding={false}
                         />
                     </View>
                 </ScrollView>
@@ -149,14 +160,19 @@ const styles = StyleSheet.create({
     },
     rowText: {
         flexDirection: 'column',
-        marginVertical: 10,
+        marginVertical: 14,
         flex: 1,
+    },
+    logoutTitle: {
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: ThemeManager.instance().getCurrentTheme().mainTextSize,
+        color: ThemeManager.instance().getCurrentTheme().accentColor,
     },
     title: {        
         fontWeight: Platform.OS === 'android' ? 'normal' : '500',
         fontSize: ThemeManager.instance().getCurrentTheme().mainTextSize,
         color: ThemeManager.instance().getCurrentTheme().mainTextColor,
-        marginBottom: Platform.OS === 'android' ? 0 : 2,
     },
     bottomBorder: {
         borderBottomWidth: StyleSheet.hairlineWidth,

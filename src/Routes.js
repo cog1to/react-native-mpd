@@ -28,6 +28,7 @@ import Artist from './screens/Artist'
 import Album from './screens/Album'
 import More from './screens/More'
 import Playlists from './screens/Playlists'
+import Playlist from './screens/Playlist'
 
 const iconColor = ThemeManager.instance().getCurrentTheme().navigationBarIconColor
 const textColor = ThemeManager.instance().getCurrentTheme().navigationBarTextColor
@@ -201,8 +202,21 @@ const MoreNavigator = createStackNavigator(
         },
         Playlists: {
             screen: Playlists,
-            navigationOptions: ({ navigation }) => ({
+            navigationOptions: ({ navigation }) => barOptionsFromState({
                 title: 'Playlists',
+                navigation: navigation,
+                hideTitle: true,
+                regularIcon: null,
+            })
+        },
+        Playlist: {
+            screen: Playlist,
+            params: { name: null, allSelected: false, },
+            navigationOptions: ({ navigation }) => barOptionsFromState({
+                title: navigation.state.params.name,
+                navigation: navigation,
+                hideTitle: true,
+                regularIcon: null,
             })
         }
     },

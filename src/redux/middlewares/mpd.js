@@ -38,10 +38,19 @@ import {
     setLibraryLoading,
     artistsLoaded,
     albumsLoaded,
-    songsLoaded
+    songsLoaded,
 } from '../reducers/library/actions'
 
 import { saveAddress } from '../reducers/storage/actions'
+
+import {
+    getPlaylists,
+    playlistsLoaded,
+    loadingPlaylists,
+    getPlaylist,
+    playlistLoaded,
+    loadingPlaylist,
+} from '../reducers/playlists/actions'
 
 import MpdClientWrapper from '../../utils/MpdClientWrapper'
 
@@ -156,6 +165,7 @@ const listToChildren = (list) => {
         } else if ('playlist' in element) {
             filename = element.playlist
             node.type = TreeNodeType.PLAYLIST
+            node.lastModified = new Date(element['Last-Modified'])
         }
 
         let pathComponents = filename.split('/')
@@ -265,14 +275,24 @@ export const mpdMiddleware = store => {
                 })
                 break
             }
+            case types.CONNECTED: {
+                if (!action.connected) {
+                    client.updatingProgress = false
+                }
+                break
+            }
             case types.GET_STATUS: {
-               client.mpd.getStatus().then((status) => {
-                   const newState = statusToState(status)
-                   store.dispatch(statusUpdated(newState, action.source))
-               }).catch((e) => {
-                   store.dispatch(error(e, types.GET_STATUS))
-               })
-               break
+                if (!client.mpd.connected) {
+                    return
+                }
+
+                client.mpd.getStatus().then((status) => {
+                    const newState = statusToState(status)
+                    store.dispatch(statusUpdated(newState, action.source))
+                }).catch((e) => {
+                    store.dispatch(error(e, types.GET_STATUS))
+                })
+                break
             }
             case types.COMMANDS: {
                 client.mpd.commands().then((commands) => {
@@ -283,7 +303,7 @@ export const mpdMiddleware = store => {
                 })
             }
             case types.STATUS_UPDATED: {
-               if (action.source === 'progress' && client.updatingProgress) {
+               if (action.source === 'progress' && client.updatingProgress && client.mpd.connected) {
                    client.progressTimeout = setTimeout(() => store.dispatch(getStatus('progress')), 1000)
                }
 
@@ -617,6 +637,24 @@ export const mpdMiddleware = store => {
             case types.GET_REPLAY_GAIN_STATUS: {
                 client.mpd.getReplayGain().then((status) => {
                     store.dispatch(replayGainStatusUpdated(status))
+                })
+                break
+            }
+            case types.GET_PLAYLISTS: {
+                store.dispatch(loadingPlaylists(true))
+
+                client.mpd.getPlaylists().then((list) => {
+                    store.dispatch(playlistsLoaded(listToChildren(list)))
+                })
+                break
+            }
+            case types.GET_PLAYLIST: {
+                const { name } = action
+
+                store.dispatch(loadingPlaylist(true))
+
+                client.mpd.getPlaylist(name).then(data => {
+                    store.dispatch(playlistLoaded(name, listToChildren(data)))
                 })
                 break
             }

@@ -115,7 +115,7 @@ class Login extends React.Component {
                         autoCapitalize='none'
                         autoCompleteType='off'
                         autoCorrect={false} />
-                    <View style={{marginVertical: 10}}>
+                    <View style={{marginVertical: 18}}>
                         <Button
                             title='Connect'
                             onPress={this.handleSubmit}

@@ -85,6 +85,7 @@ const mapStateToProps = (state, ownProps) => {
     const { tree, refreshing } = state.browser
 
     let content = tree != null ? nodeFromPath(dir, tree).children : []
+    content = content.filter(item => { return item.type !== 'PLAYLIST' })
 
     return {
         ...ownProps,

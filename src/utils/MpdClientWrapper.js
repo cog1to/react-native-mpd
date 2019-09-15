@@ -133,6 +133,11 @@ export default class MpdClientWrapper {
 
     // Sends a command to the player.
     _sendCommand(command, parser, callback) {
+        // Don't send commands if we're disconnected.
+        if (this._client == null) {
+            return
+        }
+
         return new Promise((resolve, reject) => {
             try {
                 this._client.sendCommand(command, (error, result) => {
@@ -172,7 +177,11 @@ export default class MpdClientWrapper {
     }
 
     getPlaylist(name) {
-        return this._sendCommand(cmd('listplaylist', [name]), mpd.parseArrayMessage)
+        return this._sendCommand(cmd('listplaylistinfo', [name]), mpd.parseArrayMessage)
+    }
+
+    getPlaylists() {
+        return this._sendCommand(cmd('listplaylists', []), mpd.parseArrayMessage)
     }
 
     play() {

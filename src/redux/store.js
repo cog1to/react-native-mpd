@@ -16,11 +16,10 @@ export const configureStore = () => {
             mpdMiddleware,
             albumArtMiddleware,
             localStorageMiddleware,
-            //loggerMiddleware,
         )
-     )
+    )
 
-     return store
+    return store
 }
 
 const store = configureStore()

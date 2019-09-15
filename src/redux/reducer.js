@@ -9,6 +9,7 @@ import { browserReducer } from './reducers/browser/reducer'
 import { searchReducer } from './reducers/search/reducer'
 import { libraryReducer } from './reducers/library/reducer'
 import { storageReducer } from './reducers/storage/reducer'
+import { playlistsReducer } from './reducers/playlists/reducer'
 
 const reducer = combineReducers({
     archive: archiveReducer,
@@ -19,6 +20,7 @@ const reducer = combineReducers({
     search: searchReducer,
     library: libraryReducer,
     storage: storageReducer,
+    playlists: playlistsReducer,
 })
 
 export default reducer

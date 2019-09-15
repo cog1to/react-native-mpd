@@ -17,7 +17,7 @@ export default class SearchResults extends React.Component {
 
         return (
             <View style={styles.container}>
-                <ItemsList content={content} onNavigate={this.onNavigate} navigation={navigation} />
+                <ItemsList content={content} navigation={navigation} />
             </View>
         )
     }
