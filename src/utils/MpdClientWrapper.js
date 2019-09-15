@@ -1,6 +1,6 @@
 import { sanitize } from './StringUtils'
 
-var mpd = require('mpd'), cmd = mpd.cmd
+var mpd = require('../node/mpd'), cmd = mpd.cmd
 const EventEmitter = require('events')
 
 const EventNames = {

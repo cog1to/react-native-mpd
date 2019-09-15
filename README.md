@@ -7,10 +7,7 @@ Because we're using sockets, we have to "node-ify" core node modules and link th
 npm install
 rn-nodeify --install --hack
 react-native link
-patch -n < mpd.patch
 ```
-The `mpd.patch` thingy is a fix for existing MPD wrapper module that could not handle directory listings containing more than one file type.
-
 ## Running
 ```
 react-native run-android/run-ios
