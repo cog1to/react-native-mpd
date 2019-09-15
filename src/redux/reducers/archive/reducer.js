@@ -17,9 +17,7 @@ export const archiveReducer = (state = {}, action) => {
             // Add an URL for artist->album.
             newState[artist][album] = action.url
 
-            return {
-                ...state, ...newState
-            }
+            return newState
         default:
             return state
     }

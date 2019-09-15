@@ -27,7 +27,7 @@ const uriFromState = (state) => {
     const realArtist = albumArtist ? albumArtist : artist
 
     let uri = null
-    if (state.currentSong !== null && artist in state.archive && album in state.archive[realArtist]) {
+    if (state.currentSong !== null && realArtist in state.archive && album in state.archive[realArtist]) {
         uri = state.archive[realArtist][album]
     }
 

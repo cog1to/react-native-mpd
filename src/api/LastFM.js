@@ -4,7 +4,7 @@ Here are the details of your new API account.
 
 Application name        MPD Controller
 
-API key                         5933e74f212f38fa0e7d3527d7f0207d
+API key                 5933e74f212f38fa0e7d3527d7f0207d
 
 Shared secret           d7c8986230045267c31491931a4ea0bb
 
