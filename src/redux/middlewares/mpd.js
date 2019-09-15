@@ -224,6 +224,7 @@ export const mpdMiddleware = store => {
     return next => action => {
         switch (action.type) {
             case types.CONNECT: {
+                client.mpd = new MpdClientWrapper()
                 client.mpd.connect(action.host, action.port).then(() => {
                     if (action.password !== null) {
                         return client.mpd.password(action.password)

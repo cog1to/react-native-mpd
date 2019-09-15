@@ -45,6 +45,10 @@ MpdClient.connect = function(options) {
   return client;
 }
 
+MpdClient.prototype.close = function() {
+  this.socket.end()
+}
+
 MpdClient.prototype.receive = function(data) {
   var m;
   this.buffer += data;
@@ -86,7 +90,7 @@ MpdClient.prototype.sendCommand = function(command, callback) {
   assert.ok(self.idling);
   self.send("noidle\n");
   self.sendWithCallback(command, callback);
-  if (command !== "close") {
+  if (command != "close") {
     self.sendWithCallback("idle", function(err, msg) {
       self.handleIdleResultsLoop(err, msg);
     });
