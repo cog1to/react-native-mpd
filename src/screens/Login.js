@@ -146,18 +146,22 @@ class Login extends React.Component {
                             {keyboardInfo => (
                                 <KeyboardAwareLoginForm {...keyboardInfo}>
                                     <View style={styles.credentialsContainer}>
+                                        {!keyboardInfo.keyboardVisible && (
                                         <Image
                                             source={require('../../assets/images/yamp_big_logo.png')}
                                             style={{resizeMode: 'contain', width: imageHeight, height: imageHeight }} />
+                                        )}
                                         <Input
                                             style={styles.input}
                                             placeholderTextColor={placeholderTextColor}
                                             placeholder='Host'
                                             onChangeText={this.handleHostChange}
+                                            selectionColor='#ffffff'
                                             value={host} />
                                         <Input
                                             style={styles.input}
                                             placeholderTextColor={placeholderTextColor}
+                                            selectionColor='#ffffff'
                                             placeholder='Port'
                                             onChangeText={this.handlePortChange}
                                             value={port} />
@@ -165,6 +169,7 @@ class Login extends React.Component {
                                             style={styles.input}
                                             placeholderTextColor={placeholderTextColor}
                                             placeholder='Password (optional)' 
+                                            selectionColor='#ffffff'
                                             onChangeText={this.handlePasswordChange} 
                                             value={password} 
                                             autoCapitalize='none'
