@@ -200,7 +200,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     search: {
-        backgroundColor: 'red',
         marginTop: 10,
         alignSelf: 'flex-end',
     },

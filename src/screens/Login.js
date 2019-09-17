@@ -64,8 +64,8 @@ class KeyboardAwareLoginForm extends React.Component {
 
         const useContentHeight = keyboardVisible
 
-        const containerStyle = Platform.OS === 'ios' 
-            ? { height: useContentHeight ? (contentHeight - (isIphoneX() ? 24 : 0)) : containerHeight, flex: 1 } 
+        const containerStyle = (Platform.OS === 'ios' && useContentHeight)
+            ? { transform: [{ translateY: -50 }] , flex: 1 } 
             : { flex: 1 }
         
         return (
