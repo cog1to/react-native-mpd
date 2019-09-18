@@ -60,7 +60,7 @@ class KeyboardAwareLoginForm extends React.Component {
         keyboardAnimationDuration: PropTypes.number.isRequired,
 
         // Rendering content
-        children: PropTypes.node,
+        children: PropTypes.func,
     }
 
     static defaultProps = {
@@ -90,19 +90,23 @@ class KeyboardAwareLoginForm extends React.Component {
         const { layout } = this.state
 
         if (layout != null && keyboardWillShow || keyboardWillHide) {
-            let offsetAnimation = Animated.timing(this.inputOffset, {
+            let animations = []
+
+            animations.push(Animated.timing(this.inputOffset, {
                 toValue: keyboardWillShow ? -(layout.y + layout.height - screenY) : 0,
                 duration: keyboardAnimationDuration,
                 useNativeDriver: true,
-            })
+            }))
 
-            let opacityAnimation = Animated.timing(this.imageOpacity, {
-                toValue: keyboardWillShow ? 0 : 1,
-                duration: keyboardAnimationDuration,
-                useNativeDriver: true,
-            })
+            if (screenY - layout.height < 0 || keyboardWillHide) {
+                animations.push(Animated.timing(this.imageOpacity, {
+                    toValue: keyboardWillShow ? 0 : 1,
+                    duration: keyboardAnimationDuration,
+                    useNativeDriver: true,
+                }))
+            }
 
-            Animated.parallel([offsetAnimation, opacityAnimation]).start()
+            Animated.parallel(animations).start()
         }
     }
 
@@ -112,7 +116,7 @@ class KeyboardAwareLoginForm extends React.Component {
         
         return (
             <Animated.View style={containerStyle} onLayout={this.handleLayout}>
-                {children}
+                {children(this.imageOpacity)}
             </Animated.View>
         )
     }
@@ -180,47 +184,51 @@ class Login extends React.Component {
         // Image size.
         const imageHeight = Dimensions.get('window').height / 7
 
+        let children = (opacity) => (
+            <View style={styles.credentialsContainer}>
+                <Animated.Image
+                    source={require('../../assets/images/yamp_big_logo.png')}
+                    style={{resizeMode: 'contain', width: imageHeight, height: imageHeight, opacity }} />
+                <Input
+                    style={styles.input}
+                    placeholderTextColor={placeholderTextColor}
+                    placeholder='Host'
+                    onChangeText={this.handleHostChange}
+                    selectionColor='#ffffff'
+                    value={host} />
+                <Input
+                    style={styles.input}
+                    placeholderTextColor={placeholderTextColor}
+                    selectionColor='#ffffff'
+                    placeholder='Port'
+                    onChangeText={this.handlePortChange}
+                    value={port} />
+                <Input
+                    style={styles.input}
+                    placeholderTextColor={placeholderTextColor}
+                    placeholder='Password (optional)' 
+                    selectionColor='#ffffff'
+                    onChangeText={this.handlePasswordChange} 
+                    value={password} 
+                    autoCapitalize='none'
+                    autoCompleteType='off'
+                    autoCorrect={false} />
+                <View style={{marginVertical: 18}}>
+                    <Button
+                        title='Connect'
+                        onPress={this.handleSubmit}
+                        color={ThemeManager.instance().getCurrentTheme().activeColor}
+                    />
+                </View>
+            </View>
+        )
+
         return (
             <SafeAreaView style={styles.container}>
                 <KeyboardState>
                     {keyboardInfo => (
                         <KeyboardAwareLoginForm {...keyboardInfo}>
-                            <View style={styles.credentialsContainer}>
-                                <Image
-                                    source={require('../../assets/images/yamp_big_logo.png')}
-                                    style={{resizeMode: 'contain', width: imageHeight, height: imageHeight }} />
-                                <Input
-                                    style={styles.input}
-                                    placeholderTextColor={placeholderTextColor}
-                                    placeholder='Host'
-                                    onChangeText={this.handleHostChange}
-                                    selectionColor='#ffffff'
-                                    value={host} />
-                                <Input
-                                    style={styles.input}
-                                    placeholderTextColor={placeholderTextColor}
-                                    selectionColor='#ffffff'
-                                    placeholder='Port'
-                                    onChangeText={this.handlePortChange}
-                                    value={port} />
-                                <Input
-                                    style={styles.input}
-                                    placeholderTextColor={placeholderTextColor}
-                                    placeholder='Password (optional)' 
-                                    selectionColor='#ffffff'
-                                    onChangeText={this.handlePasswordChange} 
-                                    value={password} 
-                                    autoCapitalize='none'
-                                    autoCompleteType='off'
-                                    autoCorrect={false} />
-                                <View style={{marginVertical: 18}}>
-                                    <Button
-                                        title='Connect'
-                                        onPress={this.handleSubmit}
-                                        color={ThemeManager.instance().getCurrentTheme().activeColor}
-                                    />
-                                </View>
-                            </View>
+                            {opacity => children(opacity)}
                         </KeyboardAwareLoginForm>
                     )}
                 </KeyboardState>
