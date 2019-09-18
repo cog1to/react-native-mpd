@@ -6,22 +6,14 @@ const INITIAL_ANIMATION_DURATION = 250;
 
 export default class KeyboardState extends React.Component {
   static propTypes = {
-    layout: PropTypes.shape({
-      x: PropTypes.number.isRequired,
-      y: PropTypes.number.isRequired,
-      width: PropTypes.number.isRequired,
-      height: PropTypes.number.isRequired,
-    }).isRequired,
     children: PropTypes.func.isRequired,
   };
 
   constructor(props) {
     super(props);
 
-    const { layout: { height } } = props;
-
     this.state = {
-      contentHeight: height,
+      screenY: 0,
       keyboardHeight: 0,
       keyboardVisible: false,
       keyboardWillShow: false,
@@ -82,40 +74,36 @@ export default class KeyboardState extends React.Component {
   };
 
   measure = event => {
-    const { layout } = this.props;
-
     const {
       endCoordinates: { height, screenY },
       duration = INITIAL_ANIMATION_DURATION,
     } = event;
 
     this.setState({
-      contentHeight: screenY - layout.y,
+      screenY: screenY,
       keyboardHeight: height,
       keyboardAnimationDuration: duration,
     });
   };
 
   render() {
-    const { children, layout } = this.props;
+    const { children } = this.props;
     const {
-      contentHeight,
       keyboardHeight,
       keyboardVisible,
       keyboardWillShow,
       keyboardWillHide,
       keyboardAnimationDuration,
+      screenY,
     } = this.state;
 
     return children({
-      containerY: layout.y,
-      containerHeight: layout.height,
-      contentHeight,
       keyboardHeight,
       keyboardVisible,
       keyboardWillShow,
       keyboardWillHide,
       keyboardAnimationDuration,
+      screenY,
     });
   }
 }
