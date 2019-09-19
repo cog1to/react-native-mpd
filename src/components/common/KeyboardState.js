@@ -2,7 +2,7 @@ import { Keyboard, Platform } from 'react-native';
 import PropTypes from 'prop-types';
 import React from 'react';
 
-const INITIAL_ANIMATION_DURATION = 250;
+const INITIAL_ANIMATION_DURATION = 200;
 
 export default class KeyboardState extends React.Component {
   static propTypes = {
@@ -37,6 +37,7 @@ export default class KeyboardState extends React.Component {
         Keyboard.addListener('keyboardDidHide', this.keyboardDidHide),
       ];
     } else {
+      console.log('adding keyboard listeners')
       this.subscriptions = [
         Keyboard.addListener('keyboardDidHide', this.keyboardDidHide),
         Keyboard.addListener('keyboardDidShow', this.keyboardDidShow),
@@ -54,11 +55,7 @@ export default class KeyboardState extends React.Component {
   };
 
   keyboardDidShow = event => {
-    this.setState({
-      keyboardWillShow: false,
-      keyboardVisible: true,
-    });
-    this.measure(event);
+    this.measure(event, true);
   };
 
   keyboardWillHide = event => {
@@ -73,20 +70,30 @@ export default class KeyboardState extends React.Component {
     });
   };
 
-  measure = event => {
+  measure = (event, didShow = false) => {
     const {
       endCoordinates: { height, screenY },
       duration = INITIAL_ANIMATION_DURATION,
     } = event;
 
-    this.setState({
+    let newState = Object.assign({}, this.state)
+    newState = {
       screenY: screenY,
       keyboardHeight: height,
       keyboardAnimationDuration: duration,
-    });
+    }
+
+    if (didShow) {
+      newState.keyboardWillShow = false
+      newState.keyboardVisible = true
+    }
+
+    this.setState(newState)
   };
 
   render() {
+    console.log('rendering keyboardState')
+
     const { children } = this.props;
     const {
       keyboardHeight,

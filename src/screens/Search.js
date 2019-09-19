@@ -5,6 +5,7 @@ import {
     Button,
     StyleSheet,
     Platform,
+    SafeAreaView,
 } from 'react-native'
 import PropTypes from 'prop-types'
 import { NavigationActions } from 'react-navigation'
@@ -82,7 +83,9 @@ class KeyboardAwareSearchForm extends React.Component {
             screenY,
         } = this.props
 
-        const containerStyle = (Platform.OS === 'ios' && layout != null)
+        console.log(keyboardVisible)
+
+        const containerStyle = (layout != null && Platform.OS === 'ios')
             ? { height: keyboardVisible ? (screenY - layout.y - 60) : layout.height } 
             : { }
         
@@ -154,7 +157,7 @@ class Search extends React.Component {
         const borderBottomColor = ThemeManager.instance().getCurrentTheme().accentColor
 
         return (
-            <View style={styles.container}>
+            <SafeAreaView style={styles.container}>
                 <KeyboardState>
                     {keyboardInfo => (
                         <KeyboardAwareSearchForm {...keyboardInfo}>
@@ -181,7 +184,7 @@ class Search extends React.Component {
                         </KeyboardAwareSearchForm>
                     )}
                 </KeyboardState>
-            </View>
+            </SafeAreaView>
         )
     }
 }

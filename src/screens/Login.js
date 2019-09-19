@@ -89,18 +89,26 @@ class KeyboardAwareLoginForm extends React.Component {
 
         const { layout } = this.state
 
-        if (layout != null && keyboardWillShow || keyboardWillHide) {
+        const shouldUpdateLayout = (Platform.OS === 'ios')
+            ? (keyboardWillShow || keyboardWillHide)
+            : (this.props.keyboardVisible != nextProps.keyboardVisible)
+
+        if (layout != null && shouldUpdateLayout) {
             let animations = []
+            
+            const keyboardBecomingVisible = (Platform.OS === 'ios')
+                ? keyboardWillShow
+                : nextProps.keyboardVisible
 
             animations.push(Animated.timing(this.inputOffset, {
-                toValue: keyboardWillShow ? -(layout.y + layout.height - screenY) : 0,
+                toValue: keyboardBecomingVisible ? -(layout.y + layout.height - screenY) : 0,
                 duration: keyboardAnimationDuration,
                 useNativeDriver: true,
             }))
 
             if (screenY - layout.height < 0 || keyboardWillHide) {
                 animations.push(Animated.timing(this.imageOpacity, {
-                    toValue: keyboardWillShow ? 0 : 1,
+                    toValue: keyboardBecomingVisible ? 0 : 1,
                     duration: keyboardAnimationDuration,
                     useNativeDriver: true,
                 }))
@@ -112,7 +120,7 @@ class KeyboardAwareLoginForm extends React.Component {
 
     render() {
         const { children } = this.props
-        const containerStyle = Platform.OS === 'ios' ? { transform: [{ translateY: this.inputOffset }] } : {}
+        const containerStyle = { transform: [{ translateY: this.inputOffset }] } 
         
         return (
             <Animated.View style={containerStyle} onLayout={this.handleLayout}>
