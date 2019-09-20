@@ -11,7 +11,7 @@ import Queue from './screens/Queue'
 import Browse from './screens/Browse'
 
 // Actions.
-import { connect, error, disconnect } from './redux/reducers/status/actions'
+import { connect, error, disconnect, setIntentional } from './redux/reducers/status/actions'
 
 // Navigator.
 import AppContainer from './Routes'
@@ -39,15 +39,25 @@ class Root extends Component {
     componentWillUpdate(nextProps, nextState) {
         if (nextProps && nextProps.connected && nextProps.commands != null) {
             this.navigator && this.navigator.dispatch(
-                    NavigationActions.navigate({ routeName: 'Home' })
+                NavigationActions.navigate({ routeName: 'Home' })
             )
-        } else if (this.props.connected && !nextProps.connected) {
-            const navigateAction = NavigationActions.navigate({
-                routeName: 'Login',
-                params: {},
-            })
+        } else if (!nextProps.connected) {
+            if (this.props.intentional) {
+                const navigateAction = NavigationActions.navigate({
+                    routeName: 'Login',
+                    params: {},
+                })
 
-            this.navigator && this.navigator.dispatch(navigateAction)
+                this.navigator && this.navigator.dispatch(navigateAction)
+            } else if (this.props.intentional === false) {
+                const { address, connect, attempt, setIntentional } = this.props
+                console.log('reconnecting, attempt: ' + attempt)
+                if (attempt < 3) {
+                    setTimeout(() => connect(address.host, address.port, address.password, attempt+1), Math.pow(3, attempt) * 1000)
+                } else {
+                    setIntentional()
+                }
+            }
         }
     }
 
@@ -94,6 +104,9 @@ const mapStateToProps = state => {
         error: actualError,
         connected: state.status.connected,
         commands: state.status.commands,
+        intentional: state.status.intentional,
+        address: state.storage.address,
+        attempt: state.status.attempt,
     }
 }
 
@@ -101,7 +114,9 @@ const mapDispatchToProps = dispatch => {
     return {
         onError: (err) => dispatch(error(err)),
         disconnect: () => dispatch(disconnect()),
+        connect: (host, port, password, attempt) => dispatch(connect(host, port, password, attempt)),
+        setIntentional: () => dispatch(setIntentional(true)),
     }
 }
 
-export default reduxConnect(mapStateToProps)(Root)
+export default reduxConnect(mapStateToProps, mapDispatchToProps)(Root)

@@ -3,6 +3,7 @@ import types from '../types'
 import {
     connect,
     connected,
+    setIntentional,
     connectionError,
     commandsReceived,
     commands,
@@ -246,15 +247,19 @@ export const mpdMiddleware = store => {
 
                     // Emit connected action.
                     store.dispatch(connected(true))
-                    store.dispatch(saveAddress({ host: action.host, port: action.port }))
+                    store.dispatch(saveAddress({ host: action.host, port: action.port, password: action.password }))
                     store.dispatch(getStatus('status'))
                     store.dispatch(commands())
                 }).catch((error) => {
-                    store.dispatch(connectionError(error))
+                    console.log('failed to connect')
+                    store.dispatch(connectionError(error, action.attempt))
                 })
                 break
             }
             case types.DISCONNECT: {
+                console.log('disconnecting')
+                store.dispatch(setIntentional(true))
+
                 // Stop progress update.
                 if (client.updatingProgress) {
                     client.updatingProgress = false
@@ -278,9 +283,19 @@ export const mpdMiddleware = store => {
                 break
             }
             case types.CONNECTED: {
+                // Stop progress update.
+                if (client.updatingProgress) {
+                    client.updatingProgress = false
+                }
+
+                if (client.progressTimeout !== null) {
+                    clearTimeout(client.progressTimeout)
+                }
+
                 if (!action.connected) {
                     client.updatingProgress = false
                 }
+
                 break
             }
             case types.GET_STATUS: {

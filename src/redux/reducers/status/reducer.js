@@ -10,6 +10,10 @@ const statusPropTypes = {
     songid: PropTypes.number,
     player: PropTypes.oneOf(['stop', 'play', 'pause']),
     error: PropTypes.node,
+    replayGain: PropTypes.string,
+    commands: PropTypes.array,
+    intentional: PropTypes.bool,
+    attempt: PropTypes.number,
 }
 
 const initialState = {
@@ -22,6 +26,8 @@ const initialState = {
     error: null,
     replayGain: 'off',
     commands: null,
+    intentional: null,
+    attempt: 0,
 }
 
 export const statusReducer = (state = initialState, action) => {
@@ -30,16 +36,25 @@ export const statusReducer = (state = initialState, action) => {
             return {                                
                 ...state, ...action.status
             }
+        case types.SET_INTENTIONAL:
+            return {
+                ...state, 
+                intentional: action.value,
+                attempt: 0,
+            }
         case types.CONNECTED:
             return {
                 ...state, 
                 connected: action.connected,
                 commands: action.connected ? state.commands : null,
                 connectionError: null,
+                intentional: action.connected ? false : state.intentional,
             }
         case types.CONNECTION_ERROR:
             return {
-                ...state, connectionError: action.error
+                ...state,
+                connectionError: action.error,
+                attempt: action.attempt,
             }
         case types.ERROR:
             return {

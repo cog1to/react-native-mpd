@@ -1,10 +1,16 @@
 import * as types from './types'
 
-export const connect = (host, port, password = null) => ({
+export const connect = (host, port, password = null, attempt = 0) => ({
     type: types.CONNECT,
     host,
     port,
     password,
+    attempt,
+})
+
+export const setIntentional = (value) => ({
+    type: types.SET_INTENTIONAL,
+    value,
 })
 
 export const disconnect = () => ({
@@ -22,12 +28,13 @@ export const commandsReceived = (commands) => ({
 
 export const connected = (status) => ({
     type: types.CONNECTED,
-    connected: status
+    connected: status,
 })
 
-export const connectionError = (error) => ({
+export const connectionError = (error, attempt = 0) => ({
     type: types.CONNECTION_ERROR,
     error,
+    attempt,
 })
 
 export const getStatus = (source) => ({

@@ -35,8 +35,8 @@ export default class LocalStorage {
         })
     }
 
-    setSavedAddress({ host, port }, callback) {
-        this._setValue(KEYS.SAVED_ADDRESS, JSON.stringify({ host: host, port: port }), callback)
+    setSavedAddress({ host, port, password }, callback) {
+        this._setValue(KEYS.SAVED_ADDRESS, JSON.stringify({ host: host, port: port, password: password }), callback)
     }
 
     getTheme(callback) {
