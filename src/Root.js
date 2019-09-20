@@ -50,10 +50,9 @@ class Root extends Component {
 
                 this.navigator && this.navigator.dispatch(navigateAction)
             } else if (this.props.intentional === false) {
-                const { address, connect, attempt, setIntentional } = this.props
-                console.log('reconnecting, attempt: ' + attempt)
+                const { address, connect, attempt, setIntentional } = nextProps
                 if (attempt < 3) {
-                    setTimeout(() => connect(address.host, address.port, address.password, attempt+1), Math.pow(3, attempt) * 1000)
+                    setTimeout(() => connect(address.host, address.port, address.password, attempt), Math.pow(3, attempt) * 1000)
                 } else {
                     setIntentional()
                 }

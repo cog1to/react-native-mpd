@@ -251,13 +251,11 @@ export const mpdMiddleware = store => {
                     store.dispatch(getStatus('status'))
                     store.dispatch(commands())
                 }).catch((error) => {
-                    console.log('failed to connect')
                     store.dispatch(connectionError(error, action.attempt))
                 })
                 break
             }
             case types.DISCONNECT: {
-                console.log('disconnecting')
                 store.dispatch(setIntentional(true))
 
                 // Stop progress update.

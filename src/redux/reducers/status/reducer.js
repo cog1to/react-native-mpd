@@ -49,12 +49,12 @@ export const statusReducer = (state = initialState, action) => {
                 commands: action.connected ? state.commands : null,
                 connectionError: null,
                 intentional: action.connected ? false : state.intentional,
+                attempt: action.connected ? 0 : state.attempt,
             }
         case types.CONNECTION_ERROR:
             return {
                 ...state,
-                connectionError: action.error,
-                attempt: action.attempt,
+                attempt: action.attempt + 1,
             }
         case types.ERROR:
             return {
