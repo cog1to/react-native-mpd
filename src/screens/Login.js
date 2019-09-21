@@ -10,6 +10,8 @@ import {
     Platform,
     Dimensions,
     SafeAreaView,
+    UIManager,
+    Animated,
 } from 'react-native';
 import Input from '../components/common/Input'
 
@@ -21,11 +23,113 @@ import { saveAddress, loadSavedAddress } from '../redux/reducers/storage/actions
 import { connect as reduxConnect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
+// Keyboard state listener.
+import KeyboardState from '../components/common/KeyboardState'
+
+// Safe area check.
+import { isIphoneX } from '../utils/IsIphoneX';
+
 // Themes.
 import ThemeManager from '../themes/ThemeManager'
 
 // Global error banner.
 import ErrorBanner from '../components/ErrorBanner'
+
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+    UIManager.setLayoutAnimationEnabledExperimental(true)
+}
+
+class KeyboardAwareLoginForm extends React.Component {
+    constructor(props) {
+        super(props)
+        this.inputOffset = new Animated.Value(0)
+        this.imageOpacity = new Animated.Value(1)
+
+        this.state = {
+            layout: null
+        }
+    }
+
+    static propTypes = {
+        // From `KeyboardState`
+        screenY: PropTypes.number.isRequired,
+        keyboardHeight: PropTypes.number.isRequired,
+        keyboardVisible: PropTypes.bool.isRequired,
+        keyboardWillShow: PropTypes.bool.isRequired,
+        keyboardWillHide: PropTypes.bool.isRequired,
+        keyboardAnimationDuration: PropTypes.number.isRequired,
+
+        // Rendering content
+        children: PropTypes.func,
+    }
+
+    static defaultProps = {
+        children: null,
+    }
+
+    handleLayout = event => {
+        const { nativeEvent: { layout } } = event
+
+        if (this.state.layout == null) {
+            this.setState({
+                layout,
+            })
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const {
+            keyboardHeight,
+            keyboardVisible,
+            keyboardAnimationDuration,
+            keyboardWillShow,
+            keyboardWillHide,
+            screenY,
+        } = nextProps
+
+        const { layout } = this.state
+
+        const shouldUpdateLayout = (Platform.OS === 'ios')
+            ? (keyboardWillShow || keyboardWillHide)
+            : (this.props.keyboardVisible != nextProps.keyboardVisible)
+
+        if (layout != null && shouldUpdateLayout) {
+            let animations = []
+            
+            const keyboardBecomingVisible = (Platform.OS === 'ios')
+                ? keyboardWillShow
+                : nextProps.keyboardVisible
+
+            animations.push(Animated.timing(this.inputOffset, {
+                toValue: keyboardBecomingVisible ? -(layout.y + layout.height - screenY) : 0,
+                duration: keyboardAnimationDuration,
+                useNativeDriver: true,
+            }))
+
+            if (screenY - layout.height < 0 || keyboardWillHide) {
+                animations.push(Animated.timing(this.imageOpacity, {
+                    toValue: keyboardBecomingVisible ? 0 : 1,
+                    duration: keyboardAnimationDuration,
+                    useNativeDriver: true,
+                }))
+            }
+
+            Animated.parallel(animations).start()
+        }
+    }
+
+    render() {
+        const { children } = this.props
+        const containerStyle = { transform: [{ translateY: this.inputOffset }] } 
+        
+        return (
+            <Animated.View style={containerStyle} onLayout={this.handleLayout}>
+                {children(this.imageOpacity)}
+            </Animated.View>
+        )
+    }
+}
+
 
 class Login extends React.Component {
     state = {
@@ -88,41 +192,54 @@ class Login extends React.Component {
         // Image size.
         const imageHeight = Dimensions.get('window').height / 7
 
+        let children = (opacity) => (
+            <View style={styles.credentialsContainer}>
+                <Animated.Image
+                    source={require('../../assets/images/yamp_big_logo.png')}
+                    style={{resizeMode: 'contain', width: imageHeight, height: imageHeight, opacity }} />
+                <Input
+                    style={styles.input}
+                    placeholderTextColor={placeholderTextColor}
+                    placeholder='Host'
+                    onChangeText={this.handleHostChange}
+                    selectionColor='#ffffff'
+                    value={host} />
+                <Input
+                    style={styles.input}
+                    placeholderTextColor={placeholderTextColor}
+                    selectionColor='#ffffff'
+                    placeholder='Port'
+                    onChangeText={this.handlePortChange}
+                    value={port} />
+                <Input
+                    style={styles.input}
+                    placeholderTextColor={placeholderTextColor}
+                    placeholder='Password (optional)' 
+                    selectionColor='#ffffff'
+                    onChangeText={this.handlePasswordChange} 
+                    value={password} 
+                    autoCapitalize='none'
+                    autoCompleteType='off'
+                    autoCorrect={false} />
+                <View style={{marginVertical: 18}}>
+                    <Button
+                        title='Connect'
+                        onPress={this.handleSubmit}
+                        color={ThemeManager.instance().getCurrentTheme().activeColor}
+                    />
+                </View>
+            </View>
+        )
+
         return (
             <SafeAreaView style={styles.container}>
-                <KeyboardAvoidingView style={styles.credentialsContainer} behavior="padding">
-                    <Image
-                        source={require('../../assets/images/yamp_big_logo.png')}
-                        style={{resizeMode: 'contain', width: imageHeight, height: imageHeight }} />
-                    <Input
-                        style={styles.input}
-                        placeholderTextColor={placeholderTextColor}
-                        placeholder='Host'
-                        onChangeText={this.handleHostChange}
-                        value={host} />
-                    <Input
-                        style={styles.input}
-                        placeholderTextColor={placeholderTextColor}
-                        placeholder='Port'
-                        onChangeText={this.handlePortChange}
-                        value={port} />
-                    <Input
-                        style={styles.input}
-                        placeholderTextColor={placeholderTextColor}
-                        placeholder='Password (optional)' 
-                        onChangeText={this.handlePasswordChange} 
-                        value={password} 
-                        autoCapitalize='none'
-                        autoCompleteType='off'
-                        autoCorrect={false} />
-                    <View style={{marginVertical: 18}}>
-                        <Button
-                            title='Connect'
-                            onPress={this.handleSubmit}
-                            color={ThemeManager.instance().getCurrentTheme().activeColor}
-                        />
-                    </View>
-                </KeyboardAvoidingView>
+                <KeyboardState>
+                    {keyboardInfo => (
+                        <KeyboardAwareLoginForm {...keyboardInfo}>
+                            {opacity => children(opacity)}
+                        </KeyboardAwareLoginForm>
+                    )}
+                </KeyboardState>
                 <View style={styles.disclaimer}>
                     <Text style={{color: placeholderTextColor, textAlign: 'center', fontSize: 11}}>
                         © 2019{'\n'}Cover art powered by Last.fm
@@ -161,14 +278,15 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         alignItems: 'center',
+        justifyContent: 'center',
         backgroundColor: ThemeManager.instance().getCurrentTheme().accentColor,
     },
     credentialsContainer: {
-        flex: 1,
         padding: 20,
-        alignItems: 'center',
         justifyContent: 'center',
-        flexGrow: 1,
+        alignItems: 'center',
+        width: '90%',
+        
     },
     errorText: {
         color: 'white',
@@ -180,11 +298,16 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     disclaimer: {
+        position: 'absolute',
+        bottom: isIphoneX() ? 24 : 8,
+        left: 0,
+        right: 0,
         alignItems: 'center',
-        marginBottom: 8,
     },
     input: {
         color:ThemeManager.instance().getCurrentTheme().activeColor,
         flex: 1,
+        width: '100%',
+        maxWidth: 400,
     }
 })

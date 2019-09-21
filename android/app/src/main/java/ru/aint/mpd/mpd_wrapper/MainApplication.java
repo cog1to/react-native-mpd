@@ -1,4 +1,4 @@
-package com.mpd_wrapper;
+package ru.aint.mpd.mpd_wrapper;
 
 import android.app.Application;
 

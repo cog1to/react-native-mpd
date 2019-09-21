@@ -5,6 +5,7 @@ import {
     Button,
     StyleSheet,
     Platform,
+    SafeAreaView,
 } from 'react-native'
 import PropTypes from 'prop-types'
 import { NavigationActions } from 'react-navigation'
@@ -17,8 +18,9 @@ import { search } from '../redux/reducers/search/actions'
 
 // Input control.
 import Input from '../components/common/Input'
+
+// Keyboard state listener.
 import KeyboardState from '../components/common/KeyboardState'
-import MeasureLayout from '../components/common/MeasureLayout'
 
 // Themes.
 import ThemeManager from '../themes/ThemeManager'
@@ -37,15 +39,18 @@ Fields = [
 ]
 
 class KeyboardAwareSearchForm extends React.Component {
+    state = {
+        layout: null,
+    }
+
     static propTypes = {
         // From `KeyboardState`
-        containerHeight: PropTypes.number.isRequired,
-        contentHeight: PropTypes.number.isRequired,
         keyboardHeight: PropTypes.number.isRequired,
         keyboardVisible: PropTypes.bool.isRequired,
         keyboardWillShow: PropTypes.bool.isRequired,
         keyboardWillHide: PropTypes.bool.isRequired,
         keyboardAnimationDuration: PropTypes.number.isRequired,
+        screenY: PropTypes.number.isRequired,
 
         // Rendering content
         children: PropTypes.node,
@@ -55,24 +60,37 @@ class KeyboardAwareSearchForm extends React.Component {
         children: null,
     }
 
+    handleLayout = event => {
+        const { nativeEvent: { layout } } = event
+
+        if (this.state.layout == null) {
+            this.setState({
+                layout,
+            })
+        }
+    }
+
     render() {
+        const { layout } = this.state
+
         const {
             children,
-            containerHeight,
-            contentHeight,
             keyboardHeight,
             keyboardVisible,
-            containerY
+            keyboardAnimationDuration,
+            keyboardWillShow,
+            keyboardWillHide,
+            screenY,
         } = this.props
 
-        const useContentHeight = keyboardVisible
+        console.log(keyboardVisible)
 
-        const containerStyle = Platform.OS === 'ios' 
-            ? { height: useContentHeight ? (contentHeight - (isIphoneX() ? 24 : 0)) : containerHeight } 
-            : {}
+        const containerStyle = (layout != null && Platform.OS === 'ios')
+            ? { height: keyboardVisible ? (screenY - layout.y - 60) : layout.height } 
+            : { }
         
         return (
-            <View style={containerStyle}>
+            <View style={containerStyle} onLayout={this.handleLayout}>
                 {children}
             </View>
         )
@@ -139,38 +157,34 @@ class Search extends React.Component {
         const borderBottomColor = ThemeManager.instance().getCurrentTheme().accentColor
 
         return (
-            <View style={styles.container}>
-                <MeasureLayout>
-                    {layout => (
-                        <KeyboardState layout={layout}>
-                            {keyboardInfo => (
-                                <KeyboardAwareSearchForm {...keyboardInfo}>
-                                    <ScrollView keyboardShouldPersistTaps='always'>
-                                        {Fields.map(({ ID, title, tag }) => {
-                                            return (
-                                                <Input
-                                                    borderBottomColor={borderBottomColor}
-                                                    key={ID}
-                                                    placeholder={title}
-                                                    onChangeText={(text) => this.onChangeText(text, tag)}
-                                                    value={criteria[tag]}
-                                                />
-                                            )
-                                        })}
-                                       <View style={styles.search}>
-                                            <Button 
-                                                title="Search"
-                                                onPress={this.onSearch}
-                                                color={ThemeManager.instance().getCurrentTheme().accentColor}
-                                            />
-                                        </View>
-                                    </ScrollView>
-                                </KeyboardAwareSearchForm>
-                            )}
-                        </KeyboardState>
+            <SafeAreaView style={styles.container}>
+                <KeyboardState>
+                    {keyboardInfo => (
+                        <KeyboardAwareSearchForm {...keyboardInfo}>
+                            <ScrollView keyboardShouldPersistTaps='always'>
+                                {Fields.map(({ ID, title, tag }) => {
+                                    return (
+                                        <Input
+                                            borderBottomColor={borderBottomColor}
+                                            key={ID}
+                                            placeholder={title}
+                                            onChangeText={(text) => this.onChangeText(text, tag)}
+                                            value={criteria[tag]}
+                                        />
+                                    )
+                                })}
+                               <View style={styles.search}>
+                                    <Button 
+                                        title="Search"
+                                        onPress={this.onSearch}
+                                        color={ThemeManager.instance().getCurrentTheme().accentColor}
+                                    />
+                                </View>
+                            </ScrollView>
+                        </KeyboardAwareSearchForm>
                     )}
-                </MeasureLayout>
-            </View>
+                </KeyboardState>
+            </SafeAreaView>
         )
     }
 }
@@ -200,7 +214,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 20,
     },
     search: {
-        backgroundColor: 'red',
         marginTop: 10,
         alignSelf: 'flex-end',
     },
