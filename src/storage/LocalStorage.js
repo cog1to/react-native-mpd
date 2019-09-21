@@ -36,7 +36,9 @@ export default class LocalStorage {
     }
 
     setSavedAddress({ host, port, password }, callback) {
-        this._setValue(KEYS.SAVED_ADDRESS, JSON.stringify({ host: host, port: port, password: password }), callback)
+        this._setValue(KEYS.SAVED_ADDRESS, JSON.stringify({ host: host, port: port, password: password }), () => {
+            callback({ host, port, password})
+        })
     }
 
     getTheme(callback) {
@@ -67,6 +69,7 @@ export default class LocalStorage {
     _setValue = async (key, value, callback) => {
         try {
             await AsyncStorage.setItem(key, value)
+            callback()
         } catch (error) {
             callback(error)
         }

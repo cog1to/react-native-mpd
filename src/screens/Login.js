@@ -177,7 +177,10 @@ class Login extends React.Component {
     }
 
     handleSubmit = () => {
-        const { port, host, password } = this.state
+        let { port, host, password } = this.state
+
+        port = port != null ? port.trim() : null
+        host = host != null ? host.trim() : null
 
         this.connectToMpd(host, port, password != null && password.length > 0 ? password : null)
     }

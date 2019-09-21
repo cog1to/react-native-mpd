@@ -150,15 +150,12 @@ class Root extends Component {
         )
     }
 
-     wrapGlobalHandler = (err, isFatal) => {
+    wrapGlobalHandler = (err, isFatal) => {
         if (!this.props.connected) {
             // If we're already disconnected, just display the error.
             this.props.onError(err)
-        } else {
-            // If we're not disconnected, disconnect. Global error most likely means a socket connection error.
-            this.props.disconnect()
         }
-    }
+    } 
 }
 
 const mapStateToProps = state => {
