@@ -2,7 +2,7 @@
 import React, { Component } from 'react'
 import { connect as reduxConnect } from 'react-redux'
 import { NavigationActions, StackActions } from 'react-navigation'
-import { View, StatusBar } from 'react-native'
+import { View, StatusBar, StyleSheet, Text } from 'react-native'
 
 // Screens.
 import LoginScreen from './screens/Login'
@@ -22,6 +22,13 @@ import ThemeManager from './themes/ThemeManager'
 // Global error banner.
 import ErrorBanner from './components/ErrorBanner'
 
+RECONNECT_STATE = {
+    NOTHING: 'NOTHING',
+    WAITING: 'WAITING',
+    RECONNECTING: 'RECONNECTING',
+    FAILED: 'FAILED',
+}
+
 class Root extends Component {
     constructor(props) {
         super(props)
@@ -36,13 +43,65 @@ class Root extends Component {
         error: null,
     }
 
+    state = {
+        reconnectState: RECONNECT_STATE.NOTHING,
+        timeRemaining: 0,
+    }
+
+    attemptToReconnect = (attempt) => {
+        this.setState({
+            reconnectState: RECONNECT_STATE.WAITING,
+            timeRemaining: Math.pow(2, attempt + 1)
+        }, () => {
+            setTimeout(this.updateTimer, 1000)
+        })
+    }
+
+    updateTimer = () => {
+        const { timeRemaining, reconnectState } = this.state
+
+        if (reconnectState != RECONNECT_STATE.WAITING) {
+            return
+        }
+
+        if (timeRemaining > 0) {
+            this.setState({
+                timeRemaining: this.state.timeRemaining - 1
+            }, () => { 
+                setTimeout(this.updateTimer, 1000)
+            })
+        } else {
+            const { address, connect, attempt } = this.props
+            this.setState({
+                reconnectState: RECONNECT_STATE.RECONNECTING,
+            }, () => {
+                connect(address.host, address.port, address.password, attempt)
+            })
+        }
+    }
+
+    logout = () => {
+        this.setState({
+            reconnectState: RECONNECT_STATE.FAILED,
+        }, () => {
+            this.props.setIntentional()
+        })
+    }
+
     componentWillUpdate(nextProps, nextState) {
         if (nextProps && nextProps.connected && nextProps.commands != null) {
             this.navigator && this.navigator.dispatch(
                 NavigationActions.navigate({ routeName: 'Home' })
             )
+
+            if (this.state.reconnectState == RECONNECT_STATE.RECONNECTING
+                || this.state.reconnectState == RECONNECT_STATE.FAILED) {
+                this.setState({
+                    reconnectState: RECONNECT_STATE.NOTHING,
+                })
+            }
         } else if (!nextProps.connected) {
-            if (this.props.intentional) {
+            if (nextProps.intentional === true) {
                 const navigateAction = NavigationActions.navigate({
                     routeName: 'Login',
                     params: {},
@@ -51,10 +110,13 @@ class Root extends Component {
                 this.navigator && this.navigator.dispatch(navigateAction)
             } else if (this.props.intentional === false) {
                 const { address, connect, attempt, setIntentional } = nextProps
-                if (attempt < 3) {
-                    setTimeout(() => connect(address.host, address.port, address.password, attempt), Math.pow(3, attempt) * 1000)
-                } else {
-                    setIntentional()
+                const { reconnectState } = this.state
+
+                if (attempt < 3 && (reconnectState == RECONNECT_STATE.NOTHING && this.props.connected) 
+                    || (reconnectState == RECONNECT_STATE.RECONNECTING && attempt != this.props.attempt)) {
+                    this.attemptToReconnect(attempt)
+                } else if (attempt == 3) {
+                    this.logout()
                 }
             }
         }
@@ -62,6 +124,12 @@ class Root extends Component {
 
     render() {
         const { error } = this.props
+        const { reconnectState, timeRemaining } = this.state
+
+        const reconnectText = (timeRemaining > 0)
+            ? ('in ' + timeRemaining + ' second' + ((timeRemaining > 1) ? 's' : ''))
+            : 'now'
+
         const navColor = ThemeManager.instance().getCurrentTheme().accentColor
 
         return (
@@ -71,6 +139,13 @@ class Root extends Component {
                     ref={ nav => { this.navigator = nav } }
                 />
                 <ErrorBanner error={error} />
+                {reconnectState != RECONNECT_STATE.NOTHING && reconnectState != RECONNECT_STATE.FAILED && (
+                    <View style={styles.dimOverlay}>
+                        <View style={styles.reconnectDialog}>
+                            <Text>Lost server connection. Trying to reconnect {reconnectText}...</Text>
+                        </View>
+                    </View>
+                )}
             </View>
         )
     }
@@ -119,3 +194,22 @@ const mapDispatchToProps = dispatch => {
 }
 
 export default reduxConnect(mapStateToProps, mapDispatchToProps)(Root)
+
+
+const styles = StyleSheet.create({
+    dimOverlay: {
+        position: 'absolute',
+        top: 0,
+        bottom: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: ThemeManager.instance().getCurrentTheme().dialogBackgroundColor,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    reconnectDialog: {
+        padding: 20,
+        margin: 20,
+        backgroundColor: 'white',
+    }
+})

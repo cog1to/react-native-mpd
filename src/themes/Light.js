@@ -13,6 +13,7 @@ const LightTheme = {
   tableBackgroundColor: '#AEAEAE',
   rowSelectionColor: '#4C515D',
   separatorColor: '#666666',
+  dialogBackgroundColor: '#00000099',
 }
 
 export default LightTheme

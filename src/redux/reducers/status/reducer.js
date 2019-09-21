@@ -54,6 +54,7 @@ export const statusReducer = (state = initialState, action) => {
         case types.CONNECTION_ERROR:
             return {
                 ...state,
+                error: action.error,
                 attempt: action.attempt + 1,
             }
         case types.ERROR:

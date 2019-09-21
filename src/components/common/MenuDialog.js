@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        backgroundColor: '#AFAFAFAF',
+        backgroundColor: ThemeManager.instance().getCurrentTheme().dialogBackgroundColor,
         alignItems: 'center',
         justifyContent: 'center',
     },

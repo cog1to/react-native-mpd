@@ -41,7 +41,7 @@ if (Platform.OS === 'android') {
 }
 
 const CustomLayoutAnimation = {
-    duration: 250,
+    duration: 200,
     create: {
         type: LayoutAnimation.Types.linear,
         property: LayoutAnimation.Properties.opacity,
