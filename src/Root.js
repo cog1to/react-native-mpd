@@ -247,8 +247,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     dialog: {
-        padding: 25,
-        paddingBottom: 20,
+        padding: Platform.OS == 'android' ? 25 : 15,
+        paddingBottom: 15,
         margin: 20,
         backgroundColor: 'white',
     },
@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
         color: ThemeManager.instance().getCurrentTheme().mainTextColor,
     },
     dialogButtonsContainer: {
-        marginTop: 25,
+        marginTop: Platform.OS == 'android' ? 25 : 15,
         flexDirection: 'row',
         justifyContent: 'flex-end',
     },
