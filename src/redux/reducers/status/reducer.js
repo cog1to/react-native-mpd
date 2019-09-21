@@ -40,6 +40,7 @@ export const statusReducer = (state = initialState, action) => {
             return {
                 ...state, 
                 intentional: action.value,
+                connectionError: null,
                 attempt: 0,
             }
         case types.CONNECTED:

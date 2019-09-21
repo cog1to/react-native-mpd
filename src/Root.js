@@ -2,7 +2,15 @@
 import React, { Component } from 'react'
 import { connect as reduxConnect } from 'react-redux'
 import { NavigationActions, StackActions } from 'react-navigation'
-import { View, StatusBar, StyleSheet, Text } from 'react-native'
+import {
+    View,
+    StatusBar,
+    StyleSheet,
+    Text,
+    TouchableOpacity,
+    Platform,
+    Button,
+} from 'react-native'
 
 // Screens.
 import LoginScreen from './screens/Login'
@@ -53,7 +61,7 @@ class Root extends Component {
             reconnectState: RECONNECT_STATE.WAITING,
             timeRemaining: Math.pow(2, attempt + 1)
         }, () => {
-            setTimeout(this.updateTimer, 1000)
+            this.timeout = setTimeout(this.updateTimer, 1000)
         })
     }
 
@@ -68,9 +76,13 @@ class Root extends Component {
             this.setState({
                 timeRemaining: this.state.timeRemaining - 1
             }, () => { 
-                setTimeout(this.updateTimer, 1000)
+                this.timeout = setTimeout(this.updateTimer, 1000)
             })
         } else {
+            // Reset timeout handle.
+            this.timeout = null
+
+            // Trigger reconnect.
             const { address, connect, attempt } = this.props
             this.setState({
                 reconnectState: RECONNECT_STATE.RECONNECTING,
@@ -81,6 +93,10 @@ class Root extends Component {
     }
 
     logout = () => {
+        // Reset timer.
+        this.timeout = null
+
+        // Trigger logout.
         this.setState({
             reconnectState: RECONNECT_STATE.FAILED,
         }, () => {
@@ -122,6 +138,14 @@ class Root extends Component {
         }
     }
 
+    handleReconnectCancel = () => {
+        if (this.timeout != null) {
+            clearTimeout(this.timeout)
+        }
+
+        this.logout() 
+    }
+
     render() {
         const { error } = this.props
         const { reconnectState, timeRemaining } = this.state
@@ -141,8 +165,26 @@ class Root extends Component {
                 <ErrorBanner error={error} />
                 {reconnectState != RECONNECT_STATE.NOTHING && reconnectState != RECONNECT_STATE.FAILED && (
                     <View style={styles.dimOverlay}>
-                        <View style={styles.reconnectDialog}>
-                            <Text>Lost server connection. Trying to reconnect {reconnectText}...</Text>
+                        <View style={styles.dialog}>
+                            <Text style={styles.reconnectText}>
+                                Lost server connection. Trying to reconnect {reconnectText}...
+                            </Text>
+                            <View style={styles.dialogButtonsContainer}>
+                                {Platform.OS === 'ios' && (
+                                    <Button
+                                        onPress={this.handleReconnectCancel}
+                                        title='Disconnect'
+                                        color={ThemeManager.instance().getCurrentTheme().accentColor}
+                                    />
+                                )}
+                                {Platform.OS === 'android' && (
+                                    <TouchableOpacity onPress={this.handleReconnectCancel}>
+                                        <Text style={styles.dialogButtonText}>
+                                           DISCONNECT
+                                        </Text>
+                                    </TouchableOpacity>
+                                )}
+                            </View>
                         </View>
                     </View>
                 )}
@@ -204,9 +246,24 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    reconnectDialog: {
-        padding: 20,
+    dialog: {
+        padding: 25,
+        paddingBottom: 20,
         margin: 20,
         backgroundColor: 'white',
+    },
+    reconnectText: {
+        fontSize: ThemeManager.instance().getCurrentTheme().mainTextSize,
+        color: ThemeManager.instance().getCurrentTheme().mainTextColor,
+    },
+    dialogButtonsContainer: {
+        marginTop: 25,
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+    },
+    dialogButtonText: {
+        color: ThemeManager.instance().getCurrentTheme().accentColor,
+        fontWeight: 'bold',
+        fontSize: 14,
     }
 })

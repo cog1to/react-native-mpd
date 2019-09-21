@@ -92,8 +92,6 @@ export default class KeyboardState extends React.Component {
   };
 
   render() {
-    console.log('rendering keyboardState')
-
     const { children } = this.props;
     const {
       keyboardHeight,
