@@ -10,6 +10,7 @@ import {
     TouchableOpacity,
     Platform,
     Button,
+    AppState,
 } from 'react-native'
 
 // Screens.
@@ -102,6 +103,26 @@ class Root extends Component {
         }, () => {
             this.props.setIntentional()
         })
+    }
+
+    handleAppStateChange = (nextState) => {
+        if (this.state.reconnectState == RECONNECT_STATE.WAITING) {
+            if (nextState.match(/inactive|background/)) {
+                if (this.timeout != null) {
+                    clearTimeout(this.timeout)
+                }
+            } else if (nextState.match(/active/)) {
+                this.updateTimer() 
+            }
+        }
+    }
+
+    componentDidMount() {
+        AppState.addEventListener('change', this.handleAppStateChange)
+    }
+
+    componentWillUnmount() {
+        AppState.removeEventListener('change', this.handleAppStateChange)
     }
 
     componentWillUpdate(nextProps, nextState) {
