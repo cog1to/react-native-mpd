@@ -6,6 +6,7 @@ import {
     Slider,
     Text,
     Animated,
+    AppState,
 } from 'react-native'
 
 // Redux.
@@ -54,6 +55,19 @@ class SongProgress extends React.Component {
         seek(value)
     }
 
+    handleAppStateChange = (nextState) => {
+        const { player, addListener, removeListener } = this.props
+        if (player == 'play') {
+            if (nextState.match(/inactive|background/)) {
+                console.log('removing listener')
+                removeListener()
+            } else if (nextState.match(/active/)) {
+                console.log('adding listener')
+                addListener()
+            }
+        }
+    }
+
     componentWillReceiveProps(nextProps) {
         const { player, addListener, removeListener } = nextProps
         if (player === 'play') {
@@ -66,6 +80,17 @@ class SongProgress extends React.Component {
     componentDidMount() {
         const { getStatus } = this.props
         getStatus()
+
+        // Add app state listener. We don't want to trigger status update when app is background.
+        AppState.addEventListener('change', this.handleAppStateChange)
+    }
+
+    componentWillUnmount() {
+        AppState.removeEventListener('change', this.handleAppStateChange)
+
+        // Stop status listener.
+        const { player, removeListener } = nextProps
+        removeListener()
     }
 
     render() {
