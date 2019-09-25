@@ -167,6 +167,16 @@ class Root extends Component {
         this.logout() 
     }
 
+    handleRetryNow = () => {
+        if (this.timeout != null) {
+            clearTimeout(this.timeout)
+        }
+
+        this.setState({
+            timeRemaining: 0,
+        }, this.updateTimer)
+    }
+
     render() {
         const { error } = this.props
         const { reconnectState, timeRemaining } = this.state
@@ -190,22 +200,35 @@ class Root extends Component {
                             <Text style={styles.reconnectText}>
                                 Lost server connection. Trying to reconnect {reconnectText}...
                             </Text>
-                            <View style={styles.dialogButtonsContainer}>
                                 {Platform.OS === 'ios' && (
-                                    <Button
-                                        onPress={this.handleReconnectCancel}
-                                        title='Disconnect'
-                                        color={ThemeManager.instance().getCurrentTheme().accentColor}
-                                    />
+                                    <View style={styles.dialogButtonsContainer}>
+                                        <Button
+                                            onPress={this.handleRetryNow}
+                                            title='Retry now'
+                                            color={ThemeManager.instance().getCurrentTheme().accentColor}
+                                        />
+                                        <Button
+                                            style={{paddingLeft: 20}}
+                                            onPress={this.handleReconnectCancel}
+                                            title='Disconnect'
+                                            color={ThemeManager.instance().getCurrentTheme().accentColor}
+                                        />
+                                    </View>
                                 )}
                                 {Platform.OS === 'android' && (
-                                    <TouchableOpacity onPress={this.handleReconnectCancel}>
-                                        <Text style={styles.dialogButtonText}>
-                                           DISCONNECT
-                                        </Text>
-                                    </TouchableOpacity>
+                                    <View style={styles.dialogButtonsContainer}>
+                                        <TouchableOpacity onPress={this.handleRetryNow}>
+                                            <Text style={styles.dialogButtonText}>
+                                               RETRY NOW
+                                            </Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={this.handleReconnectCancel}>
+                                            <Text style={styles.dialogButtonTextLast}>
+                                               DISCONNECT
+                                            </Text>
+                                        </TouchableOpacity>
+                                    </View>
                                 )}
-                            </View>
                         </View>
                     </View>
                 )}
@@ -282,9 +305,21 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'flex-end',
     },
+    dialogButtonsContainerLast: {
+        marginTop: Platform.OS == 'android' ? 25 : 15,
+        flexDirection: 'row',
+        justifyContent: 'flex-end',
+        paddingLeft: 8,
+    },
     dialogButtonText: {
         color: ThemeManager.instance().getCurrentTheme().accentColor,
         fontWeight: 'bold',
         fontSize: 14,
+    },
+    dialogButtonTextLast: {
+        color: ThemeManager.instance().getCurrentTheme().accentColor,
+        fontWeight: 'bold',
+        fontSize: 14,
+        paddingLeft: 20,
     }
 })
