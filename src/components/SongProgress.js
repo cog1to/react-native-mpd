@@ -89,7 +89,7 @@ class SongProgress extends React.Component {
         AppState.removeEventListener('change', this.handleAppStateChange)
 
         // Stop status listener.
-        const { player, removeListener } = nextProps
+        const { player, removeListener } = this.props
         removeListener()
     }
 
