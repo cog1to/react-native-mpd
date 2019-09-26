@@ -166,13 +166,26 @@ class Root extends Component {
     }
 
     handleRetryNow = () => {
+        const { reconnectState } = this.state
+        const { resetAttempts } = this.props
+
         if (this.timeout != null) {
             clearTimeout(this.timeout)
         }
 
-        this.setState({
-            timeRemaining: 0,
-        }, this.updateTimer)
+        if (reconnectState == RECONNECT_STATE.WAITING) {
+            this.setState({
+                timeRemaining: 0,
+            }, this.updateTimer)
+        } else {
+            // Trigger reconnect.
+            const { address, connect, attempt } = this.props
+            this.setState({
+                reconnectState: RECONNECT_STATE.RECONNECTING,
+            }, () => {
+                connect(address.host, address.port, address.password, 0)
+            })
+        }
     }
 
     render() {

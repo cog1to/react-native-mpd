@@ -62,13 +62,13 @@ export default class AppDialog extends React.Component {
                         	{cancelButton && (
                             	<TouchableOpacity onPress={cancelButton.onPress}>
                                 	<Text style={styles.buttonText}>
-                                   		{cancelButton.title.uppercased()}
+                                   		{cancelButton.title.toUpperCase()}
                                 	</Text>
                             	</TouchableOpacity>
                             )}
                             <TouchableOpacity onPress={confirmButton.onPress}>
                                 <Text style={styles.buttonTextLast}>
-                                   {confirmButton.title.uppercased()}
+                                   {confirmButton.title.toUpperCase()}
                                 </Text>
                             </TouchableOpacity>
                         </View>
@@ -105,9 +105,10 @@ const styles = StyleSheet.create({
         textAlign: Platform.OS === 'ios' ? 'center' : 'left',
     },
     buttonsContainerAndroid: {
-        marginTop: 25,
         flexDirection: 'row',
         justifyContent: 'flex-end',
+        padding: 5,
+        paddingTop: 0,
     },
     buttonsContainerIOS: {
         flexDirection: 'row',
@@ -126,6 +127,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 14,
         paddingLeft: 20,
+        paddingRight: 20,
     },
     buttonTextIOS: {
         color: ThemeManager.instance().getCurrentTheme().accentColor,
