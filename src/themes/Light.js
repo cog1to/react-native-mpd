@@ -14,6 +14,7 @@ const LightTheme = {
   rowSelectionColor: '#4C515D',
   separatorColor: '#666666',
   dialogBackgroundColor: '#00000099',
+  dialogSeparatorColor: '#AFAFAF',
 }
 
 export default LightTheme

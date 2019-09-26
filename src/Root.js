@@ -5,19 +5,8 @@ import { NavigationActions, StackActions } from 'react-navigation'
 import {
     View,
     StatusBar,
-    StyleSheet,
-    Text,
-    TouchableOpacity,
-    Platform,
-    Button,
     AppState,
 } from 'react-native'
-
-// Screens.
-import LoginScreen from './screens/Login'
-import Player from './screens/Player'
-import Queue from './screens/Queue'
-import Browse from './screens/Browse'
 
 // Actions.
 import { connect, error, disconnect, setIntentional } from './redux/reducers/status/actions'
@@ -31,12 +20,19 @@ import ThemeManager from './themes/ThemeManager'
 // Global error banner.
 import ErrorBanner from './components/ErrorBanner'
 
+// App dialog.
+import AppDialog from './components/common/AppDialog'
+
+// Possible reconnect states.
 RECONNECT_STATE = {
     NOTHING: 'NOTHING',
     WAITING: 'WAITING',
     RECONNECTING: 'RECONNECTING',
     FAILED: 'FAILED',
 }
+
+// Reconnect timeout base.
+RECONNECT_TIME_BASE = 2
 
 class Root extends Component {
     constructor(props) {
@@ -60,7 +56,7 @@ class Root extends Component {
     attemptToReconnect = (attempt) => {
         this.setState({
             reconnectState: RECONNECT_STATE.WAITING,
-            timeRemaining: Math.pow(2, attempt + 1)
+            timeRemaining: Math.pow(RECONNECT_TIME_BASE, attempt + 1)
         }, () => {
             this.timeout = setTimeout(this.updateTimer, 1000)
         })
@@ -99,7 +95,7 @@ class Root extends Component {
 
         // Trigger logout.
         this.setState({
-            reconnectState: RECONNECT_STATE.FAILED,
+            reconnectState: RECONNECT_STATE.NOTHING,
         }, () => {
             this.props.setIntentional()
         })
@@ -152,8 +148,10 @@ class Root extends Component {
                 if (attempt < 3 && (reconnectState == RECONNECT_STATE.NOTHING && this.props.connected) 
                     || (reconnectState == RECONNECT_STATE.RECONNECTING && attempt != this.props.attempt)) {
                     this.attemptToReconnect(attempt)
-                } else if (attempt == 3) {
-                    this.logout()
+                } else if (attempt == 3 && reconnectState != RECONNECT_STATE.FAILED) {
+                    this.setState({
+                        reconnectState: RECONNECT_STATE.FAILED,
+                    })
                 }
             }
         }
@@ -185,53 +183,25 @@ class Root extends Component {
             ? ('in ' + timeRemaining + ' second' + ((timeRemaining > 1) ? 's' : ''))
             : 'now'
 
-        const navColor = ThemeManager.instance().getCurrentTheme().accentColor
+        const reconnectPrompt = reconnectState == RECONNECT_STATE.FAILED
+            ? 'Connection to server lost.'
+            : 'Connection to server lost. Trying to reconnect ' + reconnectText + '...'
 
+        const navColor = ThemeManager.instance().getCurrentTheme().accentColor
         return (
             <View style={{flex: 1}}>
                 <StatusBar translucent={true} backgroundColor={navColor} barStyle="light-content" />
                 <AppContainer
                     ref={ nav => { this.navigator = nav } }
                 />
-                <ErrorBanner error={error} />
-                {reconnectState != RECONNECT_STATE.NOTHING && reconnectState != RECONNECT_STATE.FAILED && (
-                    <View style={styles.dimOverlay}>
-                        <View style={styles.dialog}>
-                            <Text style={styles.reconnectText}>
-                                Lost server connection. Trying to reconnect {reconnectText}...
-                            </Text>
-                                {Platform.OS === 'ios' && (
-                                    <View style={styles.dialogButtonsContainer}>
-                                        <Button
-                                            onPress={this.handleRetryNow}
-                                            title='Retry now'
-                                            color={ThemeManager.instance().getCurrentTheme().accentColor}
-                                        />
-                                        <Button
-                                            style={{paddingLeft: 20}}
-                                            onPress={this.handleReconnectCancel}
-                                            title='Disconnect'
-                                            color={ThemeManager.instance().getCurrentTheme().accentColor}
-                                        />
-                                    </View>
-                                )}
-                                {Platform.OS === 'android' && (
-                                    <View style={styles.dialogButtonsContainer}>
-                                        <TouchableOpacity onPress={this.handleRetryNow}>
-                                            <Text style={styles.dialogButtonText}>
-                                               RETRY NOW
-                                            </Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity onPress={this.handleReconnectCancel}>
-                                            <Text style={styles.dialogButtonTextLast}>
-                                               DISCONNECT
-                                            </Text>
-                                        </TouchableOpacity>
-                                    </View>
-                                )}
-                        </View>
-                    </View>
+                {reconnectState != RECONNECT_STATE.NOTHING && (
+                    <AppDialog
+                        prompt={reconnectPrompt}
+                        cancelButton={{ title: 'Disconnect', onPress: this.handleReconnectCancel }}
+                        confirmButton={{ title: 'Retry Now', onPress: this.handleRetryNow }}
+                    />
                 )}
+                <ErrorBanner error={error} />
             </View>
         )
     }
@@ -277,49 +247,3 @@ const mapDispatchToProps = dispatch => {
 }
 
 export default reduxConnect(mapStateToProps, mapDispatchToProps)(Root)
-
-
-const styles = StyleSheet.create({
-    dimOverlay: {
-        position: 'absolute',
-        top: 0,
-        bottom: 0,
-        left: 0,
-        right: 0,
-        backgroundColor: ThemeManager.instance().getCurrentTheme().dialogBackgroundColor,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    dialog: {
-        padding: Platform.OS == 'android' ? 25 : 15,
-        paddingBottom: 15,
-        margin: 20,
-        backgroundColor: 'white',
-    },
-    reconnectText: {
-        fontSize: ThemeManager.instance().getCurrentTheme().mainTextSize,
-        color: ThemeManager.instance().getCurrentTheme().mainTextColor,
-    },
-    dialogButtonsContainer: {
-        marginTop: Platform.OS == 'android' ? 25 : 15,
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-    },
-    dialogButtonsContainerLast: {
-        marginTop: Platform.OS == 'android' ? 25 : 15,
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        paddingLeft: 8,
-    },
-    dialogButtonText: {
-        color: ThemeManager.instance().getCurrentTheme().accentColor,
-        fontWeight: 'bold',
-        fontSize: 14,
-    },
-    dialogButtonTextLast: {
-        color: ThemeManager.instance().getCurrentTheme().accentColor,
-        fontWeight: 'bold',
-        fontSize: 14,
-        paddingLeft: 20,
-    }
-})
