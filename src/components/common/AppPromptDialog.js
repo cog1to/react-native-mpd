@@ -79,7 +79,7 @@ class KeyboardAwareDialog extends React.Component {
             const headerOffset = Platform === 'ios' ? 60 : 64
 
             animations.push(Animated.timing(this.inputOffset, {
-                toValue: keyboardBecomingVisible ? -(layout.y + layout.height + headerOffset - screenY) : 0,
+                toValue: keyboardBecomingVisible ? Math.min(0, -(layout.y + layout.height + headerOffset - screenY)) : 0,
                 duration: keyboardAnimationDuration,
                 useNativeDriver: true,
             }))
