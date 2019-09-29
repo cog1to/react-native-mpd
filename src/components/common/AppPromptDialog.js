@@ -1,10 +1,11 @@
 import React from 'react'
 import {
-	View,
-	TouchableOpacity,
-	StyleSheet,
-	Text,
-	Platform,
+    View,
+    TouchableOpacity,
+    StyleSheet,
+    Text,
+    Platform,
+    Animated,
 } from 'react-native'
 import PropTypes from 'prop-types'
 
@@ -13,6 +14,95 @@ import ThemeManager from '../../themes/ThemeManager'
 
 // Input.
 import Input from './Input'
+
+import KeyboardState from './KeyboardState'
+
+class KeyboardAwareDialog extends React.Component {
+    constructor(props) {
+        super(props)
+        this.inputOffset = new Animated.Value(0)
+        this.state = {
+            layout: null
+        }
+    }
+
+    static propTypes = {
+        // From `KeyboardState`
+        screenY: PropTypes.number.isRequired,
+        keyboardHeight: PropTypes.number.isRequired,
+        keyboardVisible: PropTypes.bool.isRequired,
+        keyboardWillShow: PropTypes.bool.isRequired,
+        keyboardWillHide: PropTypes.bool.isRequired,
+        keyboardAnimationDuration: PropTypes.number.isRequired,
+
+        // Rendering content
+        children: PropTypes.func,
+    }
+
+    static defaultProps = {
+        children: null,
+    }
+
+    handleLayout = event => {
+        const { nativeEvent: { layout } } = event
+
+        if (this.state.layout == null) {
+            this.setState({
+                layout
+            })
+        }
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const {
+            keyboardHeight,
+            keyboardVisible,
+            keyboardAnimationDuration,
+            keyboardWillShow,
+            keyboardWillHide,
+            screenY,
+        } = nextProps
+
+        const { layout } = this.state
+
+        const shouldUpdateLayout = (Platform.OS === 'ios')
+            ? (keyboardWillShow || keyboardWillHide)
+            : (this.props.keyboardVisible != nextProps.keyboardVisible)
+
+        if (layout != null && shouldUpdateLayout) {
+            let animations = []
+            
+            const keyboardBecomingVisible = (Platform.OS === 'ios')
+                ? keyboardWillShow
+                : nextProps.keyboardVisible
+
+            const headerOffset = Platform === 'ios' ? 60 : 64
+
+            animations.push(Animated.timing(this.inputOffset, {
+                toValue: keyboardBecomingVisible ? -(layout.y + layout.height + headerOffset - screenY) : 0,
+                duration: keyboardAnimationDuration,
+                useNativeDriver: true,
+            }))
+
+            Animated.parallel(animations).start()
+        }
+    }
+
+    render() {
+        const { children } = this.props
+        const containerStyle = { transform: [{ translateY: this.inputOffset }] } 
+        
+        return (
+            <Animated.View
+                style={containerStyle}
+                onLayout={this.handleLayout}
+            >
+                {children()}
+            </Animated.View>
+        )
+    }
+
+}
 
 export default class AppDialog extends React.Component {
     static propTypes = {
@@ -63,61 +153,69 @@ export default class AppDialog extends React.Component {
 
         return (
             <View style={styles.dimOverlay}>
-                <View style={styles.dialog}>
-                    <Text style={styles.promptText}>
-                        {prompt}
-                    </Text>
-                    <Input
-                        style={styles.promptInput}
-                        borderBottomColor={borderBottomColor}
-                        placeholder={placeholder}
-                        onChangeText={this.onChangeText}
-                        value={name}
-                        marginHorizontal={25}
-                        marginBottom={20}
-                    />
-                    {Platform.OS === 'ios' && (
-                        <View style={styles.buttonsContainerIOS}>
-                            {cancelButton && (
-                                <TouchableOpacity
-                                    onPress={this.handleCancelPress}
-                                    style={styles.cancelButton}>
-                                    <Text style={styles.buttonTextIOSCancel}>
-                                        {cancelButton.title}
+                <KeyboardState>
+                    {keyboardInfo => (
+                        <KeyboardAwareDialog {...keyboardInfo}>
+                            {() => (
+                                <View style={styles.dialog}>
+                                    <Text style={styles.promptText}>
+                                        {prompt}
                                     </Text>
-                                </TouchableOpacity>
+                                    <Input
+                                        style={styles.promptInput}
+                                        borderBottomColor={borderBottomColor}
+                                        placeholder={placeholder}
+                                        onChangeText={this.onChangeText}
+                                        value={name}
+                                        marginHorizontal={25}
+                                        marginBottom={20}
+                                    />
+                                    {Platform.OS === 'ios' && (
+                                        <View style={styles.buttonsContainerIOS}>
+                                            {cancelButton && (
+                                                <TouchableOpacity
+                                                    onPress={this.handleCancelPress}
+                                                    style={styles.cancelButton}>
+                                                    <Text style={styles.buttonTextIOSCancel}>
+                                                        {cancelButton.title}
+                                                    </Text>
+                                                </TouchableOpacity>
+                                            )}
+                                            <TouchableOpacity 
+                                                disabled={!canConfirm}
+                                                onPress={this.handleConfirmPress}
+                                                style={{...styles.confirmButton, opacity: canConfirm ? 1 : 0.5}}>
+                                                <Text style={styles.buttonTextIOS}>
+                                                    {confirmButton.title}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    )}
+                                    {Platform.OS === 'android' && (
+                                        <View style={styles.buttonsContainerAndroid}>
+                                            {cancelButton && (
+                                                <TouchableOpacity
+                                                    onPress={this.handleCancelPress}>
+                                                    <Text style={styles.buttonText}>
+                                                        {cancelButton.title.toUpperCase()}
+                                                    </Text>
+                                                </TouchableOpacity>
+                                            )}
+                                            <TouchableOpacity
+                                                onPress={this.handleConfirmPress}
+                                                disabled={!canConfirm}
+                                                style={{opacity: canConfirm ? 1 : 0.5}}>
+                                                <Text style={styles.buttonTextLast}>
+                                                   {confirmButton.title.toUpperCase()}
+                                                </Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    )}
+                                </View>
                             )}
-                            <TouchableOpacity 
-                                disabled={!canConfirm}
-                                onPress={this.handleConfirmPress}
-                                style={{...styles.confirmButton, opacity: canConfirm ? 1 : 0.5}}>
-                                <Text style={styles.buttonTextIOS}>
-                                    {confirmButton.title}
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
+                        </KeyboardAwareDialog>
                     )}
-                    {Platform.OS === 'android' && (
-                        <View style={styles.buttonsContainerAndroid}>
-                            {cancelButton && (
-                                <TouchableOpacity
-                                    onPress={this.handleCancelPress}>
-                                    <Text style={styles.buttonText}>
-                                        {cancelButton.title.toUpperCase()}
-                                    </Text>
-                                </TouchableOpacity>
-                            )}
-                            <TouchableOpacity
-                                onPress={this.handleConfirmPress}
-                                disabled={!canConfirm}
-                                style={{opacity: canConfirm ? 1 : 0.5}}>
-                                <Text style={styles.buttonTextLast}>
-                                   {confirmButton.title.toUpperCase()}
-                                </Text>
-                            </TouchableOpacity>
-                        </View>
-                    )}
-                </View>
+                </KeyboardState>
             </View>
 	)
     }
