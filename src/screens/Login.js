@@ -35,101 +35,11 @@ import ThemeManager from '../themes/ThemeManager'
 // Global error banner.
 import ErrorBanner from '../components/ErrorBanner'
 
+import KeyboardAwareView from '../components/common/KeyboardAwareView'
+
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true)
 }
-
-class KeyboardAwareLoginForm extends React.Component {
-    constructor(props) {
-        super(props)
-        this.inputOffset = new Animated.Value(0)
-        this.imageOpacity = new Animated.Value(1)
-
-        this.state = {
-            layout: null
-        }
-    }
-
-    static propTypes = {
-        // From `KeyboardState`
-        screenY: PropTypes.number.isRequired,
-        keyboardHeight: PropTypes.number.isRequired,
-        keyboardVisible: PropTypes.bool.isRequired,
-        keyboardWillShow: PropTypes.bool.isRequired,
-        keyboardWillHide: PropTypes.bool.isRequired,
-        keyboardAnimationDuration: PropTypes.number.isRequired,
-
-        // Rendering content
-        children: PropTypes.func,
-    }
-
-    static defaultProps = {
-        children: null,
-    }
-
-    handleLayout = event => {
-        const { nativeEvent: { layout } } = event
-
-        if (this.state.layout == null) {
-            this.setState({
-                layout,
-            })
-        }
-    }
-
-    componentWillReceiveProps(nextProps) {
-        const {
-            keyboardHeight,
-            keyboardVisible,
-            keyboardAnimationDuration,
-            keyboardWillShow,
-            keyboardWillHide,
-            screenY,
-        } = nextProps
-
-        const { layout } = this.state
-
-        const shouldUpdateLayout = (Platform.OS === 'ios')
-            ? (keyboardWillShow || keyboardWillHide)
-            : (this.props.keyboardVisible != nextProps.keyboardVisible)
-
-        if (layout != null && shouldUpdateLayout) {
-            let animations = []
-            
-            const keyboardBecomingVisible = (Platform.OS === 'ios')
-                ? keyboardWillShow
-                : nextProps.keyboardVisible
-
-            animations.push(Animated.timing(this.inputOffset, {
-                toValue: keyboardBecomingVisible ? -(layout.y + layout.height - screenY) : 0,
-                duration: keyboardAnimationDuration,
-                useNativeDriver: true,
-            }))
-
-            if (screenY - layout.height < 0 || keyboardWillHide) {
-                animations.push(Animated.timing(this.imageOpacity, {
-                    toValue: keyboardBecomingVisible ? 0 : 1,
-                    duration: keyboardAnimationDuration,
-                    useNativeDriver: true,
-                }))
-            }
-
-            Animated.parallel(animations).start()
-        }
-    }
-
-    render() {
-        const { children } = this.props
-        const containerStyle = { transform: [{ translateY: this.inputOffset }] } 
-        
-        return (
-            <Animated.View style={containerStyle} onLayout={this.handleLayout}>
-                {children(this.imageOpacity)}
-            </Animated.View>
-        )
-    }
-}
-
 
 class Login extends React.Component {
     state = {
@@ -238,9 +148,9 @@ class Login extends React.Component {
             <SafeAreaView style={styles.container}>
                 <KeyboardState>
                     {keyboardInfo => (
-                        <KeyboardAwareLoginForm {...keyboardInfo}>
+                        <KeyboardAwareView {...keyboardInfo}>
                             {opacity => children(opacity)}
-                        </KeyboardAwareLoginForm>
+                        </KeyboardAwareView>
                     )}
                 </KeyboardState>
                 <View style={styles.disclaimer}>

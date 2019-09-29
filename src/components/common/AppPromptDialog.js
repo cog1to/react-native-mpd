@@ -15,94 +15,11 @@ import ThemeManager from '../../themes/ThemeManager'
 // Input.
 import Input from './Input'
 
+// Keyboard state listener.
 import KeyboardState from './KeyboardState'
 
-class KeyboardAwareDialog extends React.Component {
-    constructor(props) {
-        super(props)
-        this.inputOffset = new Animated.Value(0)
-        this.state = {
-            layout: null
-        }
-    }
-
-    static propTypes = {
-        // From `KeyboardState`
-        screenY: PropTypes.number.isRequired,
-        keyboardHeight: PropTypes.number.isRequired,
-        keyboardVisible: PropTypes.bool.isRequired,
-        keyboardWillShow: PropTypes.bool.isRequired,
-        keyboardWillHide: PropTypes.bool.isRequired,
-        keyboardAnimationDuration: PropTypes.number.isRequired,
-
-        // Rendering content
-        children: PropTypes.func,
-    }
-
-    static defaultProps = {
-        children: null,
-    }
-
-    handleLayout = event => {
-        const { nativeEvent: { layout } } = event
-
-        if (this.state.layout == null) {
-            this.setState({
-                layout
-            })
-        }
-    }
-
-    componentWillReceiveProps(nextProps) {
-        const {
-            keyboardHeight,
-            keyboardVisible,
-            keyboardAnimationDuration,
-            keyboardWillShow,
-            keyboardWillHide,
-            screenY,
-        } = nextProps
-
-        const { layout } = this.state
-
-        const shouldUpdateLayout = (Platform.OS === 'ios')
-            ? (keyboardWillShow || keyboardWillHide)
-            : (this.props.keyboardVisible != nextProps.keyboardVisible)
-
-        if (layout != null && shouldUpdateLayout) {
-            let animations = []
-            
-            const keyboardBecomingVisible = (Platform.OS === 'ios')
-                ? keyboardWillShow
-                : nextProps.keyboardVisible
-
-            const headerOffset = Platform === 'ios' ? 60 : 64
-
-            animations.push(Animated.timing(this.inputOffset, {
-                toValue: keyboardBecomingVisible ? Math.min(0, -(layout.y + layout.height + headerOffset - screenY)) : 0,
-                duration: keyboardAnimationDuration,
-                useNativeDriver: true,
-            }))
-
-            Animated.parallel(animations).start()
-        }
-    }
-
-    render() {
-        const { children } = this.props
-        const containerStyle = { transform: [{ translateY: this.inputOffset }] } 
-        
-        return (
-            <Animated.View
-                style={containerStyle}
-                onLayout={this.handleLayout}
-            >
-                {children()}
-            </Animated.View>
-        )
-    }
-
-}
+// Keyboard aware view.
+import KeyboardAwareView from './KeyboardAwareView'
 
 export default class AppDialog extends React.Component {
     static propTypes = {
@@ -151,11 +68,13 @@ export default class AppDialog extends React.Component {
 
         const canConfirm = name.length > 0 && knownItems.find((item) => { return item == name }) == undefined
 
+        const topOffset = Platform.OS === 'ios' ? 60 : 70
+
         return (
             <View style={styles.dimOverlay}>
                 <KeyboardState>
                     {keyboardInfo => (
-                        <KeyboardAwareDialog {...keyboardInfo}>
+                        <KeyboardAwareView topOffset={topOffset} {...keyboardInfo}>
                             {() => (
                                 <View style={styles.dialog}>
                                     <Text style={styles.promptText}>
@@ -213,7 +132,7 @@ export default class AppDialog extends React.Component {
                                     )}
                                 </View>
                             )}
-                        </KeyboardAwareDialog>
+                        </KeyboardAwareView>
                     )}
                 </KeyboardState>
             </View>
