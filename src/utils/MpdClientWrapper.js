@@ -156,6 +156,28 @@ export default class MpdClientWrapper {
         })
     }
 
+    _sendCommands(commands, parser, callback) {
+        // Don't send commands if we're disconnected.
+        if (this._client == null) {
+            return
+        }
+
+        return new Promise((resolve, reject) => {
+            try {
+                this._client.sendCommands(commands, (error, result) => {
+                    if (error) {
+                        reject(error)
+                    } else {
+                        resolve(parser(result))
+                    }
+                })
+            } catch (ex) {
+                console.log('Error: ' + JSON.stringify(ex))
+                reject(ex)
+            }
+        })
+    }
+
     parseList(entries) {
         return function(msg) {
             return mpd.parseArrayMessage(msg, entries)
@@ -218,8 +240,9 @@ export default class MpdClientWrapper {
         return this._sendCommand(cmd('deleteid', [songId]), mpd.parseKeyValueMessage)   
     }
 
-    addToQueue(uri, position) {
-        return this._sendCommand(cmd('addid', [uri, position]), mpd.parseKeyValueMessage)
+    addToQueue(items) {
+        let commands = items.map((item) => { return cmd('addid', [item.file, item.position]) })
+        return this._sendCommands(commands, mpd.parseKeyValueMessage)
     }
 
     clear() {
@@ -273,8 +296,9 @@ export default class MpdClientWrapper {
         return this._sendCommand(cmd('replay_gain_status', []), mpd.parseKeyValueMessage)
     }
 
-    addToPlaylist(name, uri) {
-        return this._sendCommand(cmd('playlistadd', [name, uri]), mpd.parseKeyValueMessage)
+    addToPlaylist(name, files) {
+        let commands = files.map((file) => cmd('playlistadd', [name, file]))
+        return this._sendCommands(commands, mpd.parseKeyValueMessage)
     }
 
     deletePlaylist(name) {

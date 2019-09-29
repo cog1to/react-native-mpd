@@ -15,7 +15,7 @@ export default class Queue extends React.Component {
 
     componentDidMount() {
         this.props.navigation.setParams({ onMenu: this.handleMenuPress })
-    } 
+    }
 
     render() {
         const { navigation } = this.props
@@ -26,7 +26,7 @@ export default class Queue extends React.Component {
             </View>
         )
     }
-} 
+}
 
 const styles = StyleSheet.create({
     container: {

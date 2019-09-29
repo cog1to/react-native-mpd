@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import { 
-    View, 
+import {
+    View,
     StyleSheet,
     Text,
     FlatList,
@@ -35,8 +35,8 @@ if (Platform.OS === 'android') {
 
 const RowAnimation = {
     duration: 150,
-    create: { type: 'linear', property: 'opacity' }, 
-    update: { type: 'linear', property: 'opacity' }, 
+    create: { type: 'linear', property: 'opacity' },
+    update: { type: 'linear', property: 'opacity' },
     delete: { type: 'linear', property: 'opacity' }
 }
 
@@ -49,6 +49,10 @@ const CustomLayoutAnimation = {
     update: {
         type: LayoutAnimation.Types.easeInEaseOut,
     },
+    delete: {
+        type: LayoutAnimation.Types.linear,
+        property: LayoutAnimation.Properties.opacity,
+    }
 }
 
 const HighlightableQueueListItem = HighlightableView(QueueListItem)
@@ -164,6 +168,8 @@ class QueueList extends React.Component {
             newSelected.push({ id, status, name })
         }
 
+        LayoutAnimation.configureNext(CustomLayoutAnimation)
+
         // Update state.
         this.setState({
             editing: true,
@@ -175,7 +181,6 @@ class QueueList extends React.Component {
             editing: true,
             allSelected: newSelected.length === queue.length
         })
-
     }
 
     onDeleteItem = ({ id }) => {
@@ -271,6 +276,9 @@ const queueToList = (state) => {
         }
 
         let artist = song.artist
+        if (artist == null) {
+            artist = 'Unknown Artist'
+        }
 
         return {
             songId: song.songId,

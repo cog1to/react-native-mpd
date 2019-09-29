@@ -508,6 +508,7 @@ class ItemsList extends React.Component {
                 callback: (name) => this.addToPlaylist(name, paths)
             },
             routeName: 'Playlists',
+            key: 'selectPlaylist',
         })
         navigation.dispatch(action)
     }

@@ -12,8 +12,13 @@ import FontAwesome, { Icons } from 'react-native-fontawesome'
 import Draggable from './common/Draggable'
 import { Dimensions } from 'react-native'
 
+// Vector icons.
+import Icon from 'react-native-vector-icons/MaterialIcons'
+
+// highlightable view.
 import { HighlightableView } from './common/HighlightableView'
 
+// Theming.
 import ThemeManager from '../themes/ThemeManager'
 
 class ForegroundView extends React.PureComponent {
@@ -27,7 +32,8 @@ class ForegroundView extends React.PureComponent {
     }
 
     render() {
-        const { status, subtitle, id, name, height } = this.props
+        const { status, subtitle, id, name, height, selected } = this.props
+        const theme = ThemeManager.instance().getCurrentTheme()
 
         return (
             <View style={{...styles.container, height: height}}>
@@ -56,6 +62,12 @@ class ForegroundView extends React.PureComponent {
                     </Text>
                     {subtitle && (<Text style={styles.subtitle}>{subtitle}</Text>)}
                 </View>
+                <View>
+                    {selected && (
+                        <Icon name='check' color={theme.mainTextColor} style={{...styles.status, fontSize: 20}} />
+                    )}
+                </View>
+
             </View>
         )
     } 

@@ -125,24 +125,24 @@ const songToState = (song) => {
 }
 
 const statusToState = (status) => {
-    const { 
-        state, 
-        elapsed = 0, 
-        duration = 0, 
-        songid = null, 
-        volume = 0, 
-        random = 0, 
-        repeat = 0, 
+    const {
+        state,
+        elapsed = 0,
+        duration = 0,
+        songid = null,
+        volume = 0,
+        random = 0,
+        repeat = 0,
         single = '0',
         consume = 0,
         xfade = 0,
     } = status
 
     return {
-        player: state, 
-        elapsed: parseFloat(elapsed), 
-        duration: parseFloat(duration), 
-        songid: songid, 
+        player: state,
+        elapsed: parseFloat(elapsed),
+        duration: parseFloat(duration),
+        songid: songid,
         volume: parseFloat(volume),
         random: parseFloat(random),
         repeat: parseFloat(repeat),
@@ -205,28 +205,86 @@ const nodeFromPath = (path, tree) => {
     return node
 }
 
-async function getContentRecursively(uri) {
-    let nodes = listToChildren(await client.mpd.getList(uri))
-
+async function getContentRecursively(node) {
     let results = []
-    for (let index = 0; index < nodes.length; index++) {
-        const node = nodes[index]
-        switch (node.type) {
-            case TreeNodeType.FILE:
-                results.push(node)
-                break
-            case TreeNodeType.DIRECTORY:
-                let children = await getContentRecursively(node.fullPath)
-                children.forEach(file => { results.push(file) })
-                break
-            case TreeNodeType.PLAYLIST:
-                break
-            default:
-                break
+
+    switch (node.type) {
+        case TreeNodeType.FILE: {
+            let normalized = Object.assign({}, node)
+            if (!('fullPath' in node) && ('path' in node)) {
+                normalized.fullPath = node.path
+            }
+
+            results.push(normalized)
+            break
+        }
+        case TreeNodeType.DIRECTORY: {
+            let path = ('fullPath' in node) ? node.fullPath : node.path
+            let children = listToChildren(await client.mpd.getList(path))
+
+            for (let index = 0; index < children.length; index++) {
+                let subResults = await getContentRecursively(children[index])
+                results = results.concat(subResults)
+            }
+
+            break
+        }
+        case TreeNodeType.PLAYLIST: {
+            let files = listToChildren(await client.mpd.getPlaylist(node.path))
+            results = results.concat(files)
+            break
+        }
+        case TreeNodeType.ARTIST: {
+            const { path } = node
+            const searchExpression = '(artist == \'' + sanitize(path)  + '\')'
+
+            // Get search results.
+            let children = listToChildren(await client.mpd.search(searchExpression))
+            results = results.concat(children)
+
+            break
+        }
+        case TreeNodeType.ALBUM: {
+            const { data: { artist, album } } = node
+            const expression = [
+                { tag: 'artist', value: artist },
+                { tag: 'album', value: album },
+            ]
+
+            const searchExpressions = expression.map(({ tag, value }) => {
+                return '(' + tag + ' == \'' + sanitize(value)  + '\')'
+            })
+
+            const combined = '(' + searchExpressions.join(' AND ')  + ')'
+
+            // Get search results.
+            let children = listToChildren(await client.mpd.search(combined))
+            results = results.concat(children)
+
+            break
         }
     }
 
     return results
+}
+
+function nodesToPaths(items) {
+    let promises = items.map((node) => {
+        return new Promise((resolve, reject) => {
+            getContentRecursively(node).then(result => {
+                resolve(result)
+            }).catch(e => { reject(e) })
+        })
+    })
+
+    return promises.reduce((chain, task) => {
+        return chain.then(result => {
+            return task.then(files => {
+                let content = [...result, ...files]
+                return content
+            })
+        })
+    }, Promise.resolve([]))
 }
 
 export const mpdMiddleware = store => {
@@ -277,7 +335,7 @@ export const mpdMiddleware = store => {
                 if (client.progressTimeout !== null) {
                     clearTimeout(client.progressTimeout)
                 }
- 
+
                 // Unsubscribe from all events.
                 client.disconnects.forEach((callback) => {
                     callback()
@@ -432,7 +490,7 @@ export const mpdMiddleware = store => {
                 let node = nodeFromPath(action.path, tree)
 
                 // First we need to set 'refreshing' flag.
-                // This ensures that refresh state won't get canceled before update is finished. 
+                // This ensures that refresh state won't get canceled before update is finished.
                 store.dispatch(setRefreshing(true))
 
                 if (!action.force && node !== null && node.children.length > 0) {
@@ -453,95 +511,19 @@ export const mpdMiddleware = store => {
             case types.ADD_TO_QUEUE: {
                 const { items, position } = action
 
-                const handleFile = (uri, position) => {
-                    return new Promise((resolve, reject) => {
-                        client.mpd.addToQueue(uri, position).then((result) => {
-                            resolve(1+position)
-                        }).catch((e) => {
-                            reject(e)
-                        })
-                    })
-                }
+                nodesToPaths(items).then((allFiles) => {
+                    let filePaths = allFiles.map((node) => { return node.fullPath })
 
-                const handleFileList = (uris, position) => {
-                    return uris.reduce((promise, uri) => {
-                        return new Promise((resolve, reject) => {
-                            promise.then((pos) => {
-                                handleFile(uri, pos).then((newPos) => {
-                                    resolve(newPos)
-                                }).catch((e) => {
-                                    reject(e)
-                                })
-                            })
-                        })
-                    }, Promise.resolve(position))
-                }
+                    let filesWithPositions = []
+                    for (let index = 0; index < filePaths.length; index++) {
+                        filesWithPositions.push({ file: filePaths[index], position: position + index})
+                    }
 
-                const handlePlaylist = (uri, position) => {
-                    return client.mpd.getPlaylist(uri).then((content) => {
-                        let files = content.map(node => { return node.file })
-                        return handleFileList(files, position)
-                    })
-                }
-
-                const handleDirectory = (uri, position) => {
-                    return getContentRecursively(uri).then((content) => {
-                        let files = content.map(node => { return node.fullPath })
-                        return handleFileList(files, position)
-                    })
-                }
-
-                const handleAlbum = (artist, album, position) => {
-                    const expression = [
-                        { tag: 'artist', value: artist },
-                        { tag: 'album', value: album },
-                    ]
-
-                    const searchExpressions = expression.map(({ tag, value }) => {
-                        return '(' + tag + ' == \'' + sanitize(value)  + '\')'
-                    })
-
-                    const combined = '(' + searchExpressions.join(' AND ')  + ')'
-
-                    // Get search results.
-                    return client.mpd.search(combined).then(results => {
-                        let list = listToChildren(results, false)
-                        let files = list.map((song) => { return song.fullPath })
-                        return handleFileList(files, position)
-                    })
-                }
-
-                const handleArtist = (artist, position) => {
-                    const searchExpression = '(artist == \'' + sanitize(artist)  + '\')'
-
-                    // Get search results.
-                    return client.mpd.search(searchExpression).then(results => {
-                        let files = results.map((song) => { return song.file })
-                        return handleFileList(files, position)
-                    })
-                }
-
-                const handleEverything = (items, position) => {
-                    return items.reduce((promise, { path, type, data }) => {
-                        return promise.then((newPos) => {
-                            if (type == TreeNodeType.DIRECTORY) {
-                                return handleDirectory(path, newPos)
-                            } else if (type == TreeNodeType.PLAYLIST) {
-                                return handlePlaylist(path, newPos)
-                            } else if (type == TreeNodeType.ARTIST) {
-                                return handleArtist(path, newPos)
-                            } else if (type == TreeNodeType.ALBUM) {
-                                return handleAlbum(data.artist, data.album, newPos)
-                            } else {
-                                return handleFile(path, newPos)
-                            }
-                        })
-                    }, Promise.resolve(position))
-                }
-
-                handleEverything(items, position).catch((e) => {
-                    store.dispatch(error(e, types.ADD_TO_QUEUE))
+                    return client.mpd.addToQueue(filesWithPositions)
+                }).catch(e => {
+                    store.dispatch(error(e, types.ADD_TO_PLAYLIST))
                 })
+
                 break
             }
             case types.ADD_TO_QUEUE_PLAY: {
@@ -687,95 +669,13 @@ export const mpdMiddleware = store => {
             case types.ADD_TO_PLAYLIST: {
                 const { name, paths } = action
 
-                const handleFile = (uri) => {
-                    return new Promise((resolve, reject) => {
-                        client.mpd.addToPlaylist(name, uri).then((result) => {
-                            resolve()
-                        }).catch((e) => {
-                            reject(e)
-                        })
-                    })
-                }
-
-                const handleFileList = (uris) => {
-                    return uris.reduce((promise, uri) => {
-                        return new Promise((resolve, reject) => {
-                            promise.then((pos) => {
-                                handleFile(uri).then(() => {
-                                    resolve()
-                                }).catch((e) => {
-                                    reject(e)
-                                })
-                            })
-                        })
-                    }, Promise.resolve())
-                }
-
-                const handlePlaylist = (uri) => {
-                    return client.mpd.getPlaylist(uri).then((content) => {
-                        let files = content.map(node => { return node.file })
-                        return handleFileList(files)
-                    })
-                }
-
-                const handleDirectory = (uri) => {
-                    return getContentRecursively(uri).then((content) => {
-                        let files = content.map(node => { return node.fullPath })
-                        return handleFileList(files)
-                    })
-                }
-
-                const handleAlbum = (artist, album) => {
-                    const expression = [
-                        { tag: 'artist', value: artist },
-                        { tag: 'album', value: album },
-                    ]
-
-                    const searchExpressions = expression.map(({ tag, value }) => {
-                        return '(' + tag + ' == \'' + sanitize(value)  + '\')'
-                    })
-
-                    const combined = '(' + searchExpressions.join(' AND ')  + ')'
-
-                    // Get search results.
-                    return client.mpd.search(combined).then(results => {
-                        let list = listToChildren(results, false)
-                        let files = list.map((song) => { return song.fullPath })
-                        return handleFileList(files)
-                    })
-                }
-
-                const handleArtist = (artist) => {
-                    const searchExpression = '(artist == \'' + sanitize(artist)  + '\')'
-
-                    // Get search results.
-                    return client.mpd.search(searchExpression).then(results => {
-                        let files = results.map((song) => { return song.file })
-                        return handleFileList(files)
-                    })
-                }
-
-                const handleEverything = (items) => {
-                    return items.reduce((promise, { path, type, data }) => {
-                        return promise.then(() => {
-                            if (type == TreeNodeType.DIRECTORY) {
-                                return handleDirectory(path)
-                            } else if (type == TreeNodeType.PLAYLIST) {
-                                return handlePlaylist(path)
-                            } else if (type == TreeNodeType.ARTIST) {
-                                return handleArtist(path)
-                            } else if (type == TreeNodeType.ALBUM) {
-                                return handleAlbum(data.artist, data.album)
-                            } else {
-                                return handleFile(path)
-                            }
-                        })
-                    }, Promise.resolve())
-                }
-
-                handleEverything(paths).catch(e => {
+                nodesToPaths(paths).then((allFiles) => {
+                    let filePaths = allFiles.map((node) => { return node.fullPath })
+                    return client.mpd.addToPlaylist(name, filePaths)
+                }).catch(e => {
                     store.dispatch(error(e, types.ADD_TO_PLAYLIST))
                 })
+
                 break
             }
             case types.DELETE_PLAYLISTS: {
@@ -814,4 +714,3 @@ export const mpdMiddleware = store => {
 }
 
 export default mpdMiddleware
-
