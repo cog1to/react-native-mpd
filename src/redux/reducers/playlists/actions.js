@@ -4,6 +4,12 @@ export const getPlaylists = () => ({
     type: types.GET_PLAYLISTS,
 })
 
+export const addToPlaylist = (name, paths) => ({
+    type: types.ADD_TO_PLAYLIST,
+    name,
+    paths,
+})
+
 export const loadingPlaylists = (loading) => ({
     type: types.PLAYLISTS_LOADING,
     loading,
@@ -30,3 +36,7 @@ export const playlistLoaded = (name, data) => ({
     data,
 })
 
+export const deletePlaylists = (names) => ({
+    type: types.DELETE_PLAYLISTS,
+    names,
+})

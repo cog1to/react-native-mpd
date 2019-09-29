@@ -27,6 +27,7 @@ export default class MpdClientWrapper {
 
     constructor() {
         this.listeners = {}
+        this.cmd = cmd
 
         const events = [
             EventNames.ERROR, 
@@ -272,6 +273,14 @@ export default class MpdClientWrapper {
         return this._sendCommand(cmd('replay_gain_status', []), mpd.parseKeyValueMessage)
     }
 
+    addToPlaylist(name, uri) {
+        return this._sendCommand(cmd('playlistadd', [name, uri]), mpd.parseKeyValueMessage)
+    }
+
+    deletePlaylist(name) {
+        return this._sendCommand(cmd('rm', [name]), mpd.parseKeyValueMessage)
+    }
+
     // MARK: - Event listeners
 
     _handleSystemUpdate(systemName) {
@@ -331,7 +340,7 @@ export default class MpdClientWrapper {
         return this._subscribe(Subsystems.MIXER, callback)    
     }
 
-    /// Subscribes to mixer updates: volume changes.
+    /// Subscribes to mixer updates: stored playlist changes.
     onPlaylistUpdate(callback) {
         return this._subscribe(Subsystems.STORED_PLAYLIST, callback)    
     }

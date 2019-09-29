@@ -12,6 +12,7 @@ import {
     Animated,
     TouchableWithoutFeedback,
 } from 'react-native'
+import { NavigationActions, StackActions } from 'react-navigation'
 import PropTypes from 'prop-types'
 
 // Icons.
@@ -25,6 +26,7 @@ import { connect } from 'react-redux'
 
 // Actions.
 import { addToQueue, addToQueuePlay } from '../redux/reducers/browser/actions'
+import { addToPlaylist } from '../redux/reducers/playlists/actions'
 
 // Highlightable view wrapper.
 import { HighlightableView } from './common/HighlightableView'
@@ -34,6 +36,9 @@ import ThemeManager from '../themes/ThemeManager'
 
 // On-screen list menu/dialog.
 import MenuDialog from './common/MenuDialog'
+
+// On-screen delete dialog.
+import AppDialog from './common/AppDialog'
 
 // Enable animations on Android.
 if (Platform.OS === 'android') {
@@ -59,6 +64,7 @@ const OPTIONS = {
     ADD_TO_QUEUE_BEGINNING: { value: 'ADD_TO_QUEUE_BEGINNING', title: 'At the beginning of queue' },
     ADD_TO_QUEUE_END: { value: 'ADD_TO_QUEUE_END', title: 'At the end of queue' },
     ADD_TO_QUEUE_AFTER_CURRENT_SONG: { value: 'ADD_TO_QUEUE_AFTER_CURRENT_SONG', title: 'After current song' },
+    ADD_TO_PLAYLIST: { value: 'ADD_TO_PLAYLIST', title: 'To a playlist' }
 }
 
 class BrowseListItem extends React.Component {
@@ -96,7 +102,7 @@ class BrowseListItem extends React.Component {
     }
 
     render() {
-        const { item, playing, editing, selected, subtitle } = this.props
+        const { item, playing, editing, selected, subtitle, canAddItems } = this.props
         const { name, type, artist, title, fullPath, id, index } = item
 
         let displayName = title != null ? title : name
@@ -149,7 +155,7 @@ class BrowseListItem extends React.Component {
                 <TouchableOpacity
                     onPress={this.handleMenuPress}
                     disabled={editing}>
-                    {!editing && (
+                    {!editing && canAddItems && (
                         <Icon name='more-vert' color={theme.mainTextColor} style={{...styles.status, fontSize: 20}} />
                     )}
                     {editing && selected && (
@@ -173,6 +179,7 @@ class ItemsList extends React.Component {
 
     state = {
         showingMenu: false,
+        showingDeleteDialog: false,
         selected: [],
         editing: false,
     }
@@ -185,27 +192,33 @@ class ItemsList extends React.Component {
         onReload: null,
         refreshing: false,
         subtitle: null,
+        canAddItems: true,
+        onDelete: () => {},
     }
 
     // Rendering.
 
     renderItem = ({ item }) => {
-        const { file, subtitle } = this.props
+        const { file, subtitle, canAddItems, onSelection } = this.props
         const { editing, selected } = this.state
         const key = this.keyExtractor(item)
         const isSelected = (selected.find((el) => { return el.name == item.name }) != null)
+
+        const tapCallback = onSelection != null ? (item) => onSelection(item.name) : this.onItemTap
+        const longTapCallback = onSelection != null ? null : this.onItemLongTap
 
         return (
             <HighlightableBrowseListItem
                 item={item}
                 playing={item.fullPath === file}
                 onItemMenuSelected={this.onItemMenuPress}
-                onTap={this.onItemTap}
-                onLongTap={this.onItemLongTap}
+                onTap={tapCallback}
+                onLongTap={longTapCallback}
                 editing={editing}
                 selected={isSelected}
                 height={ItemsList.ITEM_HEIGHT}
                 subtitle={subtitle != null ? subtitle(item) : null}
+                canAddItems={canAddItems}
             />
         )
     }
@@ -348,6 +361,8 @@ class ItemsList extends React.Component {
             }
         })
 
+        let hideMenu = true
+
         switch (opt.value) {
             case OPTIONS.ADD_TO_QUEUE_BEGINNING.value:
                 addToQueue(paths, 0)
@@ -358,6 +373,16 @@ class ItemsList extends React.Component {
             case OPTIONS.ADD_TO_QUEUE_AFTER_CURRENT_SONG.value:
                 addToQueue(paths, position + 1)
                 break
+            case OPTIONS.ADD_TO_PLAYLIST.value:
+                {
+                    this.navigateToPlaylists(paths)
+                    hideMenu = false
+                    break
+                }
+        }
+
+        if (!hideMenu) {
+            return
         }
 
         LayoutAnimation.configureNext(CustomLayoutAnimation, this.onCancelEditing)
@@ -382,9 +407,35 @@ class ItemsList extends React.Component {
         })
     }
 
-    onConfirmEditing = () => {
+    onNavigationButtonPressed = (icon) => {
+        switch (icon) {
+            case 'add':
+                this.onConfirmAdd()
+                break
+            case 'delete':
+                this.onConfirmDelete()
+                break
+        }
+    }
+
+    onConfirmAdd = () => {
+        if (this.state.selected.length == 0) {
+            return
+        }
+
         this.setState({
             showingMenu: true,
+        })
+    }
+
+    onConfirmDelete = () => {
+        if (this.state.selected.length == 0) {
+            return
+        }
+
+        LayoutAnimation.configureNext(CustomLayoutAnimation)
+        this.setState({
+            showingDeleteDialog: true,
         })
     }
 
@@ -419,6 +470,68 @@ class ItemsList extends React.Component {
         }
     }
 
+    // Delete dialog.
+    
+    handleDeleteCancel = () => {
+        LayoutAnimation.configureNext(CustomLayoutAnimation)
+        this.setState({
+            showingDeleteDialog: false,
+        })
+    }
+
+    handleDeleteConfirm = () => {
+        const { selected } = this.state
+
+        // Reset editing state.
+        LayoutAnimation.configureNext(CustomLayoutAnimation)
+        this.setState({
+            editing: false,
+            selected: [],
+            showingDeleteDialog: false,
+        })
+
+        this.props.navigation.setParams({
+            editing: false
+        })
+
+        // Call the delete callback.
+        this.props.onDelete(selected)
+    }
+
+    // Playlists navigation.
+    
+    navigateToPlaylists = (paths) => {
+        const { addToPlaylist, navigation } = this.props
+
+        const action = NavigationActions.navigate({
+            params: {
+                callback: (name) => this.addToPlaylist(name, paths)
+            },
+            routeName: 'Playlists',
+        })
+        navigation.dispatch(action)
+    }
+
+    addToPlaylist = (name, paths) => {
+        const { navigation, addToPlaylist } = this.props
+
+        // Pop the stack.
+        const popAction = StackActions.pop({ n: 1 })
+        navigation.dispatch(popAction)
+
+        // Close the menu.
+        LayoutAnimation.configureNext(CustomLayoutAnimation, this.onCancelEditing)
+        this.setState({
+            editing: false,
+            showingMenu: false,
+            selected: [],
+        })
+        this.props.navigation.setParams({ editing: false })
+
+        // Perform an action.
+        addToPlaylist(name, paths)
+    }
+
     // Layout.
 
     componentDidMount() {
@@ -428,7 +541,7 @@ class ItemsList extends React.Component {
 
         this.props.navigation.setParams({
             onCancelEditing: this.onCancelEditing,
-            onConfirmEditing: this.onConfirmEditing,
+            onNavigationButtonPressed: this.onNavigationButtonPressed,
             onGlobalSelectionToggled: this.onGlobalSelectionToggled,
         })
     }
@@ -440,7 +553,7 @@ class ItemsList extends React.Component {
     }
 
     render() {
-        const { showingMenu, selected, editing } = this.state
+        const { showingDeleteDialog, showingMenu, selected, editing } = this.state
         const { queueSize = 0, position = null, content, file = null, refreshing, onReload } = this.props
         
         // Populating options.
@@ -455,6 +568,9 @@ class ItemsList extends React.Component {
         if (queueSize > 0) {
             options.push(OPTIONS.ADD_TO_QUEUE_END)
         }
+
+        // Add to playlist option.
+        options.push(OPTIONS.ADD_TO_PLAYLIST)
 
         // Add index value to each item.
         let enumerated = content.map((item, index) => {
@@ -475,6 +591,10 @@ class ItemsList extends React.Component {
             }
         }
 
+        let deletePrompt = 'Delete ' + 
+            selected.length + 
+            (selected.length > 1 ? ' selected playlists?' : ' selected playlist?')
+
         return (
             <View style={styles.container}>
                 <FlatList
@@ -494,6 +614,13 @@ class ItemsList extends React.Component {
                          onOptionSelected={this.onOptionSelected}
                     />
                  )}
+                {showingDeleteDialog && (
+                    <AppDialog
+                        prompt={deletePrompt}
+                        cancelButton={{ title: 'Cancel', onPress: this.handleDeleteCancel }}
+                        confirmButton={{ title: 'Delete', onPress: this.handleDeleteConfirm }}
+                    />
+                )}
             </View>
        )
     }
@@ -534,7 +661,10 @@ const mapDispatchToProps = dispatch => {
         },
         addToQueuePlay: (uri, position) => {
             dispatch(addToQueuePlay(uri, position))
-        }
+        },
+        addToPlaylist: (name, paths) => {
+            dispatch(addToPlaylist(name, paths))
+        },
    }
 }
 

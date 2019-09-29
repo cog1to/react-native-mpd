@@ -254,7 +254,7 @@ class QueueList extends React.Component {
     componentDidMount() {
        this.props.navigation.setParams({
             onCancelEditing: this.onCancelEditing,
-            onConfirmEditing: this.onConfirmEditing,
+            onNavigationButtonPressed: this.onConfirmEditing,
             onGlobalSelectionToggled: this.onGlobalSelectionToggled,
         })
     }

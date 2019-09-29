@@ -13,6 +13,8 @@ export default class Input extends React.Component {
         placeholder: PropTypes.string,
         keyboardType: PropTypes.string,
         borderBottomColor: PropTypes.string,
+        marginHorizontal: PropTypes.number,
+        marginBottom: PropTypes.number,
     }
 
     static defaultProps = {
@@ -20,22 +22,29 @@ export default class Input extends React.Component {
         value: '',
         placeholder: '',
         borderBottomColor: ThemeManager.instance().getCurrentTheme().activeColor,
+        marginHorizontal: 0,
+        marginBottom: null
     }
 
     render() {
-        const { borderBottomColor } = this.props
+        const { borderBottomColor, marginHorizontal, marginBottom } = this.props
 
         let style = {
+            marginLeft: marginHorizontal,
+            marginRight: marginHorizontal,
             flexDirection: 'row',
             borderBottomWidth: StyleSheet.hairlineWidth,
             borderBottomColor: borderBottomColor,
-            marginVertical: 5
+            marginVertical: 5,
+            marginBottom: marginBottom != null ? marginBottom : 5,
         }
 
         return (
             <View style={style}>
                 <TextInput
                     {...this.props}
+                    marginHorizontal={0}
+                    marginBottom={0}
                     style={{...this.props.style, ...styles.textInput}}
                     underlineColorAndroid='transparent'
                 />
@@ -45,12 +54,6 @@ export default class Input extends React.Component {
 }
 
 const styles = StyleSheet.create({
-    inputContainer: {
-        flexDirection: 'row',
-        borderBottomWidth: StyleSheet.hairlineWidth,
-        borderBottomColor: ThemeManager.instance().getCurrentTheme().activeColor,
-        marginVertical: 5
-    },
     textInput: {
         height: 41,
         flex: 1,

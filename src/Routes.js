@@ -53,37 +53,70 @@ const getMaterialTabBarIcon = icon => ({ tintColor }) => (
     <Icon name={icon} size={24} color={tintColor} /> 
 )
 
-const barOptionsFromState = ({ title, navigation, icon = 'add', hideTitle = false, regularIcon }) => {
+const barOptionsFromState = ({ title, navigation, icons = ['add'], hideTitle = false, regularIcon }) => {
     let options = {
         title: hideTitle && navigation.getParam('editing') === true ? null : title,
         ...navigationHeader
-   }
+    }
 
     const allSelected = navigation.getParam('allSelected')
     let globalSelectionIcon = allSelected ? 'checkbox-multiple-blank-outline' : 'checkbox-multiple-marked-outline'
 
     if (navigation.getParam('editing') === true) {
         options.headerLeft = (
-            <TouchableOpacity onPress={navigation.getParam('onCancelEditing')} style={styles.headerButton}>
-                <Icon name='clear' size={24} color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor} /> 
+            <TouchableOpacity
+                onPress={navigation.getParam('onCancelEditing')}
+                style={styles.headerLeftButton}
+            >
+                <Icon
+                    name='clear'
+                    size={24}
+                    color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor}
+                /> 
             </TouchableOpacity>
         )
+
+        let buttons = icons.map((icon) => {
+            return (
+                <TouchableOpacity 
+                    key={icon}
+                    onPress={() => navigation.getParam('onNavigationButtonPressed')(icon)}
+                    style={styles.headerButton}>
+                    <Icon name={icon}
+                        size={24}
+                        color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor}
+                    />
+                </TouchableOpacity>
+            )
+        })
+
         options.headerRight = (
             <View style={styles.rightEditingHeader}>
-                <TouchableOpacity onPress={() => navigation.getParam('onGlobalSelectionToggled')(!allSelected)}>
-                    <MaterialCommunityIcon name={globalSelectionIcon} size={24} color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor} />
+                <TouchableOpacity
+                    onPress={() => navigation.getParam('onGlobalSelectionToggled')(!allSelected)}
+                    style={styles.headerButton}
+                >
+                    <MaterialCommunityIcon
+                        name={globalSelectionIcon}
+                        size={24}
+                        color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor}
+                    />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={navigation.getParam('onConfirmEditing')} style={styles.headerButton}>
-                    <Icon name={icon} size={24} color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor} />
-                </TouchableOpacity>
+                {buttons}
             </View>
         )
     } else {
         if (regularIcon != null) {
             options.headerRight = (
-                <TouchableOpacity onPress={navigation.getParam('onMenu')} style={styles.headerButton}>
-                    <Icon name={regularIcon} size={24} color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor} />
-                </TouchableOpacity>
+                <View style={styles.rightEditingHeader}>
+                    <TouchableOpacity onPress={navigation.getParam('onMenu')} style={styles.headerButton}>
+                        <Icon
+                            name={regularIcon}
+                            size={24}
+                            color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor}
+                        />
+                    </TouchableOpacity>
+                </View>
             )
         }
     }
@@ -101,6 +134,17 @@ const BrowseNavigator = createStackNavigator(
                 navigation: navigation,
                 hideTitle: true,
                 regularIcon: null,
+            })
+        },
+        Playlists: {
+            screen: Playlists,
+            params: { callback: null },
+            navigationOptions: ({ navigation }) => barOptionsFromState({
+                title: 'Playlists',
+                navigation: navigation,
+                hideTitle: true,
+                icons: (navigation.state.params.callback != null) ? [] : ['add', 'delete'],
+                regularIcon: (navigation.state.params.callback != null) ? 'add' : null,
             })
         }
     },
@@ -120,7 +164,7 @@ const QueueNavigator = createStackNavigator(
             navigationOptions: ({ navigation }) => barOptionsFromState({
                 title: 'Queue',
                 navigation: navigation,
-                icon: 'delete',
+                icons: ['delete'],
                 regularIcon: 'settings',
             })
         },
@@ -202,11 +246,13 @@ const MoreNavigator = createStackNavigator(
         },
         Playlists: {
             screen: Playlists,
+            params: { callback: null },
             navigationOptions: ({ navigation }) => barOptionsFromState({
                 title: 'Playlists',
                 navigation: navigation,
                 hideTitle: true,
-                regularIcon: null,
+                icons: (navigation.state.params.callback != null) ? [] : ['add', 'delete'],
+                regularIcon: (navigation.state.params.callback != null) ? 'add' : null,
             })
         },
         Playlist: {
@@ -251,6 +297,17 @@ const LibraryNavigator = createStackNavigator(
                 title: navigation.getParam('artist') + ' - ' + navigation.getParam('album'),
                 navigation: navigation,
                 hideTitle: true,
+            })
+        },
+        Playlists: {
+            screen: Playlists,
+            params: { callback: null },
+            navigationOptions: ({ navigation }) => barOptionsFromState({
+                title: 'Playlists',
+                navigation: navigation,
+                hideTitle: true,
+                icons: (navigation.state.params.callback != null) ? [] : ['add', 'delete'],
+                regularIcon: (navigation.state.params.callback != null) ? 'add' : null,
             })
         }
     },
@@ -302,6 +359,13 @@ export default createAppContainer(AppNavigator)
 const styles = StyleSheet.create({
     headerButton: {
         height: '100%',
+        aspectRatio: 0.7,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    headerLeftButton: {
+        flexDirection: 'row',
+        height: '100%',
         aspectRatio: 1,
         justifyContent: 'center',
         alignItems: 'center',
@@ -314,6 +378,7 @@ const styles = StyleSheet.create({
     rightEditingHeader: {
         flexDirection: 'row',
         alignItems: 'center',
+        marginRight: 10,
     },
     headerTextButton: {
         color: ThemeManager.instance().getCurrentTheme().navigationBarTextColor,

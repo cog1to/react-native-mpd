@@ -65,6 +65,7 @@ const client = {
     disconnects: [],
     progressTimeout: null,
     updatingProgress: false,
+    playlistListeners: {},
 }
 
 // Returns a handler function for player update events.
@@ -78,6 +79,13 @@ const handlePlayerUpdate = (store) => {
 const handleQueueUpdate = (store) => {
     return () => {
         store.dispatch(getQueue())
+    }
+}
+
+// Returns a handler function for playlist update events.
+const handlePlaylistUpdate = (store) => {
+    return () => {
+        store.dispatch(getPlaylists())
     }
 }
 
@@ -239,10 +247,13 @@ export const mpdMiddleware = store => {
                     // Subscribe to queue events.
                     client.disconnects.push(client.mpd.onQueueUpdate(handleQueueUpdate(store)))
 
+                    // Subscribe to queue events.
+                    client.disconnects.push(client.mpd.onPlaylistUpdate(handlePlaylistUpdate(store)))
+
                     // Subscribe to error events.
                     client.disconnects.push(client.mpd.onError(handleErrorUpdate(store)))
 
-                    // Subsccribe to close events.
+                    // Subscribe to close events.
                     client.disconnects.push(client.mpd.onDisconnected(handleClose(store)))
 
                     // Emit connected action.
@@ -671,6 +682,127 @@ export const mpdMiddleware = store => {
                 client.mpd.getPlaylist(name).then(data => {
                     store.dispatch(playlistLoaded(name, listToChildren(data)))
                 })
+                break
+            }
+            case types.ADD_TO_PLAYLIST: {
+                const { name, paths } = action
+
+                const handleFile = (uri) => {
+                    return new Promise((resolve, reject) => {
+                        client.mpd.addToPlaylist(name, uri).then((result) => {
+                            resolve()
+                        }).catch((e) => {
+                            reject(e)
+                        })
+                    })
+                }
+
+                const handleFileList = (uris) => {
+                    return uris.reduce((promise, uri) => {
+                        return new Promise((resolve, reject) => {
+                            promise.then((pos) => {
+                                handleFile(uri).then(() => {
+                                    resolve()
+                                }).catch((e) => {
+                                    reject(e)
+                                })
+                            })
+                        })
+                    }, Promise.resolve())
+                }
+
+                const handlePlaylist = (uri) => {
+                    return client.mpd.getPlaylist(uri).then((content) => {
+                        let files = content.map(node => { return node.file })
+                        return handleFileList(files)
+                    })
+                }
+
+                const handleDirectory = (uri) => {
+                    return getContentRecursively(uri).then((content) => {
+                        let files = content.map(node => { return node.fullPath })
+                        return handleFileList(files)
+                    })
+                }
+
+                const handleAlbum = (artist, album) => {
+                    const expression = [
+                        { tag: 'artist', value: artist },
+                        { tag: 'album', value: album },
+                    ]
+
+                    const searchExpressions = expression.map(({ tag, value }) => {
+                        return '(' + tag + ' == \'' + sanitize(value)  + '\')'
+                    })
+
+                    const combined = '(' + searchExpressions.join(' AND ')  + ')'
+
+                    // Get search results.
+                    return client.mpd.search(combined).then(results => {
+                        let list = listToChildren(results, false)
+                        let files = list.map((song) => { return song.fullPath })
+                        return handleFileList(files)
+                    })
+                }
+
+                const handleArtist = (artist) => {
+                    const searchExpression = '(artist == \'' + sanitize(artist)  + '\')'
+
+                    // Get search results.
+                    return client.mpd.search(searchExpression).then(results => {
+                        let files = results.map((song) => { return song.file })
+                        return handleFileList(files)
+                    })
+                }
+
+                const handleEverything = (items) => {
+                    return items.reduce((promise, { path, type, data }) => {
+                        return promise.then(() => {
+                            if (type == TreeNodeType.DIRECTORY) {
+                                return handleDirectory(path)
+                            } else if (type == TreeNodeType.PLAYLIST) {
+                                return handlePlaylist(path)
+                            } else if (type == TreeNodeType.ARTIST) {
+                                return handleArtist(path)
+                            } else if (type == TreeNodeType.ALBUM) {
+                                return handleAlbum(data.artist, data.album)
+                            } else {
+                                return handleFile(path)
+                            }
+                        })
+                    }, Promise.resolve())
+                }
+
+                handleEverything(paths).catch(e => {
+                    store.dispatch(error(e, types.ADD_TO_PLAYLIST))
+                })
+                break
+            }
+            case types.DELETE_PLAYLISTS: {
+                const { names } = action
+
+                const handleFile = (name) => {
+                    return client.mpd.deletePlaylist(name)
+                }
+
+                const handleList = (names) => {
+                    return names.reduce((promise, name) => {
+                        return new Promise((resolve, reject) => {
+                            promise.then(() => {
+                                return handleFile(name).then(() => {
+                                    resolve()
+                                }).catch((e) => {
+                                    reject(e)
+                                })
+                            })
+                        })
+                    }, Promise.resolve())
+                }
+
+                handleList(names).catch((e) => {
+                    store.dispatch(error(e, types.DELETE_PLAYLISTS))
+                })
+
                 break
             }
             default:

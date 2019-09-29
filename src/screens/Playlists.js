@@ -11,7 +11,7 @@ import { NavigationActions } from 'react-navigation'
 import { connect } from 'react-redux'
 
 // Actions.
-import { getPlaylists } from '../redux/reducers/playlists/actions'
+import { getPlaylists, newPlaylist, deletePlaylists } from '../redux/reducers/playlists/actions'
 
 // Items list.
 import ItemsList from '../components/ItemsList'
@@ -19,8 +19,16 @@ import ItemsList from '../components/ItemsList'
 // Date parsing.
 import Moment from 'moment'
 
+// New playlist dialog.
+import AppPromptDialog from '../components/common/AppPromptDialog'
+
 class Playlists extends React.Component {
+    state = {
+        showingNewDialog: false,
+    }
+
     componentDidMount() {
+        this.props.navigation.setParams({ onMenu: this.handleMenuPress })
         Moment.locale('en')
         this.reload()
     }
@@ -47,8 +55,24 @@ class Playlists extends React.Component {
         navigation.dispatch(action)
     }
 
+    handleMenuPress = () => {
+        this.setState({
+            showingNewDialog: true,
+        })
+    }
+
+    handleDelete = (items) => {
+        const names = items.map((item) => { return item.name })
+        const { deletePlaylists } = this.props
+        deletePlaylists(names)
+    }
+
     render() {
-        const { content, navigation, loading } = this.props
+        const { content, navigation, loading, } = this.props
+        const { state: { params: { callback } } } = navigation
+        const { showingNewDialog } = this.state
+
+        const canAddItems = callback == null
 
         return (
             <View style={styles.container}>
@@ -59,9 +83,42 @@ class Playlists extends React.Component {
                     onReload={this.reload}
                     subtitle={this.getLastModified}
                     onNavigate={this.onNavigate}
+                    canAddItems={canAddItems}
+                    onSelection={callback}
+                    onDelete={this.handleDelete}
                 />
+                {showingNewDialog && (
+                    <AppPromptDialog
+                        prompt='Create new playlist:'
+                        placeholder='Playlist name'
+                        cancelButton={{
+                            title: 'Cancel',
+                            onPress: this.handleDailogCancel
+                        }}
+                        confirmButton={{
+                            title: 'Create',
+                            onPress: this.handleDialogConfirm
+                        }}
+                    />
+                )}
             </View>
         )
+    }
+
+    // New Playlist dialog.
+    
+    handleDailogCancel = () => {
+        this.setState({
+            showingNewDialog: false,
+        })
+    }
+
+    handleDialogConfirm = (name) => {
+       const { navigation } = this.props
+       const { state: { params: { callback = null } } } = navigation
+       if (callback) {
+           callback(name)
+       }
     }
 }
 
@@ -73,7 +130,8 @@ const mapStateToProps = state => {
 }
 
 const mapDispatchToProps = dispatch => ({
-    getPlaylists: () => dispatch(getPlaylists())
+    getPlaylists: () => dispatch(getPlaylists()),
+    deletePlaylists: (names) => dispatch(deletePlaylists(names)),
 })
 
 export default connect(mapStateToProps, mapDispatchToProps)(Playlists)
