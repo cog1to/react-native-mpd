@@ -240,6 +240,11 @@ export default class MpdClientWrapper {
         return this._sendCommand(cmd('deleteid', [songId]), mpd.parseKeyValueMessage)   
     }
 
+    deleteSongIds(ids) {
+        let commands = ids.map((id) => { return cmd('deleteid', [id]) })
+        return this._sendCommands(commands, mpd.parseKeyValueMessage)
+    }
+
     addToQueue(items) {
         let commands = items.map((item) => { return cmd('addid', [item.file, item.position]) })
         return this._sendCommands(commands, mpd.parseKeyValueMessage)

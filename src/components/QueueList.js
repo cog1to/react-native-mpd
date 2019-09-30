@@ -34,10 +34,10 @@ if (Platform.OS === 'android') {
 }
 
 const RowAnimation = {
-    duration: 150,
-    create: { type: 'linear', property: 'opacity' },
-    update: { type: 'linear', property: 'opacity' },
-    delete: { type: 'linear', property: 'opacity' }
+    duration: 250,
+    create: { type: 'linear', property: 'scaleY' },
+    update: { type: 'linear', property: 'scaleY' },
+    delete: { type: 'linear', property: 'scaleY' }
 }
 
 const CustomLayoutAnimation = {
@@ -213,16 +213,14 @@ class QueueList extends React.Component {
         const { selected } = this.state
         const ids = selected.map(item => { return item.id })
 
-        this.setState({
-            selected: [],
-            editing: false,
-        })
-
         navigation.setParams({
             editing: false,
         })
 
-        remove(ids)
+        this.setState({
+            selected: [],
+            editing: false,
+        }, () => remove(ids))
     }
 
     onGlobalSelectionToggled = (all) => {
@@ -291,8 +289,8 @@ const queueToList = (state) => {
 
 const mapStateToProps = state => {
     return {
-        queue: queueToList(state),      
-    }
+        queue: queueToList(state),
+    }    
 }
 
 const mapDispatchToProps = dispatch => {

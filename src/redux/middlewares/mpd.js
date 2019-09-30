@@ -21,7 +21,7 @@ import {
 
 import {
     getQueue,
-    queueUpdated
+    queueUpdated,
 } from '../reducers/queue/actions'
 
 import { getAlbumArt } from '../reducers/archive/actions'
@@ -458,9 +458,9 @@ export const mpdMiddleware = store => {
                 break
             }
             case types.DELETE_SONGS: {
-                action.songIds.reduce((promiseChain, songId) => {
-                    return promiseChain.then(client.mpd.deleteSongId(songId))
-                }, Promise.resolve())
+                client.mpd.deleteSongIds(action.songIds).catch(e => {
+                    store.dispatch(error(e, types.DELETE_SONGS)) 
+                })
                 break
             }
             case types.CLEAR_QUEUE: {
@@ -529,7 +529,7 @@ export const mpdMiddleware = store => {
             case types.ADD_TO_QUEUE_PLAY: {
                 const { uri: song, position: pos } = action
 
-                client.mpd.addToQueue(song, pos).then(({ Id }) => {
+                client.mpd.addToQueue([{file: song, position: pos}]).then(({ Id }) => {
                     client.mpd.setCurrentSong(Id)
                 }).catch((e) => {
                     store.dispatch(error(e, types.ADD_TO_QUEUE_PLAY))
