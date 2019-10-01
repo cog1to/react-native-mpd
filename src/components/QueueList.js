@@ -9,6 +9,7 @@ import {
     Platform,
     UIManager,
 } from 'react-native'
+import { NavigationActions, StackActions } from 'react-navigation'
 
 // Song prop types.
 import { queuePropTypes } from '../redux/reducers/queue/reducer'
@@ -19,12 +20,16 @@ import { connect } from 'react-redux';
 // Actions.
 import { setCurrentSong, deleteSongs, clear }  from '../redux/reducers/queue/actions'
 import { playPause } from '../redux/reducers/player/actions'
+import { addToPlaylist } from '../redux/reducers/playlists/actions'
 
 // List item.
 import QueueListItem from './QueueListItem'
 
 // Highlightable wrapper.
 import { HighlightableView } from './common/HighlightableView'
+
+// Item menu.
+import MenuDialog from './common/MenuDialog'
 
 // Themes.
 import ThemeManager from '../themes/ThemeManager'
@@ -64,6 +69,7 @@ class QueueList extends React.Component {
     state = {
         selected: [],
         editing: false,
+        showingMenu: false,
     }
 
     static propTypes = {
@@ -80,33 +86,52 @@ class QueueList extends React.Component {
     }
 
     render() {
+        const { showingMenu } = this.state
+
+        // Add to playlist option.
+        options = [{ value: 'ADD_TO_PLAYLIST', title: 'To a playlist' }]
+
         return (
-            <FlatList 
-                style={styles.container}
-                data={this.props.queue}
-                keyExtractor={this.keyExtractor}
-                renderItem={this.renderItem}
-                extraData={this.state.selected}
-                getItemLayout={this.getItemLayout}
-            />
+            <View style={styles.container}>
+                <FlatList 
+                    style={styles.list}
+                    data={this.props.queue}
+                    keyExtractor={this.keyExtractor}
+                    renderItem={this.renderItem}
+                    extraData={this.state.selected}
+                    getItemLayout={this.getItemLayout}
+                />
+                {showingMenu && (
+                    <MenuDialog
+                         title='Add items...'
+                         options={options}
+                         onHide={this.handleBackPress}
+                         onOptionSelected={this.onOptionSelected}
+                    />
+                )}
+ 
+            </View>
+
         )
     }
 
     keyExtractor = (item, index) => item.songId
 
     renderItem = ({item}) => {
-        const { selected } = this.state
+        const { selected, editing } = this.state
         const { songId: id } = item
         const isSelected = (selected.find(el => { return el.id === id }) != null)
 
         return <QueueListItem
-            item={{ id: item.songId, status: item.status, name: item.name }}
+            item={{ id: item.songId, status: item.status, name: item.name, file: item.file }}
             selected={isSelected}
             subtitle={item.subtitle}
             onTap={this.onPressItem}
             onLongTap={this.onLongPressItem}
             onDeleteItem={this.onDeleteItem}
+            onMenuPress={this.onMenuPress}
             height={QueueList.ITEM_HEIGHT}
+            editing={editing}
         />
     }
 
@@ -116,7 +141,7 @@ class QueueList extends React.Component {
         index,
     })
 
-    onPressItem = ({ id, status, name }) => {
+    onPressItem = ({ id, status, name, file }) => {
         const { editing, selected } = this.state
         const { navigation, queue } = this.props
 
@@ -139,7 +164,7 @@ class QueueList extends React.Component {
                     })
                 }
             } else {
-                newSelected.push({ id, status, name })
+                newSelected.push({ id, status, name, file })
                 this.setState({
                     selected: newSelected,
                 })
@@ -157,7 +182,7 @@ class QueueList extends React.Component {
         }
     }
 
-    onLongPressItem = ({ id, status, name }) => {
+    onLongPressItem = ({ id, status, name, file }) => {
         const { navigation, queue } = this.props
         const { editing, selected } = this.state
         
@@ -165,7 +190,7 @@ class QueueList extends React.Component {
         if (selected.find(el => { return el.id === id }) != null) {
             newSelected = selected.filter(el => { return el.id !== id })
         } else {
-            newSelected.push({ id, status, name })
+            newSelected.push({ id, status, name, file })
         }
 
         LayoutAnimation.configureNext(CustomLayoutAnimation)
@@ -208,7 +233,82 @@ class QueueList extends React.Component {
         })
     }
 
-    onConfirmEditing = () => {
+    onMenuPress = (item) => {
+        const { editing, selected } = this.state
+
+        let newSelected = selected.slice()
+        newSelected.push(item)
+
+        LayoutAnimation.configureNext(CustomLayoutAnimation)
+        this.setState({
+            showingMenu: true,
+            selected: newSelected,
+        })
+    }
+
+    handleBackPress = () => {
+        const { showingMenu, selected, editing } = this.state
+
+        if (showingMenu) {
+            let newSelected = selected
+
+            if (!editing) {
+                newSelected = []
+            }
+
+            LayoutAnimation.configureNext(CustomLayoutAnimation)
+            this.setState({
+                showingMenu: false,
+                selected: newSelected,
+            })
+
+            return true
+        }
+
+        if (editing) {
+            this.onCancelEditing()
+            return true
+        }
+
+        return false
+    }
+
+    onOptionSelected = (opt) => {
+        const { addToQueue, queue, queueSize, position = null } = this.props
+
+        const sorted = this.state.selected.slice()
+        sorted.sort((one, two) => {
+            return (one.id < two.id ? -1 : 1)
+        })
+
+        const paths = sorted.map(item => {
+            return {
+                path: item.file,
+                type: 'FILE',
+                data: null,
+            }
+        })
+
+        switch (opt.value) {
+            case 'ADD_TO_PLAYLIST': {
+                this.navigateToPlaylists(paths)
+                break
+            }
+        }
+    }
+
+    onNavigationButtonPressed = (icon) => {
+        switch (icon) {
+            case 'add':
+                this.onConfirmAdd()
+                break
+            case 'delete':
+                this.onConfirmDelete()
+                break
+        }
+    }
+
+    onConfirmDelete = () => {
         const { remove, navigation } = this.props
         const { selected } = this.state
         const ids = selected.map(item => { return item.id })
@@ -221,6 +321,10 @@ class QueueList extends React.Component {
             selected: [],
             editing: false,
         }, () => remove(ids))
+    }
+
+    onConfirmAdd = () => {
+        this.onOptionSelected({value: 'ADD_TO_PLAYLIST'})
     }
 
     onGlobalSelectionToggled = (all) => {
@@ -257,9 +361,44 @@ class QueueList extends React.Component {
     componentDidMount() {
        this.props.navigation.setParams({
             onCancelEditing: this.onCancelEditing,
-            onNavigationButtonPressed: this.onConfirmEditing,
+            onNavigationButtonPressed: this.onNavigationButtonPressed,
             onGlobalSelectionToggled: this.onGlobalSelectionToggled,
         })
+    }
+    
+    // Playlists navigation.
+    
+    navigateToPlaylists = (paths) => {
+        const { addToPlaylist, navigation } = this.props
+
+        const action = NavigationActions.navigate({
+            params: {
+                callback: (name) => this.addToPlaylist(name, paths)
+            },
+            routeName: 'Playlists',
+            key: 'selectPlaylist',
+        })
+        navigation.dispatch(action)
+    }
+
+    addToPlaylist = (name, paths) => {
+        const { navigation, addToPlaylist } = this.props
+
+        // Pop the stack.
+        const popAction = StackActions.pop({ n: 1 })
+        navigation.dispatch(popAction)
+
+        // Close the menu.
+        LayoutAnimation.configureNext(CustomLayoutAnimation, this.onCancelEditing)
+        this.setState({
+            editing: false,
+            showingMenu: false,
+            selected: [],
+        })
+        this.props.navigation.setParams({ editing: false })
+
+        // Perform an action.
+        addToPlaylist(name, paths)
     }
 }
 
@@ -280,6 +419,7 @@ const queueToList = (state) => {
 
         return {
             songId: song.songId,
+            file: song.file,
             name: name,
             subtitle: artist,
             status: (song.songId === currentSongId ? player : null)
@@ -306,6 +446,9 @@ const mapDispatchToProps = dispatch => {
         },
         clear: () => {
             dispatch(clear())
+        },
+        addToPlaylist: (name, items) => {
+            dispatch(addToPlaylist(name, items))
         }
     }
 }

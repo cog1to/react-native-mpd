@@ -7,6 +7,7 @@ import {
   Animated,
   TouchableWithoutFeedback,
   Platform,
+  TouchableOpacity,
 } from 'react-native'
 import FontAwesome, { Icons } from 'react-native-fontawesome'
 import Draggable from './common/Draggable'
@@ -29,10 +30,21 @@ class ForegroundView extends React.PureComponent {
         status: PropTypes.string,
         subtitle: PropTypes.string,
         height: PropTypes.number,
+        onMenuPress: PropTypes.func.isRequired,
+        editing: PropTypes.bool.isRequired,
+    }
+
+    static defaultProps = {
+        onMenuPress: () => {}
+    }
+
+    handleMenuPress = (id) => {
+        const { onMenuPress } = this.props
+        onMenuPress(id)
     }
 
     render() {
-        const { status, subtitle, id, name, height, selected } = this.props
+        const { status, subtitle, id, name, height, selected, onMenuPress, editing } = this.props
         const theme = ThemeManager.instance().getCurrentTheme()
 
         return (
@@ -66,6 +78,11 @@ class ForegroundView extends React.PureComponent {
                     {selected && (
                         <Icon name='check' color={theme.mainTextColor} style={{...styles.status, fontSize: 20}} />
                     )}
+                    {!selected && !editing && (
+                        <TouchableOpacity onPress={() => this.handleMenuPress(id)}>
+                            <Icon name='more-vert' color={theme.mainTextColor} style={{...styles.status, fontSize: 20}} />
+                        </TouchableOpacity>
+                    )}
                 </View>
 
             </View>
@@ -97,6 +114,10 @@ export default class QueueListItem extends React.Component {
 
     shouldComponentUpdate(nextProps, nextState) {
         if (this.props.selected !== nextProps.selected) {
+            return true
+        }
+
+        if (this.props.editing !== nextProps.editing) {
             return true
         }
 
@@ -141,7 +162,7 @@ export default class QueueListItem extends React.Component {
         }
     }
 
-    // Highlightable
+    // Highlightable.
     
     handleTap = () => {
         const { item, onTap } = this.props
@@ -153,10 +174,17 @@ export default class QueueListItem extends React.Component {
         onLongTap(item)
     }
 
+    // Menu.
+    
+    handleMenuPress = () => {
+        const { item, onMenuPress } = this.props
+        onMenuPress(item)
+    }
+
     // Rendering.
 
     render() {
-        const { item, subtitle, selected } = this.props
+        const { item, subtitle, selected, editing } = this.props
         const { name, status, id } = item
 
         return (
@@ -179,7 +207,9 @@ export default class QueueListItem extends React.Component {
                         return (
                             <Animated.View {...handlers} style={[styles.foreground, style]}>
                                 <HighlightableForegroundView
+                                    onMenuPress={this.handleMenuPress}
                                     selected={selected}
+                                    editing={editing}
                                     item={item}
                                     name={name}
                                     status={status}

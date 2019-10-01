@@ -164,7 +164,7 @@ const QueueNavigator = createStackNavigator(
             navigationOptions: ({ navigation }) => barOptionsFromState({
                 title: 'Queue',
                 navigation: navigation,
-                icons: ['delete'],
+                icons: ['add', 'delete'],
                 regularIcon: 'settings',
             })
         },
@@ -173,6 +173,17 @@ const QueueNavigator = createStackNavigator(
             navigationOptions: {
                 title: 'Settings',
             }
+        },
+        Playlists: {
+            screen: Playlists,
+            params: { callback: null },
+            navigationOptions: ({ navigation }) => barOptionsFromState({
+                title: 'Playlists',
+                navigation: navigation,
+                hideTitle: true,
+                icons: (navigation.state.params.callback != null) ? [] : ['add', 'delete'],
+                regularIcon: (navigation.state.params.callback != null) ? 'add' : null,
+            })
         }
     },
     {

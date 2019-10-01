@@ -614,7 +614,7 @@ class ItemsList extends React.Component {
                          onHide={this.handleBackPress}
                          onOptionSelected={this.onOptionSelected}
                     />
-                 )}
+                )}
                 {showingDeleteDialog && (
                     <AppDialog
                         prompt={deletePrompt}
