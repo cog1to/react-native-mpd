@@ -370,7 +370,7 @@ export default createAppContainer(AppNavigator)
 const styles = StyleSheet.create({
     headerButton: {
         height: '100%',
-        aspectRatio: 0.7,
+        aspectRatio: Platform.OS === 'android' ? 0.7 : 1.0,
         justifyContent: 'center',
         alignItems: 'center',
     },
