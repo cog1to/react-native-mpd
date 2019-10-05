@@ -355,12 +355,14 @@ const AppNavigator = createStackNavigator({
         screen: Login,
         navigationOptions: {
             header: null,
+            gesturesEnabled: false,
         }
     },
     Home: {
         screen: TabNavigator,
         navigationOptions: {
             header: null,
+            gesturesEnabled: false,
         }
     }
 })
