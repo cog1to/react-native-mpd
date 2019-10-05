@@ -14,7 +14,25 @@ import { connect } from 'react-redux'
 import { setCurrentSong, deleteSongs, clear, moveSong }  from '../redux/reducers/queue/actions'
 import { playPause } from '../redux/reducers/player/actions'
 
+const compareLists = (left, right) => {
+  if (left.length != right.length) {
+    return true
+  }
+
+  for (let index = 0; index < left.length; index++) {
+    if (left[index].id != right[index].id) {
+      return true
+    }
+  }
+
+  return false
+}
+
 class Queue extends React.Component {
+  state = {
+    tempData: null,
+  }
+
   handleMenuPress = () => {
     const { navigation } = this.props
     navigation.navigate('QueueSettings')
@@ -24,15 +42,26 @@ class Queue extends React.Component {
     this.props.navigation.setParams({ onMenu: this.handleMenuPress })
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.state.tempData != null && compareLists(this.state.tempData, nextProps.content)) {
+      this.setState({
+        tempData: null,
+      })
+    }
+  }
+
   render() {
     const { navigation, content, queueSize } = this.props
+    const { tempData } = this.state
+
+    const data = tempData != null ? tempData : content
 
     const options = [{ value: 'ADD_TO_PLAYLIST', title: 'To a playlist' }]
 
     return (
       <View style={styles.container}>
         <Browsable
-          content={content} 
+          content={data}
           navigation={navigation}
           canEdit={true}
           canDelete={true}
@@ -49,8 +78,12 @@ class Queue extends React.Component {
   }
 
   // Events.
-  
-  handleItemMove = ({ row, to }) => {
+
+  handleItemMove = ({ data, row, to }) => {
+    this.setState({
+      tempData: data,
+    })
+
     const { moveSong } = this.props
     moveSong(row.id, to)
   }
@@ -78,7 +111,7 @@ class Queue extends React.Component {
 
 const queueToList = (state) => {
   const player = state.status.player
-  const currentSongId = player === 'stop' ? null : state.currentSong.songId   
+  const currentSongId = player === 'stop' ? null : state.currentSong.songId
 
   return state.queue.map((song, index) => {
     let name = song.title
@@ -111,7 +144,7 @@ const mapStateToProps = state => {
   return {
     content: queue,
     queueSize: queueSize,
-  }    
+  }
 }
 
 const mapDispatchToProps = dispatch => {
