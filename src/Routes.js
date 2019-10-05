@@ -53,7 +53,7 @@ const getMaterialTabBarIcon = icon => ({ tintColor }) => (
     <Icon name={icon} size={24} color={tintColor} /> 
 )
 
-const barOptionsFromState = ({ title, navigation, icons = ['add'], hideTitle = false, regularIcon }) => {
+const barOptionsFromState = ({ title, navigation, icons = ['playlist-add'], hideTitle = false, regularIcon }) => {
     let options = {
         title: hideTitle && navigation.getParam('editing') === true ? null : title,
         ...navigationHeader
@@ -143,7 +143,7 @@ const BrowseNavigator = createStackNavigator(
                 title: 'Playlists',
                 navigation: navigation,
                 hideTitle: true,
-                icons: (navigation.state.params.callback != null) ? [] : ['add', 'delete'],
+                icons: (navigation.state.params.callback != null) ? [] : ['delete'],
                 regularIcon: (navigation.state.params.callback != null) ? 'add' : null,
             })
         }
@@ -164,7 +164,7 @@ const QueueNavigator = createStackNavigator(
             navigationOptions: ({ navigation }) => barOptionsFromState({
                 title: 'Queue',
                 navigation: navigation,
-                icons: ['add', 'delete'],
+                icons: ['playlist-add', 'delete'],
                 regularIcon: 'settings',
             })
         },
@@ -262,7 +262,7 @@ const MoreNavigator = createStackNavigator(
                 title: 'Playlists',
                 navigation: navigation,
                 hideTitle: true,
-                icons: (navigation.state.params.callback != null) ? [] : ['add', 'delete'],
+                icons: (navigation.state.params.callback != null) ? [] : ['playlist-add', 'delete'],
                 regularIcon: (navigation.state.params.callback != null) ? 'add' : null,
             })
         },

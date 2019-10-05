@@ -14,7 +14,7 @@ import { connect } from 'react-redux'
 import { loadAlbums } from '../redux/reducers/library/actions'
 
 // Items list.
-import ItemsList from '../components/ItemsList'
+import Browsable from '../components/common/Browsable'
 
 class Artist extends React.Component {
     componentWillMount() {
@@ -32,24 +32,28 @@ class Artist extends React.Component {
     }
 
     render() {
-        const { content, navigation, loading } = this.props
+        const { content, navigation, loading, queueSize, position } = this.props
 
         let albums = ((content !== null) ? Object.keys(content) : []).map((name, index) => ({ 
             icon: index + 1,
             name: name,
             type: 'ALBUM',
-            fullPath: name,
+            path: name,
+            subtitle: navigation.state.params.name,
+            status: 'none',
             data: { album: name, artist: navigation.state.params.name },
         }))
  
         return (
             <View style={styles.container}>
-                <ItemsList
+                <Browsable
                     content={albums}
                     onNavigate={this.onNavigate}
                     navigation={navigation}
                     refreshing={loading}
-                    onReload={this.reload}
+                    onRefresh={this.reload}
+                    queueSize={queueSize}
+                    position={position}
                 />
             </View>
          )
@@ -71,11 +75,14 @@ class Artist extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
+    const { position = null, file = null } = state.currentSong
     const { navigation: { state: { params: { name } } } } = ownProps
     
     return {
         content: state.library.library[name],
         loading: state.library.loading,
+        queueSize: state.queue.length,
+        position: position,
     }
 }
 

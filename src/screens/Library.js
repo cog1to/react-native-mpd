@@ -1,9 +1,9 @@
 import React from 'react'
 import {
-    StyleSheet,
-    View,
-    FlatList,
-    Text,
+  StyleSheet,
+  View,
+  FlatList,
+  Text,
 } from 'react-native'
 import { NavigationActions } from 'react-navigation'
 
@@ -14,7 +14,7 @@ import { connect } from 'react-redux'
 import { loadArtists } from '../redux/reducers/library/actions'
 
 // Items list.
-import ItemsList from '../components/ItemsList'
+import Browsable from '../components/common/Browsable'
 
 class Library extends React.Component {
     componentDidMount() {
@@ -31,22 +31,26 @@ class Library extends React.Component {
     }
 
     render() {
-        const { content, navigation, loading } = this.props
+        const { content, navigation, loading, queueSize, position } = this.props
         const artists = ((content !== null) ? Object.keys(content) : []).map((name, index) => ({
             icon: index + 1,
+            title: name,
+            subtitle: 'ARTIST',
             name: name,
             type: 'ARTIST',
-            fullPath: name,
+            path: name,
+            status: 'none',
         }))
 
         return (
             <View style={styles.container}>
-                <ItemsList
+                <Browsable
                     content={artists}
                     onNavigate={this.onNavigate}
                     navigation={navigation}
-                    onReload={this.reload}
+                    onRefresh={this.reload}
                     refreshing={loading}
+                    queueSize={queueSize}
                 />
             </View>
          )
@@ -67,10 +71,13 @@ class Library extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
     const { library, loading } = state.library
+    const { position = null, file = null } = state.currentSong
 
     return {
         content: library,
         loading: loading,
+        queueSize: state.queue.length,
+        position
     }
 }
 

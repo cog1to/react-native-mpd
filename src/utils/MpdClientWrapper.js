@@ -254,6 +254,10 @@ export default class MpdClientWrapper {
         return this._sendCommand(cmd('clear', []), mpd.parseKeyValueMessage)
     }
 
+    moveSong(id, to) {
+        return this._sendCommand(cmd('moveid', [id, to]), mpd.parseKeyValueMessage)
+    }
+
     getArtists() {
         return this._sendCommand(cmd('list', ['artist']), mpd.parseArrayMessage)
     }
@@ -310,6 +314,15 @@ export default class MpdClientWrapper {
         return this._sendCommand(cmd('rm', [name]), mpd.parseKeyValueMessage)
     }
 
+    playlistMove(name, from, to) {
+        return this._sendCommand(cmd('playlistmove', [name, from, to]), mpd.parseKeyValueMessage)
+    }
+
+    playlistDelete(name, positions) {
+        let commands = positions.map((pos) => cmd('playlistdelete', [name, pos]))
+        return this._sendCommands(commands, mpd.parseKeyValueMessage)
+    }
+    
     // MARK: - Event listeners
 
     _handleSystemUpdate(systemName) {

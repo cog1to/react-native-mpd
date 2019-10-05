@@ -40,3 +40,16 @@ export const deletePlaylists = (names) => ({
     type: types.DELETE_PLAYLISTS,
     names,
 })
+
+export const playlistMove = (name, from, to) => ({
+    type: types.PLAYLIST_MOVE,
+    name,
+    from,
+    to,
+})
+
+export const playlistDelete = (name, indices) => ({
+    type: types.PLAYLIST_DELETE,
+    name,
+    indices,
+})

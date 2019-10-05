@@ -1,30 +1,36 @@
 import React from 'react'
 import {
-    View,
-    StyleSheet,
+  View,
+  StyleSheet,
 } from 'react-native'
 
 // Redux.
 import { connect } from 'react-redux'
 
 // Items list.
-import ItemsList from '../components/ItemsList'
+import Browsable from '../components/common/Browsable'
 
 export default class SearchResults extends React.Component {
-    render() {
-        const { navigation } = this.props
-        const { state: { params: { content } } } = navigation
+  render() {
+    const { navigation } = this.props
+    const { state: { params: { content } } } = navigation
 
-        return (
-            <View style={styles.container}>
-                <ItemsList content={content} navigation={navigation} />
-            </View>
-        )
-    }
+    return (
+      <View style={styles.container}>
+        <Browsable
+          content={content}
+          navigation={navigation}
+          canDelete={false}
+          canEdit={true}
+          canArrange={false}
+        />
+      </View>
+    )
+  }
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
+  container: {
+    flex: 1,
+  },
 })

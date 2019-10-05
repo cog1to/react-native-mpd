@@ -22,3 +22,9 @@ export const deleteSongs = (songIds) => ({
 export const clear = () => ({
     type: types.CLEAR_QUEUE,
 })
+
+export const moveSong = (id, to) => ({
+    type: types.MOVE_SONG,
+    id,
+    to,
+})

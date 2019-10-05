@@ -469,7 +469,13 @@ export const mpdMiddleware = store => {
                 })
                 break
             }
-            case types.START_PROGRESS_UPDATE: {
+            case types.MOVE_SONG: {
+                const { id, to } = action
+                client.mpd.moveSong(id, to).catch(e => {
+                    store.dispatch(error(e, action.type))
+                })
+                break
+            } case types.START_PROGRESS_UPDATE: {
                 if (!client.updatingProgress) {
                     client.updatingProgress = true
                     store.dispatch(getStatus('progress'))
@@ -703,6 +709,28 @@ export const mpdMiddleware = store => {
                     store.dispatch(error(e, types.DELETE_PLAYLISTS))
                 })
 
+                break
+            }
+            case types.PLAYLIST_MOVE: {
+                const { name, from, to } = action
+                
+                client.mpd.playlistMove(name, from, to).then((result) => {
+                    store.dispatch(getPlaylist(name))
+                })
+                .catch(e => {
+                    store.dispatch(error(e, action.type))
+                })
+                break
+            }
+            case types.PLAYLIST_DELETE: {
+                const { name, indices } = action
+                
+                client.mpd.playlistDelete(name, indices).then((result) => {
+                    store.dispatch(getPlaylist(name))
+                })
+                .catch(e => {
+                    store.dispatch(error(e, action.type))
+                })
                 break
             }
             default:
