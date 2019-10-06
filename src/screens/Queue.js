@@ -20,7 +20,7 @@ const compareLists = (left, right) => {
   }
 
   for (let index = 0; index < left.length; index++) {
-    if (left[index].id != right[index].id) {
+    if (left[index].id != right[index].id || left[index].status != right[index].status) {
       return true
     }
   }
