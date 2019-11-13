@@ -2,10 +2,10 @@ import PropTypes from 'prop-types'
 
 import * as types from './types'
 
-export const archiveReducer = (state = {}, action) => {
+export const artistsReducer = (state = {}, action) => {
   switch (action.type) {
-    case types.ART_RECEIVED:
-      const { artist, album, url } = action
+    case types.ARTIST_ART_RECEIVED:
+      const { artist, urls } = action
 
       let newState = Object.assign({}, state)
 
@@ -14,10 +14,15 @@ export const archiveReducer = (state = {}, action) => {
         newState[artist] = { }
       }
 
-      // Add an URL for artist->album.
-      newState[artist][album] = action.url
+      // Add art URLs for artist.
+      newState[artist] = urls
 
       return newState
+    case types.ARTIST_ART_LOADED:
+      const { data } = action
+      if (data != null) {
+        return data
+      }
     default:
       return state
   }

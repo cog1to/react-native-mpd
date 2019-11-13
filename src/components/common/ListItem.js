@@ -5,16 +5,26 @@ import {
   Platform,
   Text,
   TouchableOpacity,
+  Image,
 } from 'react-native'
 import PropTypes from 'prop-types'
 
+// Sub-components.
 import Highlightable from './Highlightable'
 import Swipeable from './Swipeable'
 
+// Icons.
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 
-export default class ListItem extends React.Component {
+// Redux.
+import { connect } from 'react-redux'
+
+// Actions.
+import { getArtistArt } from '../../redux/reducers/artists/actions'
+import { getAlbumArt } from '../../redux/reducers/archive/actions'
+
+class ListItem extends React.Component {
   static propTypes = {
     // Data.
     title: PropTypes.string.isRequired,
@@ -25,6 +35,10 @@ export default class ListItem extends React.Component {
     selected: PropTypes.bool.isRequired,
     editing: PropTypes.bool.isRequired,
     status: PropTypes.string.isRequired,
+    context: PropTypes.string,
+
+    // From store.
+    url: PropTypes.string,
     
     // Capabilities.
     draggable: PropTypes.bool.isRequired,
@@ -47,6 +61,22 @@ export default class ListItem extends React.Component {
     moveEnd: PropTypes.func,
   }
 
+  componentDidMount() {
+    const { url, getArtistArt, getAlbumArt, type, title, subtitle, artist = null } = this.props
+
+    if (url != null) {
+      return
+    }
+
+    if (type == 'ARTIST' && title.length > 0 && title != 'VA') {
+      getArtistArt(title)
+    } else if (type == 'ALBUM') { 
+      if (title.length > 0 && artist != null && artist.length > 0) {
+        getAlbumArt(artist, title)
+      }
+    }
+  }
+
   shouldComponentUpdate(nextProps) {
     const {
       title: nextTitle,
@@ -56,6 +86,7 @@ export default class ListItem extends React.Component {
       subtitle: nextSubtitle,
       id: nextId = null,
       index: nextIndex,
+      url: nextUrl,
     } = nextProps
         
     const {
@@ -66,6 +97,7 @@ export default class ListItem extends React.Component {
       subtitle,
       id = null,
       index,
+      url = null,
     } = this.props
 
     return title != nextTitle
@@ -75,6 +107,7 @@ export default class ListItem extends React.Component {
       || subtitle != nextSubtitle
       || id != nextId
       || index != nextIndex
+      || url != nextUrl
   }
 
   render() {
@@ -94,6 +127,7 @@ export default class ListItem extends React.Component {
       canAddItems,
       canDelete,
       height,
+      url,
     } = this.props
 
     const { move, moveEnd, onLongTap = null } = this.props
@@ -102,6 +136,7 @@ export default class ListItem extends React.Component {
       ? styles.statusWithDraggable
       : styles.status
 
+    let realSubtitle = subtitle
     let icon = null
     switch (type) {
       case 'FILE':
@@ -122,10 +157,27 @@ export default class ListItem extends React.Component {
         icon = <FontAwesome name='file' style={{...statusStyle, fontSize:18}} color={passiveColor} />
         break
       case 'ARTIST':
-        icon = <Icon name='person' style={{...statusStyle, fontSize:20}} color={passiveColor} />
+        if (url != null) {
+          icon = <Image 
+            source={{ uri: url, cache: 'only-if-cached' }}
+            style={{ width: 36, height: 36, borderRadius: 18 }}
+            resizeMode='cover'
+          />
+        } else {
+          icon = <Icon name='person' style={{...statusStyle, fontSize:20}} color={passiveColor} />
+        }
         break
       case 'ALBUM':
-        icon = <Icon name='album' style={{...statusStyle, fontSize:20}} color={passiveColor} />
+        realSubtitle = 'ALBUM'
+        if (url != null) {
+          icon = <Image 
+            source={{ uri: url, cache: 'only-if-cached' }}
+            style={{ width: 36, height: 36, borderRadius: 18 }}
+            resizeMode='cover'
+          />
+        } else {
+          icon = <Icon name='album' style={{...statusStyle, fontSize:20}} color={passiveColor} />
+        }
         break
     }
 
@@ -172,7 +224,7 @@ export default class ListItem extends React.Component {
             </View>
             <View style={styles.description}>
               <Text style={titleStyle} numberOfLines={1} ellipsizeMode='tail'>{title}</Text>
-              <Text style={styles.subtitle}>{subtitle}</Text>
+              <Text style={styles.subtitle}>{realSubtitle}</Text>
             </View>
             <TouchableOpacity
               onPress={this.handleMenuPress}
@@ -213,6 +265,30 @@ export default class ListItem extends React.Component {
     this.props.onTap()
   }
 }
+
+const mapStateToProps = (state, ownProps) => {
+  const { type, title, artist = null } = ownProps
+  const { artists, archive } = state
+
+  if (type == 'ARTIST' && title.length > 0 && title != 'VA') {
+    if (title in artists && artists[title] != null) {
+      return { url: artists[title]['small'] }
+    }
+  } else if (type == 'ALBUM' && title.length > 0 && artist != null && artist.length > 0) {
+    if (artist in archive && title in archive[artist]) {
+      return { url: archive[artist][title] }
+    }
+  }
+
+  return {}
+}
+
+const mapDispatchToProps = (dispatch) => ({
+  getArtistArt: (artist) => { dispatch(getArtistArt(artist)) },
+  getAlbumArt: (artist, album) => { dispatch(getAlbumArt(artist, album)) },
+})
+
+export default connect(mapStateToProps, mapDispatchToProps)(ListItem)
 
 styles = StyleSheet.create({
   itemContainer: {

@@ -155,7 +155,7 @@ class Login extends React.Component {
                 </KeyboardState>
                 <View style={styles.disclaimer}>
                     <Text style={{color: placeholderTextColor, textAlign: 'center', fontSize: 11}}>
-                        © 2019{'\n'}Cover art powered by Last.fm
+                        © 2019{'\n'}Cover art powered by Last.fm{'\n'}Artist art powered by Discogs
                     </Text>
                 </View>
                 <ErrorBanner error={error} />

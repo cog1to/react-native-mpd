@@ -8,18 +8,20 @@ import * as searchTypes from './reducers/search/types'
 import * as libraryTypes from './reducers/library/types'
 import * as storageTypes from './reducers/storage/types'
 import * as playlistsTypes from './reducers/playlists/types'
+import * as artistsTypes from './reducers/artists/types'
 
 const types = {
-    ...archiveTypes,
-    ...currentSongTypes,
-    ...playerTypes,
-    ...queueTypes,
-    ...statusTypes,
-    ...browserTypes,
-    ...searchTypes,
-    ...libraryTypes,
-    ...storageTypes,
-    ...playlistsTypes,
+  ...archiveTypes,
+  ...currentSongTypes,
+  ...playerTypes,
+  ...queueTypes,
+  ...statusTypes,
+  ...browserTypes,
+  ...searchTypes,
+  ...libraryTypes,
+  ...storageTypes,
+  ...playlistsTypes,
+  ...artistsTypes,
 }
 
 export default types

@@ -15,7 +15,6 @@ export default class CoverArtArchive {
 		}
 
 		if (album) {
-			// TODO: refactor and put this into a separate class/file.			
 			params.push('release:' + normalizeAlbumName(album))
 		}
 

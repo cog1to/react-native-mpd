@@ -56,7 +56,7 @@ export default class UniversalList extends React.Component {
 
   renderItem = ({ item, index, move, moveEnd, isActive }) => {
     const { editing, canDelete, canAdd, canRearrange, canEdit } = this.props
-    const { id, name, type, artist, path, title, selected, status } = item
+    const { id, name, type, artist = null, path, title, selected, status } = item
 
     let displayName = title != null ? title : name
     let displayType = artist != null ? artist : type
@@ -66,9 +66,9 @@ export default class UniversalList extends React.Component {
     return (
       <ListItem 
         height={UniversalList.ITEM_HEIGHT}
-
         title={displayName}
         subtitle={displayType}
+        artist={artist}
         id={id}
         index={index}
         type={type}

@@ -84,7 +84,7 @@ class Browse extends React.Component {
 
 const nodeFromPath = (path, tree) => {
   let node = tree
-    
+
   if (node === null) {
     return null
   }

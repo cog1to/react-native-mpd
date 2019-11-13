@@ -10,17 +10,19 @@ import { searchReducer } from './reducers/search/reducer'
 import { libraryReducer } from './reducers/library/reducer'
 import { storageReducer } from './reducers/storage/reducer'
 import { playlistsReducer } from './reducers/playlists/reducer'
+import { artistsReducer } from './reducers/artists/reducer'
 
 const reducer = combineReducers({
-    archive: archiveReducer,
-    status: statusReducer,
-    queue: queueReducer,
-    currentSong: currentSongReducer,
-    browser: browserReducer,
-    search: searchReducer,
-    library: libraryReducer,
-    storage: storageReducer,
-    playlists: playlistsReducer,
+  archive: archiveReducer,
+  status: statusReducer,
+  queue: queueReducer,
+  currentSong: currentSongReducer,
+  browser: browserReducer,
+  search: searchReducer,
+  library: libraryReducer,
+  storage: storageReducer,
+  playlists: playlistsReducer,
+  artists: artistsReducer,
 })
 
 export default reducer
