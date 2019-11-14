@@ -273,6 +273,13 @@ export default class MpdClientWrapper {
     ]), mpd.parseArrayMessage)
   }
 
+  getAlbum(album) {
+    return this._sendCommand(cmd('list', [
+      'title',
+      '(album == "' + sanitize(album) + '")'
+    ]), mpd.parseArrayMessage)
+  }
+
   setVolume(volume) {
     return this._sendCommand(cmd('setvol', [volume]), mpd.parseKeyValueMessage)
   }

@@ -587,7 +587,9 @@ export const mpdMiddleware = store => {
                 const { artist, album } = action
 
                 const expression = [
-                    { tag: 'artist', value: artist },
+                    // { tag: 'artist', value: artist },
+                    // Disable artist filter for now. 
+                    // I believe it's better user experience to return full album list.
                     { tag: 'album', value: album },
                 ]
 
