@@ -53,6 +53,11 @@ import {
     loadingPlaylist,
 } from '../reducers/playlists/actions'
 
+import { 
+    getOutputs,
+    outputsUpdated,
+} from '../reducers/outputs/actions'
+
 import MpdClientWrapper from '../../utils/MpdClientWrapper'
 
 import { TreeNodeType } from '../reducers/browser/reducer'
@@ -731,6 +736,38 @@ export const mpdMiddleware = store => {
                     store.dispatch(getPlaylist(name))
                 })
                 .catch(e => {
+                    store.dispatch(error(e, action.type))
+                })
+                break
+            }
+            case types.GET_OUTPUTS: {
+                client.mpd.getOutputs().then((result) => {
+                    store.dispatch(outputsUpdated(result.map(item => ({
+                        id: item.outputid,
+                        name: item.outputname,
+                        plugin: item.plugin,
+                        enabled: item.outputenabled == 1 ? true : false,
+                    }))))
+                })
+                .catch(e => {
+                    store.dispatch(error(e, action.type))
+                })
+                break
+            }
+            case types.ENABLE_OUTPUT: {
+                client.mpd.enableOutput(action.id).then(() => {
+                    store.dispatch(getOutputs())
+                })
+                .catch (e => {
+                    store.dispatch(error(e, action.type))
+                })
+                break
+            }
+            case types.DISABLE_OUTPUT: {
+                client.mpd.disableOutput(action.id).then(() => {
+                    store.dispatch(getOutputs())
+                })
+                .catch (e => {
                     store.dispatch(error(e, action.type))
                 })
                 break

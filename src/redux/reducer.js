@@ -11,6 +11,7 @@ import { libraryReducer } from './reducers/library/reducer'
 import { storageReducer } from './reducers/storage/reducer'
 import { playlistsReducer } from './reducers/playlists/reducer'
 import { artistsReducer } from './reducers/artists/reducer'
+import { outputsReducer } from './reducers/outputs/reducer'
 
 const reducer = combineReducers({
   archive: archiveReducer,
@@ -23,6 +24,8 @@ const reducer = combineReducers({
   storage: storageReducer,
   playlists: playlistsReducer,
   artists: artistsReducer,
+  outputs: outputsReducer,
 })
 
 export default reducer
+

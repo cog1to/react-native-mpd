@@ -330,6 +330,18 @@ export default class MpdClientWrapper {
     return this._sendCommands(commands, mpd.parseKeyValueMessage)
   }
 
+  getOutputs() {
+    return this._sendCommand(cmd('outputs', []), mpd.parseArrayMessage)
+  }
+
+  enableOutput(id) {
+    return this._sendCommand(cmd('enableoutput', [id]), mpd.parseKeyValueMessage)
+  }
+
+  disableOutput(id) {
+    return this._sendCommand(cmd('disableoutput', [id]), mpd.parseKeyValueMessage)
+  }
+
   // MARK: - Event listeners
 
   _handleSystemUpdate(systemName) {

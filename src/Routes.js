@@ -29,6 +29,7 @@ import Album from './screens/Album'
 import More from './screens/More'
 import Playlists from './screens/Playlists'
 import Playlist from './screens/Playlist'
+import Outputs from './screens/Outputs'
 
 const iconColor = ThemeManager.instance().getCurrentTheme().navigationBarIconColor
 const textColor = ThemeManager.instance().getCurrentTheme().navigationBarTextColor
@@ -275,6 +276,12 @@ const MoreNavigator = createStackNavigator(
                 hideTitle: true,
                 regularIcon: null,
             })
+        },
+        Outputs: {
+            screen: Outputs,
+            navigationOptions: {
+                title: 'Outputs',
+            }
         }
     },
     {

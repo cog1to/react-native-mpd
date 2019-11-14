@@ -9,6 +9,7 @@ import * as libraryTypes from './reducers/library/types'
 import * as storageTypes from './reducers/storage/types'
 import * as playlistsTypes from './reducers/playlists/types'
 import * as artistsTypes from './reducers/artists/types'
+import * as outputsTypes from './reducers/outputs/types'
 
 const types = {
   ...archiveTypes,
@@ -22,6 +23,7 @@ const types = {
   ...storageTypes,
   ...playlistsTypes,
   ...artistsTypes,
+  ...outputsTypes,
 }
 
 export default types

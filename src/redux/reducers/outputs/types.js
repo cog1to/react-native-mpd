@@ -1,0 +1,5 @@
+export const GET_OUTPUTS = 'GET_OUTPUTS'
+export const DISABLE_OUTPUT = 'DISABLE_OUTPUT'
+export const ENABLE_OUTPUT = 'ENABLE_OUTPUT'
+export const OUTPUTS_UPDATED = 'OUTPUTS_UPDATED'
+
