@@ -80,7 +80,7 @@ class Album extends React.Component {
       fullPath: variousArtists ? null : artistCover,
       id: 'title',
       index: -1,
-      subtitle: '' + songs.length + ' songs',
+      subtitle: '' + songs.length + ' song' + (songs.length > 1 ? 's' : ''),
       selected: false,
       status: null,
     }
