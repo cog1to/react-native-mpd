@@ -27,7 +27,6 @@ class Artist extends React.Component {
   reload = () => {
     const { content, loadAlbums, navigation } = this.props
     const artistName = navigation.state.params.name
-
     loadAlbums(artistName)
   }
 

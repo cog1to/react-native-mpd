@@ -26,7 +26,6 @@ export default class LastFM {
   getArtUrl(artist, album) {
     return this.getAlbums(album)
       .then((response) => {
-        console.log(JSON.stringify(response))
         return response.json()
       })
       .then((json) => new Promise((resolve, reject) => {

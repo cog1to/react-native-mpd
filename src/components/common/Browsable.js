@@ -155,6 +155,7 @@ class Browsable extends React.Component {
         name: item.name, 
         type: item.type, 
         artist: item.artist,
+        albumArtist: item.albumArtist,
         title: item.title, 
         path: item.fullPath,
         id: item.id,

@@ -2,6 +2,9 @@ import React from 'react'
 
 import {
   View,
+  Styles,
+  Image,
+  StyleSheet,
 } from 'react-native'
 
 import PropTypes from 'prop-types'
@@ -9,6 +12,8 @@ import PropTypes from 'prop-types'
 import DraggableFlatList from 'react-native-draggable-flatlist'
 
 import ListItem from './ListItem'
+import CoverItem from './CoverItem'
+import TitleItem from './TitleItem'
 
 import ThemeManager from '../../themes/ThemeManager'
 
@@ -22,6 +27,7 @@ export default class UniversalList extends React.Component {
         name: PropTypes.string,
         type: PropTypes.string,
         artist: PropTypes.string,
+        albumArtist: PropTypes.string,
         path: PropTypes.string,
         title: PropTypes.string,
         selected: PropTypes.bool,
@@ -56,7 +62,26 @@ export default class UniversalList extends React.Component {
 
   renderItem = ({ item, index, move, moveEnd, isActive }) => {
     const { editing, canDelete, canAdd, canRearrange, canEdit } = this.props
-    const { id, name, type, artist = null, path, title, selected, status } = item
+    const { id, name, type, artist = null, path, title, selected, status, subtitle, albumArtist = null } = item
+    
+    if (type == 'COVER') {
+      return (
+        <CoverItem
+          path={path}
+        />
+      )
+    }
+
+    if (type == 'TITLE') {
+      return (
+        <TitleItem
+          title={title}
+          subtitle={subtitle}
+          url={path}
+          artist={artist}
+        />
+      )
+    }
 
     let displayName = title != null ? title : name
     let displayType = artist != null ? artist : type
@@ -145,3 +170,4 @@ export default class UniversalList extends React.Component {
     this.props.onItemMoved(data)
   }
 }
+

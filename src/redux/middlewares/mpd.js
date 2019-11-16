@@ -176,6 +176,7 @@ const listToChildren = (list) => {
             node.type = TreeNodeType.FILE
             node.title = element.Title
             node.artist = element.Artist
+            node.albumArtist = element.AlbumArtist
         } else if ('playlist' in element) {
             filename = element.playlist
             node.type = TreeNodeType.PLAYLIST

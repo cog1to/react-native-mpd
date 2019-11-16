@@ -7,6 +7,7 @@ const LightTheme = {
   activeColor: '#DEA942',
   mainTextSize: 16,
   subTextSize: 14,
+  titleTextSize: 20,
   navigationBarTextColor: '#FFFFFF',
   navigationBarIconColor: '#FFFFFF',
   toolbarColor: '#F5F5F5',
@@ -15,6 +16,7 @@ const LightTheme = {
   separatorColor: '#666666',
   dialogBackgroundColor: '#00000099',
   dialogSeparatorColor: '#AFAFAF',
+  reversedIconColor: 'white',
 }
 
 export default LightTheme
