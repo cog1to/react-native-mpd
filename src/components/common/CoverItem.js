@@ -17,23 +17,33 @@ export default class CoverItem extends React.Component {
     path: null
   }
 
+  componentDidUpdate() {
+    console.log('path = ' + this.props.path)
+  }
+
   render() {
     const { path } = this.props
 
     return (
-      <Image
-        source={path != null ? { uri: path } : require('../../../assets/images/unknown-album-art-borderless.png')}
-        style={styles.cover}
-        resizeMode='cover'
-      />
+      <View style={styles.cover}>
+        <Image
+          source={path != null ? { uri: path } : require('../../../assets/images/unknown-album-art-borderless.png')}
+          style={{ width: '100%', aspectRatio: 1 }}
+          resizeMode='cover'
+        />
+      </View>
     )
   }
 }
 
 const styles = StyleSheet.create({
   cover: {
+    width: '100%',
     maxWidth: '100%',
     aspectRatio: 1,
     backgroundColor: ThemeManager.instance().getCurrentTheme().tableBackgroundColor,
   },
+  image: {
+    width: '100%'
+  }
 })

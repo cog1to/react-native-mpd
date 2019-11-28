@@ -6,7 +6,7 @@ import {
     Text,
     TouchableOpacity,
 } from 'react-native'
-import FontAwesome, { Icons } from 'react-native-fontawesome'
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome5'
 
 // Redux.
 import { connect } from 'react-redux';
@@ -43,24 +43,24 @@ class Controls extends React.Component {
         let { state } = this.props
 
         const disabled = state === 'stop'
-        const style = disabled ? styles.disabled : styles.enabled
+        const color = disabled ? 'lightgray' : 'black'
 
         return (
             <View style={styles.container}>
                 <TouchableOpacity onPress={this.previous} disabled={disabled}>
-                    <Text style={[styles.text, style]}>
-                        <FontAwesome>{Icons.stepBackward}</FontAwesome>
-                    </Text>
+                    <View style={styles.text}>
+                        <FontAwesomeIcon style={{ flex: 0 }} name='step-backward' size={30} color={color} />
+                    </View>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={this.playPause} disabled={disabled}>
-                    <Text style={[styles.text, style]}>
-                        <FontAwesome>{state == 'pause' ? Icons.play : Icons.pause}</FontAwesome>
-                    </Text>
+                    <View style={styles.text}>
+                        <FontAwesomeIcon name={state == 'pause' ? 'play' : 'pause'} size={30} color={color} />
+                    </View>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={this.next} disabled={disabled}>
-                    <Text style={[styles.text, style]}>
-                        <FontAwesome>{Icons.stepForward}</FontAwesome>
-                    </Text>
+                    <View style={styles.text}>
+                        <FontAwesomeIcon name='step-forward' size={30} color={color} />
+		    </View>
                 </TouchableOpacity>
             </View>
         )
@@ -93,9 +93,10 @@ const styles = StyleSheet.create({
         height: 50,
     },
     text: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'column',
         width: 60,
-        textAlign: 'center',
-        flexGrow: 1,
     },
     enabled: {
         fontSize: 30,

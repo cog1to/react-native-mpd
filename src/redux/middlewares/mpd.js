@@ -603,7 +603,14 @@ export const mpdMiddleware = store => {
                     return '(' + tag + ' == \'' + sanitize(value)  + '\')'
                 })
 
-                const combined = '(' + searchExpressions.join(' AND ')  + ')'
+		let combined = ""
+		if (searchExpressions.count > 1) {
+                    combined = '(' + searchExpressions.join(' AND ')  + ')'
+		} else {
+		    combined = searchExpressions[0]
+		}
+
+		console.log(combined)
 
                 // Get search results.
                 store.dispatch(setLibraryLoading(true))

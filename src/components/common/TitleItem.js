@@ -33,11 +33,11 @@ export default class TitleItem extends React.Component {
         resizeMode='cover'
       />
     } else {
-      icon = <Icon
+      icon = <View style={styles.iconContainer}><Icon
         name='person'
         style={styles.status}
         color={ThemeManager.instance().getCurrentTheme().reversedIconColor}
-      /> 
+      /></View>
     }
 
     return (
@@ -98,14 +98,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 48
   },
-  status: {
+  iconContainer: {
+    flexDirection:'column',
+    justifyContent: 'center',
+    alignItems: 'flex-start',
     width: 36,
-    height: 36,
+    height: 36, 
+    backgroundColor: ThemeManager.instance().getCurrentTheme().tableBackgroundColor,
+    borderRadius: 18,
+  },
+  status: {
     textAlign: 'center',
     alignSelf: 'stretch',
     textAlignVertical: 'center',
     fontSize: 20,
-    backgroundColor: ThemeManager.instance().getCurrentTheme().tableBackgroundColor,
-    borderRadius: 18,
   },
 })

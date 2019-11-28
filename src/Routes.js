@@ -6,13 +6,12 @@ import {
   View,
   Platform,
 } from 'react-native'
-import {
-  createStackNavigator,
-  createBottomTabNavigator,
-  createAppContainer,
-} from 'react-navigation'
-import FontAwesome, { Icons } from 'react-native-fontawesome'
+import { createAppContainer } from 'react-navigation'
+import { createStackNavigator } from 'react-navigation-stack'
+import { createBottomTabNavigator } from 'react-navigation-tabs'
+import FontAwesome, { SolidIcons } from 'react-native-fontawesome'
 import Icon from 'react-native-vector-icons/MaterialIcons'
+import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome5'
 import MaterialCommunityIcon from 'react-native-vector-icons/MaterialCommunityIcons'
 import ThemeManager from './themes/ThemeManager'
 
@@ -46,9 +45,10 @@ const navigationHeader = {
   headerTintColor: ThemeManager.instance().getCurrentTheme().navigationBarIconColor,
 }
 
-const getTabBarIcon = icon => ({ tintColor }) => (
-  <FontAwesome style={{ color: tintColor, fontSize: 20 }}>{Icons[icon]}</FontAwesome>
-)
+const getTabBarIcon = icon => ({ tintColor }) => {
+  return (<FontAwesomeIcon name={icon} size={20} color={tintColor} />)
+}
+
 
 const getMaterialTabBarIcon = icon => ({ tintColor }) => (
   <Icon name={icon} size={24} color={tintColor} />
@@ -151,7 +151,7 @@ const BrowseNavigator = createStackNavigator(
   },
   {
     navigationOptions: {
-      tabBarIcon: getTabBarIcon('folderOpen'),
+      tabBarIcon: getTabBarIcon('folder-open'),
     },
     defaultNavigationOptions: navigationHeader,
   }
@@ -189,7 +189,7 @@ const QueueNavigator = createStackNavigator(
   },
   {
     navigationOptions: {
-      tabBarIcon: getTabBarIcon('listUl'),
+      tabBarIcon: getTabBarIcon('list-ul'),
     },
     defaultNavigationOptions: navigationHeader,
   }
@@ -216,7 +216,7 @@ const PlayerNavigator = createStackNavigator(
   },
   {
     navigationOptions: {
-      tabBarIcon: getTabBarIcon('playCircle'),
+      tabBarIcon: getTabBarIcon('play-circle'),
     },
     defaultNavigationOptions: navigationHeader,
   }

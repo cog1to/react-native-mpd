@@ -1,11 +1,11 @@
 import React from 'react'
 import {
     View,
-    Slider,
     StyleSheet,
     Platform,
 } from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
+import Slider from '@react-native-community/slider'
 
 // Themes.
 import ThemeManager from '../themes/ThemeManager'

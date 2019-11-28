@@ -28,10 +28,10 @@ export const sanitize = (string) => {
     let output = string
 
     var quotesRegex = /\"/gi
-    output = output.replace(quotesRegex, '\\"')
+    output = output.replace(quotesRegex, '\\\\"')
 
     var singleQuotesRegex = /\'/gi
-    output = output.replace(singleQuotesRegex, '\\\'')
+    output = output.replace(singleQuotesRegex, '\\\\\'')
 
     return output
 }

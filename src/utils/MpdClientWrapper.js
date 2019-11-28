@@ -229,6 +229,7 @@ export default class MpdClientWrapper {
   }
 
   search(expression) {
+    console.log('searching for ' + expression)
     return this._sendCommand(cmd('search', [expression]), mpd.parseArrayMessage)
   }
 
