@@ -17,10 +17,6 @@ export default class CoverItem extends React.Component {
     path: null
   }
 
-  componentDidUpdate() {
-    console.log('path = ' + this.props.path)
-  }
-
   render() {
     const { path } = this.props
 

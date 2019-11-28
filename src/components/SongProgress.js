@@ -59,10 +59,8 @@ class SongProgress extends React.Component {
     const { player, addListener, removeListener } = this.props
     if (player == 'play') {
       if (nextState.match(/inactive|background/)) {
-        console.log('removing listener')
         removeListener()
       } else if (nextState.match(/active/)) {
-        console.log('adding listener')
         addListener()
       }
     }
