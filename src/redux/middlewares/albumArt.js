@@ -22,13 +22,13 @@ export const albumArtMiddleware = store => {
           }
 
           const api = new LastFM()
-          let promise = api.getArtUrl(artist, album)
-          .then((url) => {
-            store.dispatch(albumArtReceived(artist, album, url))
-          })
-          .catch(error => {
-            console.log('Failed to get album art: ' + error)
-          })
+          api.getArtUrl(artist, album)
+            .then((url) => {
+              store.dispatch(albumArtReceived(artist, album, url))
+            })
+            .catch(error => {
+              console.log('Failed to get album art: ' + error)
+            })
         }
         break
       default:

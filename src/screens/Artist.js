@@ -17,7 +17,7 @@ import { loadAlbums } from '../redux/reducers/library/actions'
 import Browsable from '../components/common/Browsable'
 
 class Artist extends React.Component {
-  componentWillMount() {
+  componentDidMount() {
     const { content } = this.props
     if (content == null) {
       this.reload()

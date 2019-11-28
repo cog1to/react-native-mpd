@@ -36,8 +36,8 @@ export default class Swipeable extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.props.id != nextProps.id) {
+  componentDidUpdate(prevProps) {
+    if (this.props.id != prevProps.id) {
       this.animatedValue.left.setValue(0)
     }
   }

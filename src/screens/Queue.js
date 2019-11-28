@@ -42,12 +42,14 @@ class Queue extends React.Component {
     this.props.navigation.setParams({ onMenu: this.handleMenuPress })
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (this.state.tempData != null && compareLists(this.state.tempData, nextProps.content)) {
-      this.setState({
+  static getDerivedStateFromProps(props, state) {
+    if (state.tempData != null && compareLists(state.tempData, props.content)) {
+      return {
         tempData: null,
-      })
+      }
     }
+
+    return null
   }
 
   render() {

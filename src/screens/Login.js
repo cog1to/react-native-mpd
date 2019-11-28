@@ -35,6 +35,7 @@ import ThemeManager from '../themes/ThemeManager'
 // Global error banner.
 import ErrorBanner from '../components/ErrorBanner'
 
+// Keyboard aware view.
 import KeyboardAwareView from '../components/common/KeyboardAwareView'
 
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {

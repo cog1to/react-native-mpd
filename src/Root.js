@@ -126,7 +126,7 @@ class Root extends Component {
     AppState.removeEventListener('change', this.handleAppStateChange)
   }
 
-  componentWillUpdate(nextProps, nextState) {
+  UNSAFE_componentWillUpdate(nextProps, nextState) {
     if (nextProps && nextProps.connected && nextProps.commands != null) {
       this.navigator && this.navigator.dispatch(
         NavigationActions.navigate({ routeName: 'Home' })

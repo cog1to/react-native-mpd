@@ -11,8 +11,8 @@ import { normalizeAlbumName, normalizeArtistName } from '../utils/StringUtils'
 
 export default class LastFM {
   constructor() {
-    this.baseArtistsUrl = 'http://ws.audioscrobbler.com/2.0/?method=artist.search&api_key=5933e74f212f38fa0e7d3527d7f0207d&format=json'
-    this.baseAlbumsUrl = 'http://ws.audioscrobbler.com/2.0/?method=album.search&api_key=5933e74f212f38fa0e7d3527d7f0207d&format=json'
+    this.baseArtistsUrl = 'https://ws.audioscrobbler.com/2.0/?method=artist.search&api_key=5933e74f212f38fa0e7d3527d7f0207d&format=json'
+    this.baseAlbumsUrl = 'https://ws.audioscrobbler.com/2.0/?method=album.search&api_key=5933e74f212f38fa0e7d3527d7f0207d&format=json'
   }
 
   getAlbums(album) {

@@ -22,7 +22,7 @@ export default class KeyboardState extends React.Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     if (Platform.OS === 'ios') {
       this.subscriptions = [
         Keyboard.addListener(
@@ -37,7 +37,6 @@ export default class KeyboardState extends React.Component {
         Keyboard.addListener('keyboardDidHide', this.keyboardDidHide),
       ];
     } else {
-      console.log('adding keyboard listeners')
       this.subscriptions = [
         Keyboard.addListener('keyboardDidHide', this.keyboardDidHide),
         Keyboard.addListener('keyboardDidShow', this.keyboardDidShow),

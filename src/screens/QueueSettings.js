@@ -7,12 +7,12 @@ import {
     TouchableHighlight,
     ScrollView,
     TouchableWithoutFeedback,
-    Slider,
     Platform,
     UIManager,
     LayoutAnimation,
     BackHandler,
 } from 'react-native'
+import Slider from '@react-native-community/slider'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 

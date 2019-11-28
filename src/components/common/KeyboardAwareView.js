@@ -46,7 +46,7 @@ export default class KeyboardAwareView extends React.Component {
         }
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentDidUpdate(prevProps, prevState) {
         const {
             keyboardHeight,
             keyboardVisible,
@@ -55,20 +55,20 @@ export default class KeyboardAwareView extends React.Component {
             keyboardWillHide,
             screenY,
             topOffset,
-        } = nextProps
+        } = this.props
 
         const { layout } = this.state
 
         const shouldUpdateLayout = (Platform.OS === 'ios')
             ? (keyboardWillShow || keyboardWillHide)
-            : (this.props.keyboardVisible != nextProps.keyboardVisible)
+            : (prevProps.keyboardVisible != this.props.keyboardVisible)
 
         if (layout != null && shouldUpdateLayout) {
             let animations = []
             
             const keyboardBecomingVisible = (Platform.OS === 'ios')
                 ? keyboardWillShow
-                : nextProps.keyboardVisible
+                : this.props.keyboardVisible
 
             animations.push(Animated.timing(this.inputOffset, {
                 toValue: keyboardBecomingVisible ? -(layout.y + layout.height + topOffset - screenY) : 0,

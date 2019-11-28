@@ -151,37 +151,37 @@ class ListItem extends React.Component {
         }
         break
       case 'DIRECTORY':
-        icon = <Icon name='folder' style={{...statusStyle, fontSize:20}} color={passiveColor} />
+        icon = <Icon name='folder' style={{...statusStyle, fontSize: 20}} color={passiveColor} />
         break
       case 'PLAYLIST':
-        icon = <FontAwesome name='file' style={{...statusStyle, fontSize:18}} color={passiveColor} />
+        icon = <FontAwesome name='file' style={{...statusStyle, fontSize: 18}} color={passiveColor} />
         break
       case 'ARTIST':
         if (url != null) {
           icon = <Image 
-            source={{ uri: url, cache: 'only-if-cached' }}
+            source={{ uri: url }}
             style={{ width: 36, height: 36, borderRadius: 18 }}
             resizeMode='cover'
           />
         } else {
-          icon = <Icon name='person' style={{...statusStyle, fontSize:20}} color={passiveColor} />
+          icon = <Icon name='person' style={{...statusStyle, fontSize: 20}} color={passiveColor} />
         }
         break
       case 'ALBUM':
         realSubtitle = 'ALBUM'
         if (url != null) {
           icon = <Image 
-            source={{ uri: url, cache: 'only-if-cached' }}
+            source={{ uri: url }}
             style={{ width: 36, height: 36, borderRadius: 18 }}
             resizeMode='cover'
           />
         } else {
-          icon = <Icon name='album' style={{...statusStyle, fontSize:20}} color={passiveColor} />
+          icon = <Icon name='album' style={{...statusStyle, fontSize: 20}} color={passiveColor} />
         }
         break
     }
 
-    let iconColor = status != 'none' 
+    let iconColor = status != 'none'
       ? activeColor
       : passiveColor
 
