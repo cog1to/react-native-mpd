@@ -36,6 +36,9 @@ import { addToPlaylist } from '../../redux/reducers/playlists/actions'
 // Keyboard state listener.
 import KeyboardState from './KeyboardState'
 
+// Lodash for debounce method.
+import _ from 'lodash'
+
 // Add options.
 export const OPTIONS = { 
   ADD_TO_QUEUE_BEGINNING: { value: 'ADD_TO_QUEUE_BEGINNING', title: 'At the beginning of queue' },
@@ -124,6 +127,12 @@ class KeyboardAwareBrowsable extends React.Component {
 }
 
 class Browsable extends React.Component {
+  onSearchChange = (text) => {
+    this.setState({
+      search: text
+    })
+  }
+
   static propTypes = {
     content: PropTypes.array.isRequired,
     onNavigate: PropTypes.func,
@@ -189,7 +198,7 @@ class Browsable extends React.Component {
       onGlobalSelectionToggled: this.onGlobalSelectionToggled,
       onMenu: this.onSearch,
       onCancelSearch: this.onCancelSearch,
-      onSearchChange: this.onSearchChange,
+      onSearchChange: _.debounce(this.onSearchChange, 300),
     })
   }
 
@@ -677,11 +686,6 @@ class Browsable extends React.Component {
     navigation.setParams({ searching: false })
   }
 
-  onSearchChange = (text) => {
-    this.setState({
-      search: text
-    })
-  }
 }
 
 // Redux setup.
