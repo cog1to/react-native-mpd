@@ -94,7 +94,7 @@ class Queue extends React.Component {
     const { remove } = this.props
     const ids = items.map(item => { return item.id })
 
-    console.log('deleting songs: ' + JSON.stringify(items))
+    console.log('deleting songs: ' + JSON.stringify(ids))
 
     remove(ids)
   }

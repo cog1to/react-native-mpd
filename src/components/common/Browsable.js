@@ -8,6 +8,7 @@ import {
   BackHandler,
   LayoutAnimation,
   UIManager,
+  SafeAreaView,
 } from 'react-native'
 
 // Navigation.
@@ -31,6 +32,9 @@ import { connect } from 'react-redux'
 // Actions.
 import { addToQueue, addToQueuePlay } from '../../redux/reducers/browser/actions'
 import { addToPlaylist } from '../../redux/reducers/playlists/actions'
+
+// Keyboard state listener.
+import KeyboardState from './KeyboardState'
 
 // Add options.
 export const OPTIONS = { 
@@ -57,6 +61,65 @@ const MainLayoutAnimation = {
   delete: {
     type: LayoutAnimation.Types.linear,
     property: LayoutAnimation.Properties.opacity,
+  }
+}
+
+class KeyboardAwareBrowsable extends React.Component {
+  state = {
+    layout: null,
+  }
+
+  static propTypes = {
+    // From `KeyboardState`
+    keyboardHeight: PropTypes.number.isRequired,
+    keyboardVisible: PropTypes.bool.isRequired,
+    keyboardWillShow: PropTypes.bool.isRequired,
+    keyboardWillHide: PropTypes.bool.isRequired,
+    keyboardAnimationDuration: PropTypes.number.isRequired,
+    screenY: PropTypes.number.isRequired,
+
+    // Rendering content
+    children: PropTypes.node,
+  }
+
+  static defaultProps = {
+    children: null,
+  }
+
+  handleLayout = event => {
+    const { nativeEvent: { layout } } = event
+
+    if (this.state.layout == null) {
+      this.setState({
+        layout,
+      })
+    }
+  }
+
+  render() {
+    const { layout } = this.state
+
+    const {
+      children,
+      keyboardHeight,
+      keyboardVisible,
+      keyboardAnimationDuration,
+      keyboardWillShow,
+      keyboardWillHide,
+      screenY,
+    } = this.props
+
+    const containerStyle = (layout != null)
+      ? (Platform.OS === 'ios' 
+        ? { height: keyboardVisible ? (screenY - layout.y - 60) : layout.height, width: '100%' } 
+        : { height: keyboardVisible ? (screenY - layout.y - 80) : layout.height, width: '100%' })
+      : { height: '100%', width: '100%' }
+    
+    return (
+      <View style={containerStyle} onLayout={this.handleLayout}>
+        {children}
+      </View>
+    )
   }
 }
 
@@ -91,6 +154,8 @@ class Browsable extends React.Component {
     showingDeleteDialog: false,
     refreshing: false,
     position: null,
+    searching: false,
+    search: null,
   }
 
   static defaultProps = {
@@ -122,6 +187,9 @@ class Browsable extends React.Component {
       onCancelEditing: this.onCancelEditing,
       onNavigationButtonPressed: this.onNavigationButtonPressed,
       onGlobalSelectionToggled: this.onGlobalSelectionToggled,
+      onMenu: this.onSearch,
+      onCancelSearch: this.onCancelSearch,
+      onSearchChange: this.onSearchChange,
     })
   }
 
@@ -148,9 +216,16 @@ class Browsable extends React.Component {
       deletePrompt,
     } = this.props
     
-    const { selected, editing, showingDeleteDialog } = this.state
+    const { selected, editing, showingDeleteDialog, search } = this.state
 
-    const items = content.map((item, index) => {
+    // Filter based on search field input.
+    let filtered = content
+    if (search != null) {
+      let searchString = search.toLowerCase()
+      filtered = content.filter((item) => { return item.name.toLowerCase().includes(searchString) })
+    }
+    
+    const items = filtered.map((item, index) => {
       return {
         name: item.name, 
         type: item.type, 
@@ -201,42 +276,48 @@ class Browsable extends React.Component {
     } 
 
     return (
-      <View style={{flex: 1}}>
-        <UniversalList
-          content={items}
-          editing={editing}
-          refreshing={refreshing}
-          onRefresh={onRefresh}
+      <KeyboardState>
+        {keyboardInfo => (
+          <KeyboardAwareBrowsable {...keyboardInfo}>
+            <View style={{flex: 1}}>
+              <UniversalList
+                content={items}
+                editing={editing}
+                refreshing={refreshing}
+                onRefresh={onRefresh}
 
-          canAdd={canAdd}
-          canDelete={canDelete}
-          canRearrange={canRearrange}
-          canEdit={canEdit}
+                canAdd={canAdd}
+                canDelete={canDelete}
+                canRearrange={canRearrange}
+                canEdit={canEdit}
 
-          onItemTapped={this.handleItemTapped}
-          onItemMenu={this.handleMenuTapped} 
-          onItemLongTapped={this.handleItemLongTapped}
-          onItemMoved={this.handleItemMoved}
-          onItemDelete={this.handleItemDelete}
+                onItemTapped={this.handleItemTapped}
+                onItemMenu={this.handleMenuTapped} 
+                onItemLongTapped={this.handleItemLongTapped}
+                onItemMoved={this.handleItemMoved}
+                onItemDelete={this.handleItemDelete}
 
-          extraData={{editing, selected}}
-        />
-        {showingMenu && (
-          <MenuDialog
-            title='Add items...'
-            options={options}
-            onHide={this.handleBackPress}
-            onOptionSelected={this.onOptionSelected}
-          />
+                extraData={{editing, selected}}
+              />
+              {showingMenu && (
+                <MenuDialog
+                  title='Add items...'
+                  options={options}
+                  onHide={this.handleBackPress}
+                  onOptionSelected={this.onOptionSelected}
+                />
+              )}
+              {showingDeleteDialog && (
+                <AppDialog
+                  prompt={deleteText}
+                  cancelButton={{ title: 'Cancel', onPress: this.handleDeleteCancel }}
+                  confirmButton={{ title: 'Delete', onPress: this.handleDeleteConfirm }}
+                />
+              )}
+            </View>
+          </KeyboardAwareBrowsable>
         )}
-        {showingDeleteDialog && (
-          <AppDialog
-            prompt={deleteText}
-            cancelButton={{ title: 'Cancel', onPress: this.handleDeleteCancel }}
-            confirmButton={{ title: 'Delete', onPress: this.handleDeleteConfirm }}
-          />
-        )}
-      </View>
+      </KeyboardState>
     )
   }
 
@@ -404,9 +485,9 @@ class Browsable extends React.Component {
 
   onCancelEditing = () => {
     const { navigation } = this.props
-    navigation.setParams({ editing: false })
+    const { selected, search } = this.state
 
-    const { selected } = this.state
+    navigation.setParams({ editing: false, searchText: search })
 
     LayoutAnimation.configureNext(MainLayoutAnimation)
     this.setState({
@@ -457,6 +538,7 @@ class Browsable extends React.Component {
         return {
           name: item.name,
           index: index,
+          id: item.id,
         }
       })
 
@@ -573,6 +655,32 @@ class Browsable extends React.Component {
   
   handleItemMoved = (data) => {
     this.props.onItemMoved(data)
+  }
+
+  // Filter.
+
+  onSearch = () => {
+    const { navigation } = this.props
+
+    LayoutAnimation.configureNext(MainLayoutAnimation)
+    navigation.setParams({ searching: true, searchText: null })
+  }
+
+  onCancelSearch = () => {
+    const { navigation } = this.props
+
+    this.setState({
+      search: null,
+    })
+
+    LayoutAnimation.configureNext(MainLayoutAnimation)
+    navigation.setParams({ searching: false })
+  }
+
+  onSearchChange = (text) => {
+    this.setState({
+      search: text
+    })
   }
 }
 

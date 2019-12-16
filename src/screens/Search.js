@@ -83,8 +83,6 @@ class KeyboardAwareSearchForm extends React.Component {
       screenY,
     } = this.props
 
-    console.log(keyboardVisible)
-
     const containerStyle = (layout != null && Platform.OS === 'ios')
       ? { height: keyboardVisible ? (screenY - layout.y - 60) : layout.height } 
       : { }

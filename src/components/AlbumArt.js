@@ -10,15 +10,27 @@ import {
 import { connect } from 'react-redux';
 
 class AlbumArt extends React.Component {
+
+  state = {
+    failed: false,
+  }
+
   render() {
     const { uri } = this.props
-    const imageUri = uri !== null ? {uri: uri} : require('../../assets/images/unknown-album-art-borderless.png')
+    const { failed } = this.state
+    const imageUri = (failed != true && uri !== null)
+      ? {uri: uri}
+      : require('../../assets/images/unknown-album-art-borderless.png')
 
     return (
       <View style={styles.container}>
-        <Image style={styles.image} source={imageUri} resizeMode='contain' />
+        <Image style={styles.image} source={imageUri} resizeMode='contain' cache='default' onError={this.onError} />
       </View>
     )
+  }
+
+  onError = () => {
+    this.setState({ failed: true })
   }
 }
 

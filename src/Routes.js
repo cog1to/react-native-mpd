@@ -5,6 +5,7 @@ import {
   Text,
   View,
   Platform,
+  TextInput,
 } from 'react-native'
 import { createAppContainer } from 'react-navigation'
 import { createStackNavigator } from 'react-navigation-stack'
@@ -46,7 +47,7 @@ const navigationHeader = {
 }
 
 const getTabBarIcon = icon => ({ tintColor }) => {
-  return (<FontAwesomeIcon name={icon} size={20} color={tintColor} />)
+  return (<FontAwesomeIcon name={icon} size={20} color={tintColor} solid />)
 }
 
 
@@ -106,6 +107,29 @@ const barOptionsFromState = ({ title, navigation, icons = ['playlist-add'], hide
         {buttons}
       </View>
     )
+  } else if (navigation.getParam('searching') === true) {
+    options.headerTitle = (
+      <View style={styles.header}>
+        <View style={styles.searchBarHeader}>
+          <View style={styles.searchBarBackground} />
+          <TextInput
+            value={navigation.getParam('searchText')}
+            style={styles.searchBarTextInput} placeholder='Filter list...'
+            onChangeText={navigation.getParam('onSearchChange')} 
+          />
+        </View>
+        <TouchableOpacity
+          onPress={navigation.getParam('onCancelSearch')}
+          style={styles.headerButton} 
+        >
+          <Icon
+            name='clear'
+            size={24}
+            color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor}
+          />
+        </TouchableOpacity>
+      </View>
+    )
   } else {
     if (regularIcon != null) {
       options.headerRight = (
@@ -134,7 +158,7 @@ const BrowseNavigator = createStackNavigator(
         title: navigation.state.params.name == null ? 'Browse' : navigation.state.params.name,
         navigation: navigation,
         hideTitle: true,
-        regularIcon: null,
+        regularIcon: 'filter-list',
       })
     },
     Playlists: {
@@ -299,6 +323,7 @@ const LibraryNavigator = createStackNavigator(
       navigationOptions: ({ navigation }) => barOptionsFromState({
         title: 'Library',
         navigation: navigation,
+        regularIcon: 'filter-list',
       }),
     },
     Artist: {
@@ -306,6 +331,7 @@ const LibraryNavigator = createStackNavigator(
       navigationOptions: ({ navigation }) => barOptionsFromState({
         title: navigation.getParam('name'),
         navigation: navigation,
+        regularIcon: 'filter-list',
       }),
     },
     Album: {
@@ -314,6 +340,7 @@ const LibraryNavigator = createStackNavigator(
         title: null,
         navigation: navigation,
         hideTitle: true,
+        regularIcon: 'filter-list',
       })
     },
     Playlists: {
@@ -403,5 +430,29 @@ const styles = StyleSheet.create({
     color: ThemeManager.instance().getCurrentTheme().navigationBarTextColor,
     fontWeight: 'bold',
     fontSize: 18,
-  }
+  },
+  searchBarBackground: {
+    position: 'absolute',
+    top: 12,
+    bottom: 12,
+    backgroundColor: 'white',
+    left: 0,
+    right: 0, 
+    borderRadius: 8,
+  },
+  searchBarTextInput: {
+    color: ThemeManager.instance().getCurrentTheme().lightTextColor,
+    flex: 1,
+    marginHorizontal: 4,
+  },
+  searchBarHeader: {
+    marginHorizontal: 8,
+    flex: 1,
+  },
+  header: {
+    flex: 1,
+    flexDirection: 'row',
+    marginHorizontal: 10,
+    alignItems: 'center'
+  },
 })

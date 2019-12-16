@@ -87,7 +87,7 @@ class Outputs extends React.Component {
       plugin: item.plugin,
       id: item.id,
       enabled: item.enabled,
-      last: index == outputs.length
+      last: index == outputs.length - 1
     }))
 
     return (
@@ -101,6 +101,7 @@ class Outputs extends React.Component {
                 title={item.name}
                 onTapped={() => this.toggle(item.id)}
                 value={item.enabled ? 1 : 0}
+                lastRow={item.last}
               />
             )}
           </View>

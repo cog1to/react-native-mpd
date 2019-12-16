@@ -17,18 +17,30 @@ export default class CoverItem extends React.Component {
     path: null
   }
 
+  state = {
+    failed: false,
+  }
+
   render() {
     const { path } = this.props
+    const { failed } = this.state
 
     return (
       <View style={styles.cover}>
         <Image
-          source={path != null ? { uri: path } : require('../../../assets/images/unknown-album-art-borderless.png')}
-          style={{ width: '100%', aspectRatio: 1 }}
+          source={failed == false && path != null ? { uri: path } : require('../../../assets/images/unknown-album-art-borderless.png')}
           resizeMode='cover'
+          onError={this.onError}
+          style={styles.image}
         />
       </View>
     )
+  }
+
+  onError = () => {
+    this.setState({
+      failed: true,
+    })
   }
 }
 
@@ -40,6 +52,7 @@ const styles = StyleSheet.create({
     backgroundColor: ThemeManager.instance().getCurrentTheme().tableBackgroundColor,
   },
   image: {
-    width: '100%'
+    width: '100%',
+    height: '100%'
   }
 })

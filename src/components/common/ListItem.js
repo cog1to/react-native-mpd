@@ -162,6 +162,7 @@ class ListItem extends React.Component {
             source={{ uri: url }}
             style={{ width: 36, height: 36, borderRadius: 18 }}
             resizeMode='cover'
+            cache='default'
           />
         } else {
           icon = <Icon name='person' style={{...statusStyle, fontSize: 20}} color={passiveColor} />
@@ -174,6 +175,7 @@ class ListItem extends React.Component {
             source={{ uri: url }}
             style={{ width: 36, height: 36, borderRadius: 18 }}
             resizeMode='cover'
+            cache='default'
           />
         } else {
           icon = <Icon name='album' style={{...statusStyle, fontSize: 20}} color={passiveColor} />
