@@ -37,7 +37,7 @@ const textColor = ThemeManager.instance().getCurrentTheme().navigationBarTextCol
 const navigationHeader = {
   headerStyle: {
     paddingTop: Platform.OS === 'android' ? 24 : 12,
-    height: Platform.OS === 'android' ? 56 + 24 : 40,
+    height: Platform.OS === 'android' ? 56 + 24 : 44,
     backgroundColor: ThemeManager.instance().getCurrentTheme().accentColor,
   },
   headerTitleStyle: {
@@ -108,6 +108,8 @@ const barOptionsFromState = ({ title, navigation, icons = ['playlist-add'], hide
       </View>
     )
   } else if (navigation.getParam('searching') === true) {
+    options.headerRight = null
+    options.headerLeft = null
     options.headerTitle = (
       <View style={styles.header}>
         <View style={styles.searchBarHeader}>
@@ -115,12 +117,12 @@ const barOptionsFromState = ({ title, navigation, icons = ['playlist-add'], hide
           <TextInput
             value={navigation.getParam('searchText')}
             style={styles.searchBarTextInput} placeholder='Filter list...'
-            onChangeText={navigation.getParam('onSearchChange')} 
+            onChangeText={navigation.getParam('onSearchChange')}
           />
         </View>
         <TouchableOpacity
           onPress={navigation.getParam('onCancelSearch')}
-          style={styles.headerButton} 
+          style={styles.headerButton}
         >
           <Icon
             name='clear'
@@ -433,17 +435,17 @@ const styles = StyleSheet.create({
   },
   searchBarBackground: {
     position: 'absolute',
-    top: 12,
-    bottom: 12,
+    top: Platform.OS === 'android' ? 12 : 6,
+    bottom: Platform.OS === 'android' ? 12 : 6,
     backgroundColor: 'white',
-    left: 0,
-    right: 0, 
+    left: Platform.OS === 'android' ? 0 : 4,
+    right: Platform.OS === 'android' ? 0 : 4,
     borderRadius: 8,
   },
   searchBarTextInput: {
     color: ThemeManager.instance().getCurrentTheme().lightTextColor,
     flex: 1,
-    marginHorizontal: 4,
+    marginHorizontal: Platform.OS === 'android' ? 4 : 12,
   },
   searchBarHeader: {
     marginHorizontal: 8,
@@ -453,6 +455,6 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     marginHorizontal: 10,
-    alignItems: 'center'
+    alignItems: 'center',
   },
 })

@@ -8,8 +8,10 @@ import {
   BackHandler,
   LayoutAnimation,
   UIManager,
-  SafeAreaView,
 } from 'react-native'
+
+// Device info.
+import DeviceInfo from 'react-native-device-info'
 
 // Navigation.
 import { NavigationActions, StackActions } from 'react-navigation'
@@ -40,7 +42,7 @@ import KeyboardState from './KeyboardState'
 import _ from 'lodash'
 
 // Add options.
-export const OPTIONS = { 
+export const OPTIONS = {
   ADD_TO_QUEUE_BEGINNING: { value: 'ADD_TO_QUEUE_BEGINNING', title: 'At the beginning of queue' },
   ADD_TO_QUEUE_END: { value: 'ADD_TO_QUEUE_END', title: 'At the end of queue' },
   ADD_TO_QUEUE_AFTER_CURRENT_SONG: { value: 'ADD_TO_QUEUE_AFTER_CURRENT_SONG', title: 'After current song' },
@@ -112,12 +114,23 @@ class KeyboardAwareBrowsable extends React.Component {
       screenY,
     } = this.props
 
+    let hasSafeArea = function() {
+      let device = DeviceInfo.getDeviceId()
+      if (device.startsWith("iPhone")) {
+        let model = parseInt(device.split(',')[0].substring("iPhone".length))
+        if (model >= 11) {
+          return true
+        }
+      }
+      return false
+    }()
+
     const containerStyle = (layout != null)
-      ? (Platform.OS === 'ios' 
-        ? { height: keyboardVisible ? (screenY - layout.y - 60) : layout.height, width: '100%' } 
+      ? (Platform.OS === 'ios'
+        ? { height: keyboardVisible ? (screenY - layout.y - (hasSafeArea ? 88 : 64)) : layout.height, width: '100%' }
         : { height: keyboardVisible ? (screenY - layout.y - 80) : layout.height, width: '100%' })
       : { height: '100%', width: '100%' }
-    
+
     return (
       <View style={containerStyle} onLayout={this.handleLayout}>
         {children}
@@ -186,7 +199,7 @@ class Browsable extends React.Component {
   }
 
   // Global handlers.
-  
+
   componentDidMount() {
     if (Platform.OS === 'android') {
       BackHandler.addEventListener('hardwareBackPress', this.handleBackPress)
@@ -207,9 +220,9 @@ class Browsable extends React.Component {
       BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress)
     }
   }
-  
+
   // Rendering.
-  
+
   render() {
     const {
       content,
@@ -224,7 +237,7 @@ class Browsable extends React.Component {
       canRearrange,
       deletePrompt,
     } = this.props
-    
+
     const { selected, editing, showingDeleteDialog, search } = this.state
 
     // Filter based on search field input.
@@ -233,21 +246,21 @@ class Browsable extends React.Component {
       let searchString = search.toLowerCase()
       filtered = content.filter((item) => { return item.name.toLowerCase().includes(searchString) })
     }
-    
+
     const items = filtered.map((item, index) => {
       return {
-        name: item.name, 
-        type: item.type, 
+        name: item.name,
+        type: item.type,
         artist: item.artist,
         albumArtist: item.albumArtist,
-        title: item.title, 
+        title: item.title,
         path: item.fullPath,
         id: item.id,
         index: index,
         subtitle: item.subtitle,
         selected: selected.find(it => { return it.index == index }) != null,
         status: item.status,
-      } 
+      }
     })
 
     const { showingMenu } = this.state
@@ -282,7 +295,7 @@ class Browsable extends React.Component {
       } else {
         deleteText = deletePrompt.single
       }
-    } 
+    }
 
     return (
       <KeyboardState>
@@ -301,7 +314,7 @@ class Browsable extends React.Component {
                 canEdit={canEdit}
 
                 onItemTapped={this.handleItemTapped}
-                onItemMenu={this.handleMenuTapped} 
+                onItemMenu={this.handleMenuTapped}
                 onItemLongTapped={this.handleItemLongTapped}
                 onItemMoved={this.handleItemMoved}
                 onItemDelete={this.handleItemDelete}
@@ -331,7 +344,7 @@ class Browsable extends React.Component {
   }
 
   // Events.
-  
+
   handleItemTapped = (item) => {
     const { addToQueuePlay, queueSize, onNavigate, navigation, content, onSelection } = this.props
     const { editing, selected } = this.state
@@ -387,7 +400,7 @@ class Browsable extends React.Component {
     // Add item to selected list.
     let newSelected = this.state.selected.slice()
     newSelected.push(item)
-    
+
     // Update own state.
     this.setState({
       editing: true,
@@ -518,7 +531,7 @@ class Browsable extends React.Component {
 
   onConfirmAdd = () => {
     const { selected } = this.state
-    
+
     if (selected.length == 0) {
       return
     }
@@ -572,7 +585,7 @@ class Browsable extends React.Component {
   }
 
   // Deletion.
-  
+
   onHandleDelete = () => {
     const { confirmDelete, onDeleteItems } = this.props
     const { selected } = this.state
@@ -580,7 +593,7 @@ class Browsable extends React.Component {
     if (selected.length == 0) {
       return
     }
-    
+
     if (!confirmDelete) {
       this.handleDeleteConfirm()
       return
@@ -661,7 +674,7 @@ class Browsable extends React.Component {
   }
 
   // Moving.
-  
+
   handleItemMoved = (data) => {
     this.props.onItemMoved(data)
   }

@@ -24,6 +24,9 @@ import ErrorBanner from './components/ErrorBanner'
 // App dialog.
 import AppDialog from './components/common/AppDialog'
 
+// Safe area view.
+import SafeAreaView from 'react-native-safe-area-view'
+
 // Possible reconnect states.
 RECONNECT_STATE = {
   NOTHING: 'NOTHING',
