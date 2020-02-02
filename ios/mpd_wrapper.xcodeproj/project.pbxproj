@@ -49,7 +49,7 @@
 		00E356F21AD99517003FC87E /* mpd_wrapperTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = mpd_wrapperTests.m; sourceTree = "<group>"; };
 		0C6FD634BEC750FDD7F46200 /* Pods-mpd_wrapperTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mpd_wrapperTests.release.xcconfig"; path = "Target Support Files/Pods-mpd_wrapperTests/Pods-mpd_wrapperTests.release.xcconfig"; sourceTree = "<group>"; };
 		135ACE24168C8F7A71F7D439 /* Pods-mpd_wrapperTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mpd_wrapperTests.debug.xcconfig"; path = "Target Support Files/Pods-mpd_wrapperTests/Pods-mpd_wrapperTests.debug.xcconfig"; sourceTree = "<group>"; };
-		13B07F961A680F5B00A75B9A /* mpd_wrapper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = mpd_wrapper.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		13B07F961A680F5B00A75B9A /* Yamd.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yamd.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = mpd_wrapper/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = mpd_wrapper/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -223,7 +223,7 @@
 		83CBBA001A601CBA00E9B192 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				13B07F961A680F5B00A75B9A /* mpd_wrapper.app */,
+				13B07F961A680F5B00A75B9A /* Yamd.app */,
 				00E356EE1AD99517003FC87E /* mpd_wrapperTests.xctest */,
 				2D02E47B1E0B4A5D006451C7 /* mpd_wrapper-tvOS.app */,
 				2D02E4901E0B4A5D006451C7 /* mpd_wrapper-tvOSTests.xctest */,
@@ -286,7 +286,7 @@
 			);
 			name = mpd_wrapper;
 			productName = mpd_wrapper;
-			productReference = 13B07F961A680F5B00A75B9A /* mpd_wrapper.app */;
+			productReference = 13B07F961A680F5B00A75B9A /* Yamd.app */;
 			productType = "com.apple.product-type.application";
 		};
 		2D02E47A1E0B4A5D006451C7 /* mpd_wrapper-tvOS */ = {
@@ -339,6 +339,7 @@
 				TargetAttributes = {
 					00E356ED1AD99517003FC87E = {
 						CreatedOnToolsVersion = 6.2;
+						DevelopmentTeam = 758Y8RBM68;
 						TestTargetID = 13B07F861A680F5B00A75B9A;
 					};
 					13B07F861A680F5B00A75B9A = {
@@ -427,7 +428,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
+			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh\n";
 		};
 		2D02E4CB1E0B4B27006451C7 /* Bundle React Native Code And Images */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -687,12 +688,14 @@
 			baseConfigurationReference = 135ACE24168C8F7A71F7D439 /* Pods-mpd_wrapperTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				DEVELOPMENT_TEAM = 758Y8RBM68;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = mpd_wrapperTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -701,7 +704,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/mpd_wrapper.app/mpd_wrapper";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Yamd.app/Yamd";
 			};
 			name = Debug;
 		};
@@ -710,9 +713,11 @@
 			baseConfigurationReference = 0C6FD634BEC750FDD7F46200 /* Pods-mpd_wrapperTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				COPY_PHASE_STRIP = NO;
+				DEVELOPMENT_TEAM = 758Y8RBM68;
 				INFOPLIST_FILE = mpd_wrapperTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"-ObjC",
@@ -721,7 +726,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/mpd_wrapper.app/mpd_wrapper";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Yamd.app/Yamd";
 			};
 			name = Release;
 		};
@@ -743,7 +748,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "ru.aint.mpd-wrapper";
-				PRODUCT_NAME = mpd_wrapper;
+				PRODUCT_NAME = Yamd;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -766,7 +771,7 @@
 					"-lc++",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "ru.aint.mpd-wrapper";
-				PRODUCT_NAME = mpd_wrapper;
+				PRODUCT_NAME = Yamd;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
