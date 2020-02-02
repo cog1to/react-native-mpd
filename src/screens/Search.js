@@ -10,6 +10,9 @@ import {
 import PropTypes from 'prop-types'
 import { NavigationActions } from 'react-navigation'
 
+// Device info.
+import DeviceInfo from 'react-native-device-info'
+
 // Redux.
 import { connect } from 'react-redux'
 
@@ -83,10 +86,21 @@ class KeyboardAwareSearchForm extends React.Component {
       screenY,
     } = this.props
 
+    let hasSafeArea = function() {
+      let device = DeviceInfo.getDeviceId()
+      if (device.startsWith("iPhone")) {
+        let model = parseInt(device.split(',')[0].substring("iPhone".length))
+        if (model >= 11) {
+          return true
+        }
+      }
+      return false
+    }()
+
     const containerStyle = (layout != null && Platform.OS === 'ios')
-      ? { height: keyboardVisible ? (screenY - layout.y - 60) : layout.height } 
+      ? { height: keyboardVisible ? (screenY - layout.y - (hasSafeArea ? 88 : 64)) : layout.height }
       : { }
-    
+
     return (
       <View style={containerStyle} onLayout={this.handleLayout}>
         {children}
@@ -96,7 +110,7 @@ class KeyboardAwareSearchForm extends React.Component {
 }
 
 class Search extends React.Component {
-  state = { 
+  state = {
     dirty: false,
     criteria: {},
   }
@@ -116,7 +130,7 @@ class Search extends React.Component {
     })
     navigation.dispatch(action)
   }
-  
+
   shouldComponentUpdate(nextProps, nextState) {
     const { results } = nextProps
 
@@ -148,7 +162,7 @@ class Search extends React.Component {
     const total = nonEmptyTags.map(tag => {
       return { tag: tag, value: tags[tag] }
     })
-    
+
     this.setState({
       dirty: false,
     }, () => doSearch(total))
@@ -176,7 +190,7 @@ class Search extends React.Component {
                   )
                 })}
                 <View style={styles.search}>
-                  <Button 
+                  <Button
                     title="Search"
                     onPress={this.onSearch}
                     color={ThemeManager.instance().getCurrentTheme().accentColor}

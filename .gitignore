@@ -30,6 +30,14 @@ build/
 local.properties
 *.iml
 
+# iOS/CocoaPods
+#
+ios/Pods
+
+# Vim
+#
+*.swp
+
 # node.js
 #
 node_modules/
