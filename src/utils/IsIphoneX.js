@@ -12,6 +12,18 @@ export function isIphoneX() {
     )
 }
 
+export function isIpadPro() {
+    const dim = Dimensions.get('window')
+  
+    return (
+        // This has to be iOS
+        Platform.OS === 'ios' &&
+    
+        // Check either, iPhone X or XR
+        (isIpadPro13(dim))
+    )
+}
+
 export function isIPhoneXSize(dim) {
     return dim.height == 812 || dim.width == 812
 }
@@ -26,4 +38,8 @@ export function isIPhone11(dim) {
 
 export function isIPhone11ProMax(dim) {
     return dim.height == 896 || dim.width == 896
+}
+
+export function isIpadPro13(dim) {
+    return dim.height == 1366 || dim.width == 1366
 }

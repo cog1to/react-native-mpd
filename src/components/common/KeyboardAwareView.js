@@ -70,17 +70,26 @@ export default class KeyboardAwareView extends React.Component {
                 ? keyboardWillShow
                 : this.props.keyboardVisible
 
+            let offset = 0
+            if (screenY > (layout.y + layout.height + topOffset)) {
+              offset = screenY / 4
+            } else {
+              offset = (layout.y + layout.height + topOffset + 20) - screenY
+            }
+
             animations.push(Animated.timing(this.inputOffset, {
-                toValue: keyboardBecomingVisible ? -(layout.y + layout.height + topOffset - screenY) : 0,
+                toValue: keyboardBecomingVisible ? -offset : 0,
                 duration: keyboardAnimationDuration,
                 useNativeDriver: true,
             }))
 
-            animations.push(Animated.timing(this.animationState, {
-                toValue: keyboardBecomingVisible ? 0 : 1,
-                duration: keyboardAnimationDuration,
-                useNativeDriver: true,
-            }))
+            if (keyboardBecomingVisible && (layout.y + topOffset - offset < 0) || !keyboardBecomingVisible) {
+              animations.push(Animated.timing(this.animationState, {
+                  toValue: keyboardBecomingVisible ? 0 : 1,
+                  duration: keyboardAnimationDuration,
+                  useNativeDriver: true,
+              }))
+            }
 
             Animated.parallel(animations).start()
         }

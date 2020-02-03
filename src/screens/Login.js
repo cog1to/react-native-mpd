@@ -27,7 +27,7 @@ import { bindActionCreators } from 'redux'
 import KeyboardState from '../components/common/KeyboardState'
 
 // Safe area check.
-import { isIphoneX } from '../utils/IsIphoneX';
+import { isIphoneX, isIpadPro } from '../utils/IsIphoneX';
 
 // Themes.
 import ThemeManager from '../themes/ThemeManager'
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     },
     disclaimer: {
         position: 'absolute',
-        bottom: isIphoneX() ? 24 : 8,
+        bottom: (isIphoneX() || isIpadPro()) ? 24 : 8,
         left: 0,
         right: 0,
         alignItems: 'center',
