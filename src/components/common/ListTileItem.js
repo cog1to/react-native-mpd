@@ -240,7 +240,7 @@ const mapStateToProps = (state, ownProps) => {
 
   if (type == 'ARTIST' && title.length > 0 && title != 'VA') {
     if (title in artists && artists[title] != null) {
-      return { url: artists[title]['small'] }
+      return { url: artists[title]['large'] }
     }
   } else if (type == 'ALBUM' && title.length > 0 && artist != null && artist.length > 0) {
     if (artist in archive && title in archive[artist]) {
