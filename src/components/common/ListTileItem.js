@@ -268,7 +268,7 @@ const styles = StyleSheet.create({
   },
   itemContainer: {
     ...elevationShadowStyle(1),
-    borderRadius: 1,
+    backgroundColor: 'white',
     flexDirection: 'column',
     flex: 1,
     alignItems: 'center',
