@@ -6,12 +6,18 @@ import {
   Text,
   TouchableOpacity,
   Image,
+  Dimensions,
 } from 'react-native'
 import PropTypes from 'prop-types'
 
-// Sub-components.
+// Subviews.
 import Highlightable from './Highlightable'
-import Swipeable from './Swipeable'
+
+// Shadow style that works on both iOS and Android.
+import { elevationShadowStyle } from '../../utils/Styles'
+
+// Themes.
+import ThemeManager from '../../themes/ThemeManager'
 
 // Icons.
 import Icon from 'react-native-vector-icons/MaterialIcons'
@@ -24,7 +30,7 @@ import { connect } from 'react-redux'
 import { getArtistArt } from '../../redux/reducers/artists/actions'
 import { getAlbumArt } from '../../redux/reducers/archive/actions'
 
-class ListItem extends React.Component {
+class ListTileItem extends React.Component {
   static propTypes = {
     // Data.
     title: PropTypes.string.isRequired,
@@ -40,8 +46,6 @@ class ListItem extends React.Component {
     // From store.
     url: PropTypes.string,
     
-    // Capabilities.
-    draggable: PropTypes.bool.isRequired,
     canAddItems: PropTypes.bool.isRequired,
     canDelete: PropTypes.bool.isRequired,
     
@@ -55,10 +59,6 @@ class ListItem extends React.Component {
     passiveColor: PropTypes.string.isRequired,
     highlightColor: PropTypes.string.isRequired,
     underlayColor: PropTypes.string.isRequired,
-
-    // Dragging.
-    move: PropTypes.func,
-    moveEnd: PropTypes.func,
   }
 
   componentDidMount() {
@@ -128,7 +128,14 @@ class ListItem extends React.Component {
       canDelete,
       height,
       url,
+      numColumns,
     } = this.props
+
+    const width = Dimensions.get('window').width / numColumns - 12.0
+    const padding = styles.wrapper.padding
+    const shadowPadding = 2.0
+    const imageWidth = width - shadowPadding - (padding * 2.0)
+    const imageHeight = (height / 2.0) - (shadowPadding / 2.0) + 18 
 
     const { move, moveEnd, onLongTap = null } = this.props
 
@@ -139,33 +146,20 @@ class ListItem extends React.Component {
     let realSubtitle = subtitle
     let icon = null
     switch (type) {
-      case 'FILE':
-        if (status == 'play') {
-          icon = <FontAwesome name='play' size={20} style={statusStyle} color={activeColor} />
-        } else if (status == 'pause') {
-          icon = <FontAwesome name='pause' size={20} style={statusStyle} color={activeColor} />
-        } else if (id != null) {
-          icon = <Text style={statusStyle}>{"" + id}</Text>
-        } else {
-          icon = <FontAwesome name='music' size={22} style={statusStyle} color={passiveColor} />
-        }
-        break
-      case 'DIRECTORY':
-        icon = <Icon name='folder' style={{...statusStyle, fontSize: 20}} color={passiveColor} />
-        break
-      case 'PLAYLIST':
-        icon = <FontAwesome name='file' style={{...statusStyle, fontSize: 18}} color={passiveColor} />
-        break
       case 'ARTIST':
         if (url != null) {
           icon = <Image 
             source={{ uri: url }}
-            style={{ width: 36, height: 36, borderRadius: 18 }}
+            style={{ height: imageHeight, width: imageWidth }}
             resizeMode='cover'
             cache='default'
           />
         } else {
-          icon = <Icon name='person' style={{...statusStyle, fontSize: 20}} color={passiveColor} />
+          icon = <Icon
+            name='person'
+            style={{fontSize: 70, height: imageHeight}}
+            color={ThemeManager.instance().getCurrentTheme().backgroundColor}
+          />
         }
         break
       case 'ALBUM':
@@ -173,12 +167,16 @@ class ListItem extends React.Component {
         if (url != null) {
           icon = <Image 
             source={{ uri: url }}
-            style={{ width: 36, height: 36, borderRadius: 18 }}
+            style={{ height: imageHeight, width: imageWidth}}
             resizeMode='cover'
             cache='default'
           />
         } else {
-          icon = <Icon name='album' style={{...statusStyle, fontSize: 20}} color={passiveColor} />
+          icon = <Icon
+            name='album'
+            style={{fontSize: 70, height: imageHeight}}
+            color={ThemeManager.instance().getCurrentTheme().backgroundColor}
+          />
         }
         break
     }
@@ -187,18 +185,8 @@ class ListItem extends React.Component {
       ? activeColor
       : passiveColor
 
-    let titleStyle = status != 'none'
-      ? styles.titlePlaying
-      : styles.title
-
     return (
-      <Swipeable
-        enabled={canDelete}
-        icon='delete'
-        underlayColor={underlayColor}
-        onSwipe={this.handleSwipe}
-        id={title}
-      >
+      <View style={{...styles.wrapper, height: height, width: width}}>
         <Highlightable
           underlayColor={highlightColor}
           foregroundColor='#FFFFFF'
@@ -208,58 +196,38 @@ class ListItem extends React.Component {
           key={'' + id}
           highlighted={selected}
         >
-          <View style={{...styles.itemContainer, height: height}}>
-            {!editing && draggable && (
-              <TouchableOpacity
-                onLongPress={this.handleMove}
-                onPressOut={moveEnd}
-              >
-                <View style={{ alignItems: 'center', justifyContent: 'center' }}>
-                  <Icon name='drag-handle' color={passiveColor} style={{...styles.status, fontSize: 24}} />
-                </View>
-              </TouchableOpacity>
- 
-            )}
-            <View style={{ alignItems: 'center', justifyContent: 'center', width: (!editing && draggable ? 30 : 60) }}>
+          <View style={{...styles.itemContainer, height: height - padding * 2, width: width - padding * 2}}>
+            <View style={{...styles.image, width: imageWidth, height: imageHeight}}>
               {icon}
             </View>
-            <View style={styles.description}>
-              <Text style={titleStyle} numberOfLines={1} ellipsizeMode='tail'>{title}</Text>
-              <Text style={styles.subtitle}>{realSubtitle}</Text>
+            <View style={styles.details}>
+              <View style={styles.description}>
+                <Text style={styles.title} numberOfLines={1} ellipsizeMode='tail'>{title}</Text>
+              </View>
+              <TouchableOpacity
+                onPress={this.handleMenuPress}
+                disabled={editing}
+              >
+                {!editing && canAddItems && (
+                  <Icon name='more-vert' color='black' style={styles.status} />
+                )}
+                {editing && selected && (
+                  <Icon name='check' color='black' style={styles.status} />
+                )}
+                {editing && !selected && 
+                  // Placeholder view to keep the text layout the same.
+                  (<View style={styles.placeholder} />)
+                }
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity
-              onPress={this.handleMenuPress}
-              disabled={editing}
-            >
-              {!editing && canAddItems && (
-                <Icon name='more-vert' color='black' style={{...styles.status, fontSize: 20}} />
-              )}
-              {editing && selected && (
-                <Icon name='check' color='black' style={{...styles.status, fontSize: 20}} />
-              )}
-              {editing && !selected && 
-                // Placeholder view to keep the text layout the same.
-                (<View style={{width: 60, height: '100%'}} />)
-              }
-            </TouchableOpacity>
           </View>
         </Highlightable>
-      </Swipeable>
+      </View>
     )
-  }
-
-  // Events.
-  
-  handleMove = () => {
-    this.props.move()
   }
 
   handleMenuPress = () => {
     this.props.onMenu()
-  }
-
-  handleSwipe = () => {
-    this.props.onDelete()
   }
 
   handlePress = () => {
@@ -273,7 +241,7 @@ const mapStateToProps = (state, ownProps) => {
 
   if (type == 'ARTIST' && title.length > 0 && title != 'VA') {
     if (title in artists && artists[title] != null) {
-      return { url: artists[title]['small'] }
+      return { url: artists[title]['large'] }
     }
   } else if (type == 'ALBUM' && title.length > 0 && artist != null && artist.length > 0) {
     if (artist in archive && title in archive[artist]) {
@@ -289,64 +257,59 @@ const mapDispatchToProps = (dispatch) => ({
   getAlbumArt: (artist, album) => { dispatch(getAlbumArt(artist, album)) },
 })
 
-export default connect(mapStateToProps, mapDispatchToProps)(ListItem)
+export default connect(mapStateToProps, mapDispatchToProps)(ListTileItem)
 
 const styles = StyleSheet.create({
+  wrapper: {
+    padding: 4,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    flex: 1,
+  },
   itemContainer: {
+    ...elevationShadowStyle(1),
+    backgroundColor: 'white',
+    flexDirection: 'column',
+    flex: 1,
+    alignItems: 'center',
+  },
+  image: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: 1,
+    backgroundColor: ThemeManager.instance().getCurrentTheme().tableBackgroundColor,
+  },
+  details: {
     flexDirection: 'row',
     flex: 1,
-    alignItems: 'center',
-    paddingVertical: 10,
-  },
-  status: {
-    width: 60,
-    textAlign: 'center',
-    alignSelf: 'stretch',
-    textAlignVertical: 'center',
-    fontSize: 12,
-  },
-  statusWithDraggable: {
-    width: 30,
-    textAlign: 'left',
-    alignSelf: 'stretch',
-    textAlignVertical: 'center',
-    fontSize: 12,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    flexShrink: 1,
   },
   description: {
-    flex: 1,
+    alignItems: 'stretch',
     flexDirection: 'column',
-    marginRight: 10,
+    flexGrow: 1,
+    flexShrink: 1,
   },
   title: {
-    fontWeight: Platform.OS === 'android' ? 'normal' : '500',
-    fontSize: 16,
-    color: 'black',
-    marginBottom: Platform.OS === 'android' ? 0 : 2,
-  },
-  titlePlaying: {
+    flexGrow: 1,
+    flexShrink: 1,
     fontWeight: 'bold',
-    fontSize: 16,
-    color: 'black',
-    marginBottom: Platform.OS === 'android' ? 0 : 2,
+    color: ThemeManager.instance().getCurrentTheme().mainTextColor,
+    fontSize: ThemeManager.instance().getCurrentTheme().subTextSize,
   },
   subtitle: {
-    fontSize: 13,
-    color: 'gray',
+    flexGrow: 1,
+    flexShrink: 1,
+    fontSize: ThemeManager.instance().getCurrentTheme().subTextSize,
   },
-  menuWrapper: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
+  status: {
+    fontSize: 20,
   },
-  menuContainer: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
+  placeholder: {
+    width: 60,
+    height: '100%',
   },
 })
+

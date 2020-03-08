@@ -34,6 +34,21 @@ import Outputs from './screens/Outputs'
 const iconColor = ThemeManager.instance().getCurrentTheme().navigationBarIconColor
 const textColor = ThemeManager.instance().getCurrentTheme().navigationBarTextColor
 
+const iconsFromButtons = (icons, navigation) => {
+  return icons.map((icon) => {
+    return (
+      <TouchableOpacity
+        key={icon}
+        onPress={() => navigation.getParam('onNavigationButtonPressed')(icon)}
+        style={styles.headerButton}>
+        <Icon name={icon}
+          size={24}
+          color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor}
+        />
+      </TouchableOpacity>
+    )
+  })
+}
 const navigationHeader = {
   headerStyle: {
     paddingTop: Platform.OS === 'android' ? 24 : 12,
@@ -78,20 +93,7 @@ const barOptionsFromState = ({ title, navigation, icons = ['playlist-add'], hide
       </TouchableOpacity>
     )
 
-    let buttons = icons.map((icon) => {
-      return (
-        <TouchableOpacity
-          key={icon}
-          onPress={() => navigation.getParam('onNavigationButtonPressed')(icon)}
-          style={styles.headerButton}>
-          <Icon name={icon}
-            size={24}
-            color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor}
-          />
-        </TouchableOpacity>
-      )
-    })
-
+    let buttons = iconsFromButtons(icons, navigation)
     options.headerRight = (
       <View style={styles.rightEditingHeader}>
         <TouchableOpacity
@@ -134,17 +136,26 @@ const barOptionsFromState = ({ title, navigation, icons = ['playlist-add'], hide
     )
   } else {
     if (regularIcon != null) {
-      options.headerRight = (
-        <View style={styles.rightEditingHeader}>
-          <TouchableOpacity onPress={navigation.getParam('onMenu')} style={styles.headerButton}>
-            <Icon
-              name={regularIcon}
-              size={24}
-              color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor}
-            />
-          </TouchableOpacity>
-        </View>
-      )
+      if (Array.isArray(regularIcon)) {
+        let buttons = iconsFromButtons(regularIcon, navigation) 
+        options.headerRight = (
+          <View style={styles.rightEditingHeader}>
+            {buttons}
+          </View>
+        )
+      } else {
+        options.headerRight = (
+          <View style={styles.rightEditingHeader}>
+            <TouchableOpacity onPress={navigation.getParam('onMenu')} style={styles.headerButton}>
+              <Icon
+                name={regularIcon}
+                size={24}
+                color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor}
+              />
+            </TouchableOpacity>
+          </View>
+        )
+      }
     }
   }
 
@@ -325,7 +336,7 @@ const LibraryNavigator = createStackNavigator(
       navigationOptions: ({ navigation }) => barOptionsFromState({
         title: 'Library',
         navigation: navigation,
-        regularIcon: 'filter-list',
+        regularIcon: [navigation.getParam('mode') == 'tiles' ? 'view-list' : 'view-module', 'filter-list'],
       }),
     },
     Artist: {
@@ -333,7 +344,7 @@ const LibraryNavigator = createStackNavigator(
       navigationOptions: ({ navigation }) => barOptionsFromState({
         title: navigation.getParam('name'),
         navigation: navigation,
-        regularIcon: 'filter-list',
+        regularIcon: [navigation.getParam('mode') == 'tiles' ? 'view-list' : 'view-module', 'filter-list'],
       }),
     },
     Album: {

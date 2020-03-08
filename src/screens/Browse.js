@@ -52,6 +52,7 @@ class Browse extends React.Component {
           canEdit={true}
           position={position}
           navigation={navigation}
+          mode='list'
         />
       </View>
     )

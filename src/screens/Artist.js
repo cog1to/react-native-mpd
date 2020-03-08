@@ -12,13 +12,19 @@ import { connect } from 'react-redux'
 
 // Actions.
 import { loadAlbums } from '../redux/reducers/library/actions'
+import { saveLibraryMode } from '../redux/reducers/storage/actions'
 
 // Items list.
 import Browsable from '../components/common/Browsable'
 
 class Artist extends React.Component {
   componentDidMount() {
-    const { content } = this.props
+    const { content, mode } = this.props
+
+    this.props.navigation.setParams({
+      mode: this.props.mode
+    })
+
     if (content == null) {
       this.reload()
     }
@@ -31,7 +37,7 @@ class Artist extends React.Component {
   }
 
   render() {
-    const { content, navigation, loading, queueSize, position } = this.props
+    const { content, navigation, loading, queueSize, position, mode } = this.props
 
     let albums = ((content !== null) ? Object.keys(content) : []).map((name, index) => ({
       icon: index + 1,
@@ -54,6 +60,8 @@ class Artist extends React.Component {
           onRefresh={this.reload}
           queueSize={queueSize}
           position={position}
+          onIconTapped={this.onModeSelected}
+          mode={mode}
         />
       </View>
    )
@@ -72,23 +80,43 @@ class Artist extends React.Component {
     })
     navigation.dispatch(action)
   }
+
+  onModeSelected = (icon) => {
+    let switchMode = (mode) => {
+      this.props.saveLibraryMode(mode)
+      this.props.navigation.setParams({
+        mode: mode
+      })
+    }
+
+    if (icon === 'view-list') {
+      switchMode('list')
+    } else if (icon === 'view-module') {
+      switchMode('tiles')
+    } else {
+      console.log('Unknown library visual mode')
+    }
+  }
 }
 
 const mapStateToProps = (state, ownProps) => {
   const { position = null, file = null } = state.currentSong
+  const { mode } = state.storage
   const { navigation: { state: { params: { name } } } } = ownProps
 
   return {
     content: state.library.library[name],
     loading: state.library.loading,
     queueSize: state.queue.length,
-    position: position,
+    position,
+    mode,
   }
 }
 
 const mapDispatchToProps = dispatch => {
   return {
-    loadAlbums: (artist) => dispatch(loadAlbums(artist))
+    loadAlbums: (artist) => dispatch(loadAlbums(artist)),
+    saveLibraryMode: (mode) => dispatch(saveLibraryMode(mode)),
   }
 }
 

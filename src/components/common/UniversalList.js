@@ -5,6 +5,8 @@ import {
   Styles,
   Image,
   StyleSheet,
+  Dimensions,
+  FlatList,
 } from 'react-native'
 
 import PropTypes from 'prop-types'
@@ -12,6 +14,8 @@ import PropTypes from 'prop-types'
 import DraggableFlatList from 'react-native-draggable-flatlist'
 
 import ListItem from './ListItem'
+import ListTileItem from './ListTileItem'
+import EmptyListTileItem from './EmptyListTileItem'
 import CoverItem from './CoverItem'
 import TitleItem from './TitleItem'
 
@@ -52,6 +56,9 @@ export default class UniversalList extends React.Component {
     onItemDeleted: PropTypes.func,
     onItemMoved: PropTypes.func,
     onItemMenu: PropTypes.func,
+
+    // Style
+    mode: PropTypes.string,
   }
 
   // Item rendering.
@@ -61,7 +68,7 @@ export default class UniversalList extends React.Component {
   }
 
   renderItem = ({ item, index, move, moveEnd, isActive }) => {
-    const { editing, canDelete, canAdd, canRearrange, canEdit } = this.props
+    const { editing, canDelete, canAdd, canRearrange, canEdit, mode } = this.props
     const { id, name, type, artist = null, path, title, selected, status, subtitle, albumArtist = null } = item
     
     if (type == 'COVER') {
@@ -89,7 +96,7 @@ export default class UniversalList extends React.Component {
     const theme = ThemeManager.instance().getCurrentTheme()
 
     return (
-      <ListItem 
+      <ListItem
         height={UniversalList.ITEM_HEIGHT}
         title={displayName}
         subtitle={displayType}
@@ -121,31 +128,108 @@ export default class UniversalList extends React.Component {
     )
   }
 
+  renderTileItem = ({ item, index }) => {
+    // Check if it's a filler tile.
+    const { id, isEmpty = false } = item
+    if (isEmpty) {
+      return (
+        <EmptyListTileItem
+          height={UniversalList.TILE_HEIGHT}
+          id={id}
+        />
+      )
+    }
+
+    // If not a filler, proceed with normal tile render.
+    const { editing, canDelete, canAdd, canRearrange, canEdit, mode } = this.props
+    const { name, type, artist = null, path, title, selected, status, subtitle, albumArtist = null } = item
+    const numColumns = Math.floor((Dimensions.get('window').width - 8 * 2) / 200)
+    
+    let displayName = title != null ? title : name
+    let displayType = artist != null ? artist : type
+
+    const theme = ThemeManager.instance().getCurrentTheme()
+
+    return (
+      <ListTileItem
+        height={UniversalList.TILE_HEIGHT}
+        numColumns={numColumns}
+        title={displayName}
+        subtitle={displayType}
+        artist={artist}
+        id={id}
+        index={index}
+        type={type}
+        selected={selected}
+        status={status}
+        editing={editing}
+
+        draggable={canRearrange}
+        canAddItems={canAdd}
+        canDelete={canDelete}
+
+        activeColor={theme.activeColor}
+        passiveColor={theme.lightTextColor}
+        highlightColor={theme.accentColor + '50'}
+        underlayColor={theme.accentBackgroundColor}
+
+        onDelete={() => this.handleDelete(item)}
+        onTap={() => this.handleTap(item)}
+        onLongTap={canEdit ? () => this.handleLongTap(item) : null}
+        onMenu={() => this.handleMenu(item)}
+      />
+    )
+  }
+
   // Root rendering.
 
   static ITEM_HEIGHT = 60 
+  static TILE_HEIGHT = 110 
 
-  getItemLayout = (data, index) => ({
-    length: UniversalList.ITEM_HEIGHT,
-    offset: index * UniversalList.ITEM_HEIGHT,
-    index,
-  })
+  getItemLayout = (data, index) => {
+    const { mode } = this.props
+    const height = (mode === 'list') ? UniversalList.ITEM_HEIGHT : UniversalList.TILE_HEIGHT
+
+    return {
+      length: height,
+      offset: index * height,
+      index,
+    }
+  }
 
   render() {
-    const { content, refreshing, onRefresh, extraData } = this.props
+    const { content, refreshing, onRefresh, extraData, mode } = this.props
 
-    return (
-      <DraggableFlatList
-        data={content}
-        renderItem={this.renderItem}
-        keyExtractor={this.keyExtractor}
-        onMoveEnd={(data) => this.handleMoveEnd(data)}
-        getItemLayout={this.getItemLayout}
-        refreshing={refreshing}
-        onRefresh={onRefresh}
-        extraData={extraData}
-      />
-    )
+    if (mode === 'list') {
+      return (
+        <DraggableFlatList
+          data={content}
+          renderItem={this.renderItem}
+          keyExtractor={this.keyExtractor}
+          onMoveEnd={(data) => this.handleMoveEnd(data)}
+          getItemLayout={this.getItemLayout}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          extraData={extraData}
+        />
+      )
+    } else {
+      const numColumns = Math.floor((Dimensions.get('window').width - 8 * 2) / 200)
+
+      return(
+        <FlatList
+          style={styles.tileList}
+          data={formatTiledContent(content, numColumns)}
+          renderItem={this.renderTileItem}
+          keyExtractor={this.keyExtractor}
+          getItemLayout={this.getItemLayout}
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          extraData={extraData}
+          numColumns={numColumns}
+        />
+      )
+    }
   }
 
   // Event handling.
@@ -171,3 +255,22 @@ export default class UniversalList extends React.Component {
   }
 }
 
+const formatTiledContent = (content, numColumns) => {
+  const numberOfFullRows = Math.floor(content.length / numColumns)
+
+  // Add empty cells to fill the last row.
+  let numberOfElementsInLastRow = content.length - (numberOfFullRows * numColumns)
+  while (numberOfElementsInLastRow != numColumns && numberOfElementsInLastRow !== 0) {
+    content.push({ id: 'blank-' + numberOfElementsInLastRow, isEmpty: true })
+    numberOfElementsInLastRow += 1
+  }
+
+  return content
+}
+
+const styles = StyleSheet.create({
+  tileList: {
+    marginHorizontal: 8,
+    marginTop: 4,
+  }
+})
