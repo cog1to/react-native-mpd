@@ -5,6 +5,7 @@ import {
   Styles,
   Image,
   StyleSheet,
+  Dimensions,
   FlatList,
 } from 'react-native'
 
@@ -142,6 +143,7 @@ export default class UniversalList extends React.Component {
     // If not a filler, proceed with normal tile render.
     const { editing, canDelete, canAdd, canRearrange, canEdit, mode } = this.props
     const { name, type, artist = null, path, title, selected, status, subtitle, albumArtist = null } = item
+    const numColumns = Math.floor((Dimensions.get('window').width - 8 * 2) / 200)
     
     let displayName = title != null ? title : name
     let displayType = artist != null ? artist : type
@@ -151,6 +153,7 @@ export default class UniversalList extends React.Component {
     return (
       <ListTileItem
         height={UniversalList.TILE_HEIGHT}
+        numColumns={numColumns}
         title={displayName}
         subtitle={displayType}
         artist={artist}
@@ -211,17 +214,19 @@ export default class UniversalList extends React.Component {
         />
       )
     } else {
+      const numColumns = Math.floor((Dimensions.get('window').width - 8 * 2) / 200)
+
       return(
         <FlatList
           style={styles.tileList}
-          data={formatTiledContent(content, 2)}
+          data={formatTiledContent(content, numColumns)}
           renderItem={this.renderTileItem}
           keyExtractor={this.keyExtractor}
           getItemLayout={this.getItemLayout}
           refreshing={refreshing}
           onRefresh={onRefresh}
           extraData={extraData}
-          numColumns={2}
+          numColumns={numColumns}
         />
       )
     }

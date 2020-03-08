@@ -128,9 +128,10 @@ class ListTileItem extends React.Component {
       canDelete,
       height,
       url,
+      numColumns,
     } = this.props
 
-    const width = Dimensions.get('window').width / 2.0 - 12.0
+    const width = Dimensions.get('window').width / numColumns - 12.0
     const padding = styles.wrapper.padding
     const shadowPadding = 2.0
     const imageWidth = width - shadowPadding - (padding * 2.0)
