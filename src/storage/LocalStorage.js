@@ -4,6 +4,7 @@ const KEYS = {
   SAVED_ADDRESS: 'SAVED_ADDRESS',
   CURRENT_THEME: 'CURRENT_THEME',
   ARTIST_ART: 'ARTIST_ART',
+  LIBRARY_MODE: 'LIBRARY_MODE',
 }
 
 export default class LocalStorage {
@@ -106,6 +107,20 @@ export default class LocalStorage {
 
   setTheme(name, callback) {
     this._setValue(KEYS.CURRENT_THEME, name, callback)
+  }
+
+  getLibraryMode(callback) {
+    this._getValue(KEYS.LIBRARY_MODE, (error, result) => {
+      if (error != null) {
+        callback(error, null)
+      }
+
+      callback(null, result)
+    })
+  }
+
+  setLibraryMode(name, callback) {
+    this._setValue(KEYS.LIBRARY_MODE, name, callback)
   }
 
   // Private.

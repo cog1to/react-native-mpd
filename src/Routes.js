@@ -134,17 +134,39 @@ const barOptionsFromState = ({ title, navigation, icons = ['playlist-add'], hide
     )
   } else {
     if (regularIcon != null) {
-      options.headerRight = (
-        <View style={styles.rightEditingHeader}>
-          <TouchableOpacity onPress={navigation.getParam('onMenu')} style={styles.headerButton}>
-            <Icon
-              name={regularIcon}
-              size={24}
-              color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor}
-            />
-          </TouchableOpacity>
-        </View>
-      )
+      if (Array.isArray(regularIcon)) {
+        let buttons = regularIcon.map((icon) => {
+          return (
+            <TouchableOpacity
+              key={icon}
+              onPress={() => navigation.getParam('onNavigationButtonPressed')(icon)}
+              style={styles.headerButton}>
+              <Icon name={icon}
+                size={24}
+                color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor}
+              />
+            </TouchableOpacity>
+          )
+        })
+
+        options.headerRight = (
+          <View style={styles.rightEditingHeader}>
+            {buttons}
+          </View>
+        )
+      } else {
+        options.headerRight = (
+          <View style={styles.rightEditingHeader}>
+            <TouchableOpacity onPress={navigation.getParam('onMenu')} style={styles.headerButton}>
+              <Icon
+                name={regularIcon}
+                size={24}
+                color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor}
+              />
+            </TouchableOpacity>
+          </View>
+        )
+      }
     }
   }
 
@@ -325,7 +347,7 @@ const LibraryNavigator = createStackNavigator(
       navigationOptions: ({ navigation }) => barOptionsFromState({
         title: 'Library',
         navigation: navigation,
-        regularIcon: 'filter-list',
+        regularIcon: [navigation.getParam('mode') == 'tiles' ? 'view-list' : 'view-module', 'filter-list'],
       }),
     },
     Artist: {
@@ -333,7 +355,7 @@ const LibraryNavigator = createStackNavigator(
       navigationOptions: ({ navigation }) => barOptionsFromState({
         title: navigation.getParam('name'),
         navigation: navigation,
-        regularIcon: 'filter-list',
+        regularIcon: [navigation.getParam('mode') == 'tiles' ? 'view-list' : 'view-module', 'filter-list'],
       }),
     },
     Album: {

@@ -2,7 +2,7 @@ import types from '../types'
 
 import LocalStorage from '../../storage/LocalStorage'
 
-import { addressLoaded, addressSaved, loadSavedAddress } from '../reducers/storage/actions'
+import { addressLoaded, addressSaved, loadSavedAddress, libraryModeLoaded, libraryModeSaved } from '../reducers/storage/actions'
 import { artistArtLoaded } from '../reducers/artists/actions'
 
 export const localStorageMiddleware = store => {
@@ -34,6 +34,20 @@ export const localStorageMiddleware = store => {
       {
         LocalStorage.instance().loadArtistArt((error, data) => {
           store.dispatch(artistArtLoaded(data))
+        })
+        break
+      }
+      case types.LOAD_LIBRARY_MODE:
+      {
+        LocalStorage.instance().getLibraryMode((error, result) => {
+          store.dispatch(libraryModeLoaded(result, error))
+        })
+        break
+      }
+      case types.SAVE_LIBRARY_MODE:
+      {
+        LocalStorage.instance().setLibraryMode(action.data, (error) => {
+          store.dispatch(libraryModeSaved(action.data, error))
         })
         break
       }

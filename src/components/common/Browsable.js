@@ -167,6 +167,7 @@ class Browsable extends React.Component {
     }),
     confirmDelete: PropTypes.bool.isRequired,
     onDeleteItems: PropTypes.func,
+    mode: PropTypes.string,
   }
 
   state = {
@@ -196,6 +197,7 @@ class Browsable extends React.Component {
     confirmDelete: true,
     onRefresh: null,
     refreshing: null,
+    mode: 'list'
   }
 
   // Global handlers.
@@ -212,6 +214,7 @@ class Browsable extends React.Component {
       onMenu: this.onSearch,
       onCancelSearch: this.onCancelSearch,
       onSearchChange: _.debounce(this.onSearchChange, 300),
+      mode: this.props.mode,
     })
   }
 
@@ -236,6 +239,7 @@ class Browsable extends React.Component {
       canDelete,
       canRearrange,
       deletePrompt,
+      mode,
     } = this.props
 
     const { selected, editing, showingDeleteDialog, search } = this.state
@@ -320,6 +324,7 @@ class Browsable extends React.Component {
                 onItemDelete={this.handleItemDelete}
 
                 extraData={{editing, selected}}
+                mode={mode}
               />
               {showingMenu && (
                 <MenuDialog
@@ -525,6 +530,12 @@ class Browsable extends React.Component {
         break
       case 'delete':
         this.onConfirmDelete()
+        break
+      case 'filter-list':
+        this.onSearch()
+        break
+      default:
+        this.props.onIconTapped != null && this.props.onIconTapped(icon)
         break
     }
   }

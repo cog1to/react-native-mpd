@@ -20,3 +20,24 @@ export const addressSaved = (address, error) => ({
     data: address,
     error: error,
 })
+
+export const loadLibraryMode = () => ({
+    type: types.LOAD_LIBRARY_MODE,
+})
+
+export const libraryModeLoaded = (mode, error) => ({
+    type: types.LIBRARY_MODE_LOADED,
+    data: mode,
+    error: error,
+})
+
+export const saveLibraryMode = (mode) => ({
+    type: types.SAVE_LIBRARY_MODE,
+    data: mode,
+})
+
+export const libraryModeSaved = (mode, error) => ({
+    type: types.LIBRARY_MODE_SAVED,
+    data: mode,
+    error: error,
+})
