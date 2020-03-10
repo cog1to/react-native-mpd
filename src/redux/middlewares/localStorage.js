@@ -40,7 +40,9 @@ export const localStorageMiddleware = store => {
       case types.LOAD_LIBRARY_MODE:
       {
         LocalStorage.instance().getLibraryMode((error, result) => {
-          store.dispatch(libraryModeLoaded(result, error))
+          if (result != null) {
+            store.dispatch(libraryModeLoaded(result, error))
+          }
         })
         break
       }

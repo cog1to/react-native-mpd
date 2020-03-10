@@ -34,6 +34,8 @@ import Outputs from './screens/Outputs'
 const iconColor = ThemeManager.instance().getCurrentTheme().navigationBarIconColor
 const textColor = ThemeManager.instance().getCurrentTheme().navigationBarTextColor
 
+import store from './redux/store'
+
 const iconsFromButtons = (icons, navigation) => {
   return icons.map((icon) => {
     return (
@@ -336,16 +338,18 @@ const LibraryNavigator = createStackNavigator(
       navigationOptions: ({ navigation }) => barOptionsFromState({
         title: 'Library',
         navigation: navigation,
-        regularIcon: [navigation.getParam('mode') == 'tiles' ? 'view-list' : 'view-module', 'filter-list'],
+        regularIcon: [(navigation.getParam('mode') === 'tiles') ? 'view-list' : 'view-module', 'filter-list'],
       }),
+      params: { mode: store.getState().storage.mode },
     },
     Artist: {
       screen: Artist,
       navigationOptions: ({ navigation }) => barOptionsFromState({
         title: navigation.getParam('name'),
         navigation: navigation,
-        regularIcon: [navigation.getParam('mode') == 'tiles' ? 'view-list' : 'view-module', 'filter-list'],
+        regularIcon: [(navigation.getParam('mode') === 'tiles') ? 'view-list' : 'view-module', 'filter-list'],
       }),
+      params: { mode: store.getState().storage.mode },
     },
     Album: {
       screen: Album,

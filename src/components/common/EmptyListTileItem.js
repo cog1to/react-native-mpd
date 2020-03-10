@@ -6,8 +6,7 @@ import {
 
 class EmptyListTileItem extends React.Component {
   render() {
-    const { height } = this.props
-    const width = Dimensions.get('window').width / 2.0 - 8.0
+    const { height, width } = this.props
 
     return (
       <View style={{height: height, width: width}}>

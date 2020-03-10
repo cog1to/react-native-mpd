@@ -21,9 +21,7 @@ class Library extends React.Component {
   componentDidMount() {
     const { content, mode } = this.props
 
-    this.props.navigation.setParams({
-      mode: this.props.mode
-    })
+    console.log('*** mode:' + mode)
 
     if (content === null) {
       this.reload()

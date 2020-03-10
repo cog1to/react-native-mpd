@@ -21,10 +21,6 @@ class Artist extends React.Component {
   componentDidMount() {
     const { content, mode } = this.props
 
-    this.props.navigation.setParams({
-      mode: this.props.mode
-    })
-
     if (content == null) {
       this.reload()
     }

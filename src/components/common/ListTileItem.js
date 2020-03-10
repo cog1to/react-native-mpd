@@ -127,17 +127,17 @@ class ListTileItem extends React.Component {
       canAddItems,
       canDelete,
       height,
+      width,
       url,
       numColumns,
     } = this.props
 
-    const width = Dimensions.get('window').width / numColumns - 12.0
     const padding = styles.wrapper.padding
     const shadowPadding = 2.0
     const imageWidth = width - shadowPadding - (padding * 2.0)
     const imageHeight = (height / 2.0) - (shadowPadding / 2.0) + 18 
 
-    const { move, moveEnd, onLongTap = null } = this.props
+    const { onLongTap = null } = this.props
 
     let statusStyle = (draggable && !editing)
       ? styles.statusWithDraggable
