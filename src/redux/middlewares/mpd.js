@@ -236,7 +236,8 @@ async function getContentRecursively(node) {
             break
         }
         case TreeNodeType.PLAYLIST: {
-            let files = listToChildren(await client.mpd.getPlaylist(node.path))
+            let path = ('fullPath' in node) ? node.fullPath : node.path
+            let files = listToChildren(await client.mpd.getPlaylist(path))
             results = results.concat(files)
             break
         }
