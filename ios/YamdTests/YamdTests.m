@@ -14,11 +14,11 @@
 #define TIMEOUT_SECONDS 600
 #define TEXT_TO_LOOK_FOR @"Welcome to React Native!"
 
-@interface mpd_wrapperTests : XCTestCase
+@interface YamdTests : XCTestCase
 
 @end
 
-@implementation mpd_wrapperTests
+@implementation YamdTests
 
 - (BOOL)findSubviewInView:(UIView *)view matching:(BOOL(^)(UIView *view))test
 {

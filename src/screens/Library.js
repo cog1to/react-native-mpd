@@ -21,8 +21,6 @@ class Library extends React.Component {
   componentDidMount() {
     const { content, mode } = this.props
 
-    console.log('*** mode:' + mode)
-
     if (content === null) {
       this.reload()
     }
@@ -56,6 +54,7 @@ class Library extends React.Component {
           queueSize={queueSize}
           mode={mode}
           onIconTapped={this.onModeSelected}
+          position={position}
       />
       </View>
     )

@@ -455,6 +455,9 @@ export const mpdMiddleware = store => {
                 client.mpd.getQueue().then((result) => {
                     let queue = queueToState(result, true)
                     store.dispatch(queueUpdated(queue))
+
+                    // Reload current song. Mostly to get proper song's position.
+                    store.dispatch(getCurrentSong())
                 }).catch((e) => {
                     store.dispatch(error(e, types.GET_QUEUE))
                 })

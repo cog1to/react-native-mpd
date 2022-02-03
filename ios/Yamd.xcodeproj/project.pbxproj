@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		00E356F31AD99517003FC87E /* mpd_wrapperTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* mpd_wrapperTests.m */; };
+		00E356F31AD99517003FC87E /* YamdTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* YamdTests.m */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB11A68108700A75B9A /* LaunchScreen.xib */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
@@ -15,14 +15,14 @@
 		2D02E4BC1E0B4A80006451C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
-		2DCD954D1E0B4F2C00145EB5 /* mpd_wrapperTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* mpd_wrapperTests.m */; };
-		5759B89B4E35813E343D8854 /* libPods-mpd_wrapper-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8820D9748C9D4A3A9DA09592 /* libPods-mpd_wrapper-tvOSTests.a */; };
-		67709E6374067998B4262958 /* libPods-mpd_wrapperTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3083FCF21EE071E88DE35C93 /* libPods-mpd_wrapperTests.a */; };
+		2DCD954D1E0B4F2C00145EB5 /* YamdTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* YamdTests.m */; };
+		5759B89B4E35813E343D8854 /* libPods-Yamd-tvOSTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8820D9748C9D4A3A9DA09592 /* libPods-Yamd-tvOSTests.a */; };
+		67709E6374067998B4262958 /* libPods-YamdTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 3083FCF21EE071E88DE35C93 /* libPods-YamdTests.a */; };
 		BC215D85238C7D94008865B9 /* fa-solid-900.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BC215D82238C7D94008865B9 /* fa-solid-900.ttf */; };
 		BC215D86238C7D94008865B9 /* fa-regular-400.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BC215D83238C7D94008865B9 /* fa-regular-400.ttf */; };
 		BC215D87238C7D94008865B9 /* fa-brands-400.ttf in Resources */ = {isa = PBXBuildFile; fileRef = BC215D84238C7D94008865B9 /* fa-brands-400.ttf */; };
-		C5D5C460B6FE86CF955EFCE3 /* libPods-mpd_wrapper.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 91AB0B5C15AD65BCD00F17F5 /* libPods-mpd_wrapper.a */; };
-		CBEF422F6D1BEF309CBE6DB3 /* libPods-mpd_wrapper-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 50F28DF5E24C70298093D777 /* libPods-mpd_wrapper-tvOS.a */; };
+		C5D5C460B6FE86CF955EFCE3 /* libPods-Yamd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 91AB0B5C15AD65BCD00F17F5 /* libPods-Yamd.a */; };
+		CBEF422F6D1BEF309CBE6DB3 /* libPods-Yamd-tvOS.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 50F28DF5E24C70298093D777 /* libPods-Yamd-tvOS.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,64 +31,64 @@
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 13B07F861A680F5B00A75B9A;
-			remoteInfo = mpd_wrapper;
+			remoteInfo = Yamd;
 		};
 		2D02E4911E0B4A5D006451C7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 83CBB9F71A601CBA00E9B192 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 2D02E47A1E0B4A5D006451C7;
-			remoteInfo = "mpd_wrapper-tvOS";
+			remoteInfo = "Yamd-tvOS";
 		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		008F07F21AC5B25A0029DE68 /* main.jsbundle */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = main.jsbundle; sourceTree = "<group>"; };
-		00E356EE1AD99517003FC87E /* mpd_wrapperTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = mpd_wrapperTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		00E356EE1AD99517003FC87E /* YamdTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YamdTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		00E356F21AD99517003FC87E /* mpd_wrapperTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = mpd_wrapperTests.m; sourceTree = "<group>"; };
-		0C6FD634BEC750FDD7F46200 /* Pods-mpd_wrapperTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mpd_wrapperTests.release.xcconfig"; path = "Target Support Files/Pods-mpd_wrapperTests/Pods-mpd_wrapperTests.release.xcconfig"; sourceTree = "<group>"; };
-		135ACE24168C8F7A71F7D439 /* Pods-mpd_wrapperTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mpd_wrapperTests.debug.xcconfig"; path = "Target Support Files/Pods-mpd_wrapperTests/Pods-mpd_wrapperTests.debug.xcconfig"; sourceTree = "<group>"; };
+		00E356F21AD99517003FC87E /* YamdTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YamdTests.m; sourceTree = "<group>"; };
+		0C6FD634BEC750FDD7F46200 /* Pods-YamdTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YamdTests.release.xcconfig"; path = "Target Support Files/Pods-YamdTests/Pods-YamdTests.release.xcconfig"; sourceTree = "<group>"; };
+		135ACE24168C8F7A71F7D439 /* Pods-YamdTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-YamdTests.debug.xcconfig"; path = "Target Support Files/Pods-YamdTests/Pods-YamdTests.debug.xcconfig"; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Yamd.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Yamd.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = mpd_wrapper/AppDelegate.h; sourceTree = "<group>"; };
-		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = mpd_wrapper/AppDelegate.m; sourceTree = "<group>"; };
+		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Yamd/AppDelegate.h; sourceTree = "<group>"; };
+		13B07FB01A68108700A75B9A /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = Yamd/AppDelegate.m; sourceTree = "<group>"; };
 		13B07FB21A68108700A75B9A /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
-		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = mpd_wrapper/Images.xcassets; sourceTree = "<group>"; };
-		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = mpd_wrapper/Info.plist; sourceTree = "<group>"; };
-		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = mpd_wrapper/main.m; sourceTree = "<group>"; };
+		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Yamd/Images.xcassets; sourceTree = "<group>"; };
+		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Yamd/Info.plist; sourceTree = "<group>"; };
+		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Yamd/main.m; sourceTree = "<group>"; };
 		1F4BC2AABCD04F25B0C18398 /* AntDesign.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = AntDesign.ttf; path = "../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf"; sourceTree = "<group>"; };
 		20C6F38287D64D6FAFC6FBC2 /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
 		27915DEF18844403AF32AB7D /* MaterialCommunityIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialCommunityIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf"; sourceTree = "<group>"; };
 		29FDB98A8B7A4D83BCEC2AB7 /* FontAwesome5_Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Regular.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Regular.ttf"; sourceTree = "<group>"; };
-		2D02E47B1E0B4A5D006451C7 /* mpd_wrapper-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "mpd_wrapper-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		2D02E4901E0B4A5D006451C7 /* mpd_wrapper-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "mpd_wrapper-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		3083FCF21EE071E88DE35C93 /* libPods-mpd_wrapperTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-mpd_wrapperTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2D02E47B1E0B4A5D006451C7 /* Yamd-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Yamd-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		2D02E4901E0B4A5D006451C7 /* Yamd-tvOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Yamd-tvOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		3083FCF21EE071E88DE35C93 /* libPods-YamdTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-YamdTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		32FE86446A2240F9B7818B00 /* Foundation.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Foundation.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Foundation.ttf"; sourceTree = "<group>"; };
 		40951755AB0947B780F18C97 /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Brands.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf"; sourceTree = "<group>"; };
-		50F28DF5E24C70298093D777 /* libPods-mpd_wrapper-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-mpd_wrapper-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		50F28DF5E24C70298093D777 /* libPods-Yamd-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Yamd-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		533B8143DBE340848432F86E /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
 		55436235675B43B0A48BBEBC /* FontAwesome5_Solid.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Solid.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Solid.ttf"; sourceTree = "<group>"; };
 		5758312E8A06431B88A863F1 /* MaterialIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = MaterialIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/MaterialIcons.ttf"; sourceTree = "<group>"; };
 		64BF9BC4A79E4EDF8CF70C6D /* Feather.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Feather.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Feather.ttf"; sourceTree = "<group>"; };
-		660EDF45A70B8274B8AB44C6 /* Pods-mpd_wrapper.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mpd_wrapper.debug.xcconfig"; path = "Target Support Files/Pods-mpd_wrapper/Pods-mpd_wrapper.debug.xcconfig"; sourceTree = "<group>"; };
-		690302C5363F0D55803A5699 /* Pods-mpd_wrapper-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mpd_wrapper-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-mpd_wrapper-tvOSTests/Pods-mpd_wrapper-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
+		660EDF45A70B8274B8AB44C6 /* Pods-Yamd.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yamd.debug.xcconfig"; path = "Target Support Files/Pods-Yamd/Pods-Yamd.debug.xcconfig"; sourceTree = "<group>"; };
+		690302C5363F0D55803A5699 /* Pods-Yamd-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yamd-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-Yamd-tvOSTests/Pods-Yamd-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		7F73667A7E654F0FB94A83E2 /* SimpleLineIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SimpleLineIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/SimpleLineIcons.ttf"; sourceTree = "<group>"; };
 		804DE333F5F3427A8629E308 /* Fontisto.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Fontisto.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Fontisto.ttf"; sourceTree = "<group>"; };
-		8820D9748C9D4A3A9DA09592 /* libPods-mpd_wrapper-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-mpd_wrapper-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		91AB0B5C15AD65BCD00F17F5 /* libPods-mpd_wrapper.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-mpd_wrapper.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		8820D9748C9D4A3A9DA09592 /* libPods-Yamd-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Yamd-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		91AB0B5C15AD65BCD00F17F5 /* libPods-Yamd.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Yamd.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9C29A94312E64578BE0A74A9 /* Octicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Octicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Octicons.ttf"; sourceTree = "<group>"; };
-		AC7156264BBC15F0DF6A0E21 /* Pods-mpd_wrapper.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mpd_wrapper.release.xcconfig"; path = "Target Support Files/Pods-mpd_wrapper/Pods-mpd_wrapper.release.xcconfig"; sourceTree = "<group>"; };
+		AC7156264BBC15F0DF6A0E21 /* Pods-Yamd.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yamd.release.xcconfig"; path = "Target Support Files/Pods-Yamd/Pods-Yamd.release.xcconfig"; sourceTree = "<group>"; };
 		BC215D82238C7D94008865B9 /* fa-solid-900.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "fa-solid-900.ttf"; path = "../assets/fonts/fa-solid-900.ttf"; sourceTree = "<group>"; };
 		BC215D83238C7D94008865B9 /* fa-regular-400.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "fa-regular-400.ttf"; path = "../assets/fonts/fa-regular-400.ttf"; sourceTree = "<group>"; };
 		BC215D84238C7D94008865B9 /* fa-brands-400.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "fa-brands-400.ttf"; path = "../assets/fonts/fa-brands-400.ttf"; sourceTree = "<group>"; };
-		BE9D629167776C975CD13FDC /* Pods-mpd_wrapper-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mpd_wrapper-tvOS.release.xcconfig"; path = "Target Support Files/Pods-mpd_wrapper-tvOS/Pods-mpd_wrapper-tvOS.release.xcconfig"; sourceTree = "<group>"; };
+		BE9D629167776C975CD13FDC /* Pods-Yamd-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yamd-tvOS.release.xcconfig"; path = "Target Support Files/Pods-Yamd-tvOS/Pods-Yamd-tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		DD990B7F29AF46B5A88D750D /* Ionicons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Ionicons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Ionicons.ttf"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		EFD5C88F15E34E6AAE218DA5 /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome.ttf"; sourceTree = "<group>"; };
-		F0EFAAAE5B73E473431DCF99 /* Pods-mpd_wrapper-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mpd_wrapper-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-mpd_wrapper-tvOS/Pods-mpd_wrapper-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
+		F0EFAAAE5B73E473431DCF99 /* Pods-Yamd-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yamd-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-Yamd-tvOS/Pods-Yamd-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		F2E411FABD1A456F94A91FD9 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
-		F2EE58B66C6D89451E5CDB4E /* Pods-mpd_wrapper-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mpd_wrapper-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-mpd_wrapper-tvOSTests/Pods-mpd_wrapper-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
+		F2EE58B66C6D89451E5CDB4E /* Pods-Yamd-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Yamd-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-Yamd-tvOSTests/Pods-Yamd-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,7 +96,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				67709E6374067998B4262958 /* libPods-mpd_wrapperTests.a in Frameworks */,
+				67709E6374067998B4262958 /* libPods-YamdTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -104,7 +104,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C5D5C460B6FE86CF955EFCE3 /* libPods-mpd_wrapper.a in Frameworks */,
+				C5D5C460B6FE86CF955EFCE3 /* libPods-Yamd.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,7 +112,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CBEF422F6D1BEF309CBE6DB3 /* libPods-mpd_wrapper-tvOS.a in Frameworks */,
+				CBEF422F6D1BEF309CBE6DB3 /* libPods-Yamd-tvOS.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -120,20 +120,20 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5759B89B4E35813E343D8854 /* libPods-mpd_wrapper-tvOSTests.a in Frameworks */,
+				5759B89B4E35813E343D8854 /* libPods-Yamd-tvOSTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		00E356EF1AD99517003FC87E /* mpd_wrapperTests */ = {
+		00E356EF1AD99517003FC87E /* YamdTests */ = {
 			isa = PBXGroup;
 			children = (
-				00E356F21AD99517003FC87E /* mpd_wrapperTests.m */,
+				00E356F21AD99517003FC87E /* YamdTests.m */,
 				00E356F01AD99517003FC87E /* Supporting Files */,
 			);
-			path = mpd_wrapperTests;
+			path = YamdTests;
 			sourceTree = "<group>";
 		};
 		00E356F01AD99517003FC87E /* Supporting Files */ = {
@@ -144,7 +144,7 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		13B07FAE1A68108700A75B9A /* mpd_wrapper */ = {
+		13B07FAE1A68108700A75B9A /* Yamd */ = {
 			isa = PBXGroup;
 			children = (
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
@@ -155,7 +155,7 @@
 				13B07FB11A68108700A75B9A /* LaunchScreen.xib */,
 				13B07FB71A68108700A75B9A /* main.m */,
 			);
-			name = mpd_wrapper;
+			name = Yamd;
 			sourceTree = "<group>";
 		};
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
@@ -163,10 +163,10 @@
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
 				ED2971642150620600B7C4FE /* JavaScriptCore.framework */,
-				91AB0B5C15AD65BCD00F17F5 /* libPods-mpd_wrapper.a */,
-				50F28DF5E24C70298093D777 /* libPods-mpd_wrapper-tvOS.a */,
-				8820D9748C9D4A3A9DA09592 /* libPods-mpd_wrapper-tvOSTests.a */,
-				3083FCF21EE071E88DE35C93 /* libPods-mpd_wrapperTests.a */,
+				91AB0B5C15AD65BCD00F17F5 /* libPods-Yamd.a */,
+				50F28DF5E24C70298093D777 /* libPods-Yamd-tvOS.a */,
+				8820D9748C9D4A3A9DA09592 /* libPods-Yamd-tvOSTests.a */,
+				3083FCF21EE071E88DE35C93 /* libPods-YamdTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -207,9 +207,9 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
-				13B07FAE1A68108700A75B9A /* mpd_wrapper */,
+				13B07FAE1A68108700A75B9A /* Yamd */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
-				00E356EF1AD99517003FC87E /* mpd_wrapperTests */,
+				00E356EF1AD99517003FC87E /* YamdTests */,
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				A4886D400EBC07649E56A7CC /* Pods */,
@@ -224,9 +224,9 @@
 			isa = PBXGroup;
 			children = (
 				13B07F961A680F5B00A75B9A /* Yamd.app */,
-				00E356EE1AD99517003FC87E /* mpd_wrapperTests.xctest */,
-				2D02E47B1E0B4A5D006451C7 /* mpd_wrapper-tvOS.app */,
-				2D02E4901E0B4A5D006451C7 /* mpd_wrapper-tvOSTests.xctest */,
+				00E356EE1AD99517003FC87E /* YamdTests.xctest */,
+				2D02E47B1E0B4A5D006451C7 /* Yamd-tvOS.app */,
+				2D02E4901E0B4A5D006451C7 /* Yamd-tvOSTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -234,14 +234,14 @@
 		A4886D400EBC07649E56A7CC /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				660EDF45A70B8274B8AB44C6 /* Pods-mpd_wrapper.debug.xcconfig */,
-				AC7156264BBC15F0DF6A0E21 /* Pods-mpd_wrapper.release.xcconfig */,
-				F0EFAAAE5B73E473431DCF99 /* Pods-mpd_wrapper-tvOS.debug.xcconfig */,
-				BE9D629167776C975CD13FDC /* Pods-mpd_wrapper-tvOS.release.xcconfig */,
-				690302C5363F0D55803A5699 /* Pods-mpd_wrapper-tvOSTests.debug.xcconfig */,
-				F2EE58B66C6D89451E5CDB4E /* Pods-mpd_wrapper-tvOSTests.release.xcconfig */,
-				135ACE24168C8F7A71F7D439 /* Pods-mpd_wrapperTests.debug.xcconfig */,
-				0C6FD634BEC750FDD7F46200 /* Pods-mpd_wrapperTests.release.xcconfig */,
+				660EDF45A70B8274B8AB44C6 /* Pods-Yamd.debug.xcconfig */,
+				AC7156264BBC15F0DF6A0E21 /* Pods-Yamd.release.xcconfig */,
+				F0EFAAAE5B73E473431DCF99 /* Pods-Yamd-tvOS.debug.xcconfig */,
+				BE9D629167776C975CD13FDC /* Pods-Yamd-tvOS.release.xcconfig */,
+				690302C5363F0D55803A5699 /* Pods-Yamd-tvOSTests.debug.xcconfig */,
+				F2EE58B66C6D89451E5CDB4E /* Pods-Yamd-tvOSTests.release.xcconfig */,
+				135ACE24168C8F7A71F7D439 /* Pods-YamdTests.debug.xcconfig */,
+				0C6FD634BEC750FDD7F46200 /* Pods-YamdTests.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -249,9 +249,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		00E356ED1AD99517003FC87E /* mpd_wrapperTests */ = {
+		00E356ED1AD99517003FC87E /* YamdTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "mpd_wrapperTests" */;
+			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "YamdTests" */;
 			buildPhases = (
 				44B83392FA9BC4433628E9FD /* [CP] Check Pods Manifest.lock */,
 				00E356EA1AD99517003FC87E /* Sources */,
@@ -263,14 +263,14 @@
 			dependencies = (
 				00E356F51AD99517003FC87E /* PBXTargetDependency */,
 			);
-			name = mpd_wrapperTests;
-			productName = mpd_wrapperTests;
-			productReference = 00E356EE1AD99517003FC87E /* mpd_wrapperTests.xctest */;
+			name = YamdTests;
+			productName = YamdTests;
+			productReference = 00E356EE1AD99517003FC87E /* YamdTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		13B07F861A680F5B00A75B9A /* mpd_wrapper */ = {
+		13B07F861A680F5B00A75B9A /* Yamd */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "mpd_wrapper" */;
+			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Yamd" */;
 			buildPhases = (
 				E566FA47B5010EDF5A49D901 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F022414F080027D42C /* Start Packager */,
@@ -284,14 +284,14 @@
 			);
 			dependencies = (
 			);
-			name = mpd_wrapper;
-			productName = mpd_wrapper;
+			name = Yamd;
+			productName = Yamd;
 			productReference = 13B07F961A680F5B00A75B9A /* Yamd.app */;
 			productType = "com.apple.product-type.application";
 		};
-		2D02E47A1E0B4A5D006451C7 /* mpd_wrapper-tvOS */ = {
+		2D02E47A1E0B4A5D006451C7 /* Yamd-tvOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2D02E4BA1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "mpd_wrapper-tvOS" */;
+			buildConfigurationList = 2D02E4BA1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "Yamd-tvOS" */;
 			buildPhases = (
 				A4C3FDBBB2CAEE725D069CA9 /* [CP] Check Pods Manifest.lock */,
 				FD10A7F122414F3F0027D42C /* Start Packager */,
@@ -304,14 +304,14 @@
 			);
 			dependencies = (
 			);
-			name = "mpd_wrapper-tvOS";
-			productName = "mpd_wrapper-tvOS";
-			productReference = 2D02E47B1E0B4A5D006451C7 /* mpd_wrapper-tvOS.app */;
+			name = "Yamd-tvOS";
+			productName = "Yamd-tvOS";
+			productReference = 2D02E47B1E0B4A5D006451C7 /* Yamd-tvOS.app */;
 			productType = "com.apple.product-type.application";
 		};
-		2D02E48F1E0B4A5D006451C7 /* mpd_wrapper-tvOSTests */ = {
+		2D02E48F1E0B4A5D006451C7 /* Yamd-tvOSTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 2D02E4BB1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "mpd_wrapper-tvOSTests" */;
+			buildConfigurationList = 2D02E4BB1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "Yamd-tvOSTests" */;
 			buildPhases = (
 				D484D2D1BD2F2C4CF46CDC94 /* [CP] Check Pods Manifest.lock */,
 				2D02E48C1E0B4A5D006451C7 /* Sources */,
@@ -323,9 +323,9 @@
 			dependencies = (
 				2D02E4921E0B4A5D006451C7 /* PBXTargetDependency */,
 			);
-			name = "mpd_wrapper-tvOSTests";
-			productName = "mpd_wrapper-tvOSTests";
-			productReference = 2D02E4901E0B4A5D006451C7 /* mpd_wrapper-tvOSTests.xctest */;
+			name = "Yamd-tvOSTests";
+			productName = "Yamd-tvOSTests";
+			productReference = 2D02E4901E0B4A5D006451C7 /* Yamd-tvOSTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -356,7 +356,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "mpd_wrapper" */;
+			buildConfigurationList = 83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Yamd" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -370,10 +370,10 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				13B07F861A680F5B00A75B9A /* mpd_wrapper */,
-				00E356ED1AD99517003FC87E /* mpd_wrapperTests */,
-				2D02E47A1E0B4A5D006451C7 /* mpd_wrapper-tvOS */,
-				2D02E48F1E0B4A5D006451C7 /* mpd_wrapper-tvOSTests */,
+				13B07F861A680F5B00A75B9A /* Yamd */,
+				00E356ED1AD99517003FC87E /* YamdTests */,
+				2D02E47A1E0B4A5D006451C7 /* Yamd-tvOS */,
+				2D02E48F1E0B4A5D006451C7 /* Yamd-tvOSTests */,
 			);
 		};
 /* End PBXProject section */
@@ -459,7 +459,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-mpd_wrapperTests-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-YamdTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -481,7 +481,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-mpd_wrapper-tvOS-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Yamd-tvOS-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -494,7 +494,7 @@
 			files = (
 			);
 			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-mpd_wrapper/Pods-mpd_wrapper-resources.sh",
+				"${PODS_ROOT}/Target Support Files/Pods-Yamd/Pods-Yamd-resources.sh",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/AntDesign.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/Entypo.ttf",
 				"${PODS_ROOT}/../../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf",
@@ -533,7 +533,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-mpd_wrapper/Pods-mpd_wrapper-resources.sh\"\n";
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Yamd/Pods-Yamd-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		D484D2D1BD2F2C4CF46CDC94 /* [CP] Check Pods Manifest.lock */ = {
@@ -551,7 +551,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-mpd_wrapper-tvOSTests-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Yamd-tvOSTests-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -573,7 +573,7 @@
 			outputFileListPaths = (
 			);
 			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-mpd_wrapper-checkManifestLockResult.txt",
+				"$(DERIVED_FILE_DIR)/Pods-Yamd-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -625,7 +625,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				00E356F31AD99517003FC87E /* mpd_wrapperTests.m in Sources */,
+				00E356F31AD99517003FC87E /* YamdTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -651,7 +651,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				2DCD954D1E0B4F2C00145EB5 /* mpd_wrapperTests.m in Sources */,
+				2DCD954D1E0B4F2C00145EB5 /* YamdTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -660,12 +660,12 @@
 /* Begin PBXTargetDependency section */
 		00E356F51AD99517003FC87E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 13B07F861A680F5B00A75B9A /* mpd_wrapper */;
+			target = 13B07F861A680F5B00A75B9A /* Yamd */;
 			targetProxy = 00E356F41AD99517003FC87E /* PBXContainerItemProxy */;
 		};
 		2D02E4921E0B4A5D006451C7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 2D02E47A1E0B4A5D006451C7 /* mpd_wrapper-tvOS */;
+			target = 2D02E47A1E0B4A5D006451C7 /* Yamd-tvOS */;
 			targetProxy = 2D02E4911E0B4A5D006451C7 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -677,7 +677,7 @@
 				13B07FB21A68108700A75B9A /* Base */,
 			);
 			name = LaunchScreen.xib;
-			path = mpd_wrapper;
+			path = Yamd;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -685,7 +685,7 @@
 /* Begin XCBuildConfiguration section */
 		00E356F61AD99517003FC87E /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 135ACE24168C8F7A71F7D439 /* Pods-mpd_wrapperTests.debug.xcconfig */;
+			baseConfigurationReference = 135ACE24168C8F7A71F7D439 /* Pods-YamdTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
@@ -694,7 +694,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = mpd_wrapperTests/Info.plist;
+				INFOPLIST_FILE = YamdTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -710,13 +710,13 @@
 		};
 		00E356F71AD99517003FC87E /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0C6FD634BEC750FDD7F46200 /* Pods-mpd_wrapperTests.release.xcconfig */;
+			baseConfigurationReference = 0C6FD634BEC750FDD7F46200 /* Pods-YamdTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = 758Y8RBM68;
-				INFOPLIST_FILE = mpd_wrapperTests/Info.plist;
+				INFOPLIST_FILE = YamdTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_LDFLAGS = (
@@ -732,13 +732,13 @@
 		};
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 660EDF45A70B8274B8AB44C6 /* Pods-mpd_wrapper.debug.xcconfig */;
+			baseConfigurationReference = 660EDF45A70B8274B8AB44C6 /* Pods-Yamd.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 5;
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = 758Y8RBM68;
-				INFOPLIST_FILE = mpd_wrapper/Info.plist;
+				INFOPLIST_FILE = Yamd/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
@@ -756,12 +756,12 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = AC7156264BBC15F0DF6A0E21 /* Pods-mpd_wrapper.release.xcconfig */;
+			baseConfigurationReference = AC7156264BBC15F0DF6A0E21 /* Pods-Yamd.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 5;
 				DEVELOPMENT_TEAM = 758Y8RBM68;
-				INFOPLIST_FILE = mpd_wrapper/Info.plist;
+				INFOPLIST_FILE = Yamd/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 1.0;
@@ -779,7 +779,7 @@
 		};
 		2D02E4971E0B4A5E006451C7 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F0EFAAAE5B73E473431DCF99 /* Pods-mpd_wrapper-tvOS.debug.xcconfig */;
+			baseConfigurationReference = F0EFAAAE5B73E473431DCF99 /* Pods-Yamd-tvOS.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -790,14 +790,14 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
-				INFOPLIST_FILE = "mpd_wrapper-tvOS/Info.plist";
+				INFOPLIST_FILE = "Yamd-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.mpd_wrapper-tvOS";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.Yamd-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
@@ -807,7 +807,7 @@
 		};
 		2D02E4981E0B4A5E006451C7 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = BE9D629167776C975CD13FDC /* Pods-mpd_wrapper-tvOS.release.xcconfig */;
+			baseConfigurationReference = BE9D629167776C975CD13FDC /* Pods-Yamd-tvOS.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
@@ -818,14 +818,14 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_NO_COMMON_BLOCKS = YES;
-				INFOPLIST_FILE = "mpd_wrapper-tvOS/Info.plist";
+				INFOPLIST_FILE = "Yamd-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.mpd_wrapper-tvOS";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.Yamd-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
 				TARGETED_DEVICE_FAMILY = 3;
@@ -835,7 +835,7 @@
 		};
 		2D02E4991E0B4A5E006451C7 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 690302C5363F0D55803A5699 /* Pods-mpd_wrapper-tvOSTests.debug.xcconfig */;
+			baseConfigurationReference = 690302C5363F0D55803A5699 /* Pods-Yamd-tvOSTests.debug.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -845,24 +845,24 @@
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_TESTABILITY = YES;
 				GCC_NO_COMMON_BLOCKS = YES;
-				INFOPLIST_FILE = "mpd_wrapper-tvOSTests/Info.plist";
+				INFOPLIST_FILE = "Yamd-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.mpd_wrapper-tvOSTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.Yamd-tvOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/mpd_wrapper-tvOS.app/mpd_wrapper-tvOS";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Yamd-tvOS.app/Yamd-tvOS";
 				TVOS_DEPLOYMENT_TARGET = 10.1;
 			};
 			name = Debug;
 		};
 		2D02E49A1E0B4A5E006451C7 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = F2EE58B66C6D89451E5CDB4E /* Pods-mpd_wrapper-tvOSTests.release.xcconfig */;
+			baseConfigurationReference = F2EE58B66C6D89451E5CDB4E /* Pods-Yamd-tvOSTests.release.xcconfig */;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
@@ -872,17 +872,17 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_NO_COMMON_BLOCKS = YES;
-				INFOPLIST_FILE = "mpd_wrapper-tvOSTests/Info.plist";
+				INFOPLIST_FILE = "Yamd-tvOSTests/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.mpd_wrapper-tvOSTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "com.facebook.REACT.Yamd-tvOSTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = appletvos;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/mpd_wrapper-tvOS.app/mpd_wrapper-tvOS";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Yamd-tvOS.app/Yamd-tvOS";
 				TVOS_DEPLOYMENT_TARGET = 10.1;
 			};
 			name = Release;
@@ -989,7 +989,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "mpd_wrapperTests" */ = {
+		00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "YamdTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				00E356F61AD99517003FC87E /* Debug */,
@@ -998,7 +998,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "mpd_wrapper" */ = {
+		13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Yamd" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				13B07F941A680F5B00A75B9A /* Debug */,
@@ -1007,7 +1007,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2D02E4BA1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "mpd_wrapper-tvOS" */ = {
+		2D02E4BA1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "Yamd-tvOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2D02E4971E0B4A5E006451C7 /* Debug */,
@@ -1016,7 +1016,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		2D02E4BB1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "mpd_wrapper-tvOSTests" */ = {
+		2D02E4BB1E0B4A5E006451C7 /* Build configuration list for PBXNativeTarget "Yamd-tvOSTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				2D02E4991E0B4A5E006451C7 /* Debug */,
@@ -1025,7 +1025,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "mpd_wrapper" */ = {
+		83CBB9FA1A601CBA00E9B192 /* Build configuration list for PBXProject "Yamd" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				83CBBA201A601CBA00E9B192 /* Debug */,
