@@ -195,6 +195,7 @@ class Search extends React.Component {
                       placeholder={title}
                       onChangeText={(text) => this.onChangeText(text, tag)}
                       value={criteria[tag]}
+                      placeholderColor={themeValue.placeholderColor}
                     />
                   )
                 })}

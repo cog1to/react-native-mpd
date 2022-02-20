@@ -5,7 +5,7 @@ const DarkTheme = {
   accentColor: '#404550',
   highlightColor: '#404550FF',
   accentBackgroundColor: '#2C2F34',
-  activeColor: '#B07D19',
+  activeColor: '#DEA942',
   mainTextSize: 16,
   subTextSize: 14,
   titleTextSize: 20,
@@ -20,6 +20,8 @@ const DarkTheme = {
   reversedIconColor: '#EFEFEF',
   searchButtonColor: '#EFEFEF',
   navBarColor: '#2B2E36',
+  placeholderColor: '#9F9F9F',
+  darkPlaceholderColor: '#9F9F9F'
 }
 
 export default DarkTheme

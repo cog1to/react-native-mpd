@@ -100,10 +100,12 @@ class Login extends React.Component {
 
   render() {
     const { port, host, password } = this.state
-    const { error, address } = this.props
+    const { error, address, theme } = this.props
 
     // Placeholder text color.
-    const placeholderTextColor = ThemeManager.instance().getCurrentTheme().activeColor + '55'
+    const themeValue = ThemeManager.instance().getTheme(theme)
+    const placeholderTextColor = themeValue.darkPlaceholderColor
+    const disclaimerColor = themeValue.activeColor + '7F'
 
     // Image size.
     const imageHeight = Dimensions.get('window').height / 7
@@ -114,22 +116,22 @@ class Login extends React.Component {
           source={require('../../assets/images/yamp_big_logo.png')}
           style={{resizeMode: 'contain', width: imageHeight, height: imageHeight, opacity }} />
         <Input
-          style={styles.input}
-          placeholderTextColor={placeholderTextColor}
+          style={{...styles.input, color: themeValue.activeColor}}
+          placeholderColor={placeholderTextColor}
           placeholder='Host'
           onChangeText={this.handleHostChange}
           selectionColor='#ffffff'
           value={host} />
         <Input
-          style={styles.input}
-          placeholderTextColor={placeholderTextColor}
+          style={{...styles.input, color: themeValue.activeColor}}
+          placeholderColor={placeholderTextColor}
           selectionColor='#ffffff'
           placeholder='Port'
           onChangeText={this.handlePortChange}
           value={port} />
         <Input
-          style={styles.input}
-          placeholderTextColor={placeholderTextColor}
+          style={{...styles.input, color: themeValue.activeColor}}
+          placeholderColor={placeholderTextColor}
           placeholder='Password (optional)'
           selectionColor='#ffffff'
           onChangeText={this.handlePasswordChange}
@@ -141,14 +143,14 @@ class Login extends React.Component {
           <Button
             title='Connect'
             onPress={this.handleSubmit}
-            color={ThemeManager.instance().getCurrentTheme().activeColor}
+            color={themeValue.activeColor}
           />
         </View>
       </View>
     )
 
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={{...styles.container, backgroundColor: themeValue.navBarColor}}>
         <KeyboardState>
           {keyboardInfo => (
             <KeyboardAwareView {...keyboardInfo}>
@@ -157,7 +159,7 @@ class Login extends React.Component {
           )}
         </KeyboardState>
         <View style={styles.disclaimer}>
-          <Text style={{color: placeholderTextColor, textAlign: 'center', fontSize: 11}}>
+          <Text style={{color: disclaimerColor, textAlign: 'center', fontSize: 11}}>
             © 2019{'\n'}Cover art powered by Last.fm{'\n'}Artist art powered by Discogs
           </Text>
         </View>
@@ -170,6 +172,7 @@ class Login extends React.Component {
 const mapStateToProps = state => {
   const { address, error: storageError } = state.storage
   const { connectionError } = state.status
+  const { theme } = state.storage
 
   let actualError = (connectionError != null ? connectionError.message : (storageError != null ? storageError.message : null))
 
@@ -180,7 +183,7 @@ const mapStateToProps = state => {
     actualError = match[1]
   }
 
-  return { address: address, error: actualError }
+  return { address: address, error: actualError, theme: theme }
 }
 
 const mapDispatchToProps = dispatch => ({
@@ -196,7 +199,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: ThemeManager.instance().getCurrentTheme().accentColor,
   },
   credentialsContainer: {
     padding: 20,
@@ -221,7 +223,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   input: {
-    color:ThemeManager.instance().getCurrentTheme().activeColor,
     flex: 1,
     width: '100%',
     maxWidth: 400,

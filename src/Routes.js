@@ -81,6 +81,9 @@ const barOptionsFromState = ({ title, navigation, icons = ['playlist-add'], hide
   const allSelected = navigation.getParam('allSelected')
   let globalSelectionIcon = allSelected ? 'checkbox-multiple-blank-outline' : 'checkbox-multiple-marked-outline'
 
+  let theme = ThemeManager.instance().getCurrentTheme()
+  options.headerStyle.backgroundColor = theme.navBarColor
+
   if (navigation.getParam('editing') === true) {
     options.headerLeft = (
       <TouchableOpacity
@@ -117,10 +120,11 @@ const barOptionsFromState = ({ title, navigation, icons = ['playlist-add'], hide
     options.headerTitle = (
       <View style={styles.header}>
         <View style={styles.searchBarHeader}>
-          <View style={styles.searchBarBackground} />
+          <View style={{...styles.searchBarBackground, backgroundColor: theme.backgroundColor}} />
           <TextInput
             value={navigation.getParam('searchText')}
-            style={styles.searchBarTextInput} placeholder='Filter list...'
+            style={{...styles.searchBarTextInput, color: theme.mainTextColor}} placeholder='Filter list...'
+            placeholderTextColor={theme.placeholderColor}
             onChangeText={navigation.getParam('onSearchChange')}
           />
         </View>
@@ -464,7 +468,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   searchBarTextInput: {
-    color: ThemeManager.instance().getCurrentTheme().lightTextColor,
     flex: 1,
     marginHorizontal: Platform.OS === 'android' ? 4 : 12,
   },

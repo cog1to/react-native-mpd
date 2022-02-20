@@ -11,6 +11,7 @@ export default class Input extends React.Component {
         onChangeText: PropTypes.func.isRequired,
         value: PropTypes.string,
         placeholder: PropTypes.string,
+        placeholderColor: PropTypes.string,
         keyboardType: PropTypes.string,
         borderBottomColor: PropTypes.string,
         marginHorizontal: PropTypes.number,
@@ -21,13 +22,14 @@ export default class Input extends React.Component {
         keyboardType: 'default',
         value: '',
         placeholder: '',
+        placeholderColor: ThemeManager.instance().getCurrentTheme().placeholderColor,
         borderBottomColor: ThemeManager.instance().getCurrentTheme().activeColor,
         marginHorizontal: 0,
         marginBottom: null
     }
 
     render() {
-        const { borderBottomColor, marginHorizontal, marginBottom } = this.props
+        const { borderBottomColor, marginHorizontal, marginBottom, placeholderColor } = this.props
 
         let style = {
             marginLeft: marginHorizontal,
@@ -47,6 +49,7 @@ export default class Input extends React.Component {
                     marginBottom={0}
                     style={{...this.props.style, ...styles.textInput}}
                     underlineColorAndroid='transparent'
+                    placeholderTextColor={placeholderColor}
                 />
             </View>
         )
@@ -57,5 +60,6 @@ const styles = StyleSheet.create({
     textInput: {
         height: 41,
         flex: 1,
+        fontSize: 16
     }
 })
