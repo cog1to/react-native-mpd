@@ -4,7 +4,7 @@ const DarkTheme = {
   lightTextColor: '#6F6F6F',
   accentColor: '#404550',
   highlightColor: '#404550FF',
-  accentBackgroundColor: '#2C2F34',
+  accentBackgroundColor: '#454A51',
   activeColor: '#DEA942',
   mainTextSize: 16,
   subTextSize: 14,

@@ -140,7 +140,7 @@ class ListTileItem extends React.Component {
     const textColor = themeValue.mainTextColor
     const activeColor = themeValue.activeColor
     const passiveColor = themeValue.lightTextColor
-    const highlightColor= themeValue.highlightColor
+    const highlightColor = themeValue.highlightColor
     const underlayColor = themeValue.accentBackgroundColor
     const backgroundColor = themeValue.backgroundColor
 
@@ -190,6 +190,8 @@ class ListTileItem extends React.Component {
       ? activeColor
       : passiveColor
 
+    let titleBackColor = selected ? '#00000000' : backgroundColor
+
     return (
       <View style={{...styles.wrapper, height: height, width: width}}>
         <Highlightable
@@ -201,7 +203,7 @@ class ListTileItem extends React.Component {
           key={'' + id}
           highlighted={selected}
         >
-          <View style={{...styles.itemContainer, ...elevationShadowStyleWithColor(1, themeValue.mainTextColor), height: height - padding * 2, width: width - padding * 2, backgroundColor: backgroundColor}}>
+          <View style={{...styles.itemContainer, ...elevationShadowStyleWithColor(1, themeValue.mainTextColor), height: height - padding * 2, width: width - padding * 2, backgroundColor: titleBackColor}}>
             <View style={{...styles.image, width: imageWidth, height: imageHeight, backgroundColor: themeValue.tableBackgroundColor}}>
               {icon}
             </View>
@@ -295,6 +297,7 @@ const styles = StyleSheet.create({
     flexShrink: 1,
   },
   title: {
+    paddingTop: 2,
     flexGrow: 1,
     flexShrink: 1,
     fontWeight: 'bold',
