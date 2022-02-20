@@ -12,6 +12,7 @@ import {
   SafeAreaView,
   UIManager,
   Animated,
+  TouchableOpacity
 } from 'react-native'
 import Input from '../components/common/Input'
 
@@ -139,12 +140,10 @@ class Login extends React.Component {
           autoCapitalize='none'
           autoCompleteType='off'
           autoCorrect={false} />
-        <View style={{marginVertical: 18}}>
-          <Button
-            title='Connect'
-            onPress={this.handleSubmit}
-            color={themeValue.activeColor}
-          />
+        <View style={{marginVertical: 24}}>
+          <TouchableOpacity style={{...styles.button, backgroundColor: themeValue.activeColor}} onPress={this.handleSubmit}>
+            <Text style={{...styles.buttonText, color: themeValue.navBarColor}}>Connect</Text>
+          </TouchableOpacity>
         </View>
       </View>
     )
@@ -226,5 +225,18 @@ const styles = StyleSheet.create({
     flex: 1,
     width: '100%',
     maxWidth: 400,
+  },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 4,
+    elevation: 3
+  },
+  buttonText: {
+    fontSize: 18,
+    lineHeight: 21,
+    fontWeight: 'bold',
   }
 })

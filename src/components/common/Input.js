@@ -60,6 +60,6 @@ const styles = StyleSheet.create({
     textInput: {
         height: 41,
         flex: 1,
-        fontSize: 16
+        fontSize: 17
     }
 })

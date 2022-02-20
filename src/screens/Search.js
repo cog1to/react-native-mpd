@@ -6,6 +6,8 @@ import {
   StyleSheet,
   Platform,
   SafeAreaView,
+  TouchableOpacity,
+  Text
 } from 'react-native'
 import PropTypes from 'prop-types'
 import { NavigationActions } from 'react-navigation'
@@ -200,11 +202,9 @@ class Search extends React.Component {
                   )
                 })}
                 <View style={styles.search}>
-                  <Button
-                    title="Search"
-                    onPress={this.onSearch}
-                    color={searchButtonColor}
-                  />
+                  <TouchableOpacity style={{...styles.button, backgroundColor: searchButtonColor}} onPress={this.onSearch}>
+                    <Text style={{...styles.buttonText, color: backgroundColor}}>Search</Text>
+                  </TouchableOpacity>
                 </View>
               </ScrollView>
             </KeyboardAwareSearchForm>
@@ -245,5 +245,18 @@ const styles = StyleSheet.create({
     marginTop: 10,
     alignSelf: 'flex-end',
   },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 4,
+    elevation: 3
+  },
+  buttonText: {
+    fontSize: 18,
+    lineHeight: 21,
+    fontWeight: 'bold',
+  }
 })
 
