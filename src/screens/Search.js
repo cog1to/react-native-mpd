@@ -133,8 +133,12 @@ class Search extends React.Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     const { results } = nextProps
+    const { theme: nextTheme } = nextProps
+    const { theme } = this.props
 
-    if (!nextState.dirty && results != null) {
+    let dirty = nextState.dirty || (theme != nextTheme)
+
+    if (!dirty && results != null) {
       this.showResults(results)
       return false
     }
@@ -170,10 +174,15 @@ class Search extends React.Component {
 
   render() {
     const { criteria } = this.state
-    const borderBottomColor = ThemeManager.instance().getCurrentTheme().accentColor
+    const { theme } = this.props
+    
+    const themeValue = ThemeManager.instance().getTheme(theme)
+    const borderBottomColor = themeValue.accentColor
+    const backgroundColor = themeValue.backgroundColor
+    const searchButtonColor = themeValue.searchButtonColor
 
     return (
-      <SafeAreaView style={styles.container}>
+      <SafeAreaView style={{...styles.container, backgroundColor: backgroundColor}}>
         <KeyboardState>
           {keyboardInfo => (
             <KeyboardAwareSearchForm {...keyboardInfo}>
@@ -193,7 +202,7 @@ class Search extends React.Component {
                   <Button
                     title="Search"
                     onPress={this.onSearch}
-                    color={ThemeManager.instance().getCurrentTheme().accentColor}
+                    color={searchButtonColor}
                   />
                 </View>
               </ScrollView>
@@ -215,9 +224,11 @@ const mapDispatchToProps = dispatch => {
 
 const mapStateToProps = (state) => {
   const results = state.search
+  const theme = state.storage.theme
 
   return {
     results: results,
+    theme: theme,
   }
 }
 

@@ -23,12 +23,17 @@ export default class TitleItem extends React.Component {
   }
 
   render() {
-    const { url, title, artist, subtitle } = this.props
+    const { url, title, artist, subtitle, theme } = this.props
+
+    const themeValue = ThemeManager.instance().getTheme(theme)
+    const textColor = themeValue.mainTextColor
+    const subColor = themeValue.lightTextColor
+    const reversedIconColor = themeValue.reversedIconColor
 
     let icon = null
     if (url != null) {
       icon = <Image 
-        source={{ uri: url, cache: 'only-if-cached' }}
+        source={{ uri: url }}
         style={{ width: 36, height: 36, borderRadius: 18 }}
         resizeMode='cover'
       />
@@ -36,20 +41,20 @@ export default class TitleItem extends React.Component {
       icon = <View style={styles.iconContainer}><Icon
         name='person'
         style={styles.status}
-        color={ThemeManager.instance().getCurrentTheme().reversedIconColor}
+        color={reversedIconColor}
       /></View>
     }
 
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>{title}</Text>
+        <Text style={{...styles.title, color: textColor}}>{title}</Text>
         <View style={styles.secondaryContainer}>
           <View style={styles.imageContainer}>
             {icon}
           </View>
           <View style={styles.descriptionContainer}>
-            <Text style={styles.main}>{artist}</Text>
-            <Text style={styles.sub}>{subtitle}</Text>
+            <Text style={{...styles.main, color: textColor}}>{artist}</Text>
+            <Text style={{...styles.sub, color: subColor}}>{subtitle}</Text>
           </View>
         </View>
       </View>
@@ -67,7 +72,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: ThemeManager.instance().getCurrentTheme().titleTextSize,
-    color: ThemeManager.instance().getCurrentTheme().mainTextColor,
     fontWeight: 'bold',
   },
   secondaryContainer: {

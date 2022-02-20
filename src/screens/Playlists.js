@@ -83,7 +83,7 @@ class Playlists extends React.Component {
   }
 
   render() {
-    const { content, navigation, refreshing, queueSize } = this.props
+    const { content, navigation, refreshing, queueSize, theme } = this.props
     const { state: { params: { callback } } } = navigation
     const { showingNewDialog, showingDeleteDialog } = this.state
 
@@ -107,6 +107,7 @@ class Playlists extends React.Component {
           navigation={navigation}
           onDeleteItems={this.handleDelete}
           deletePrompt={{single: 'Delete selected playlist?', multiple: 'Delete %% selected playlists?'}}
+          theme={theme}
         />
         {showingNewDialog && (
           <AppPromptDialog
@@ -120,6 +121,7 @@ class Playlists extends React.Component {
               title: 'Create',
               onPress: this.handleDialogConfirm
             }}
+            theme={theme}
           />
         )}
       </View>
@@ -187,6 +189,7 @@ const mapStateToProps = state => {
     refreshing: state.playlists.loading,
     queueSize: state.queue.length,
     position: state.currentSong.position,
+    theme: state.storage.theme
   }
 }
 

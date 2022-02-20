@@ -59,6 +59,7 @@ export default class UniversalList extends React.Component {
 
     // Style
     mode: PropTypes.string,
+    theme: PropTypes.string
   }
 
   // Item rendering.
@@ -68,13 +69,14 @@ export default class UniversalList extends React.Component {
   }
 
   renderItem = ({ item, index, move, moveEnd, isActive }) => {
-    const { editing, canDelete, canAdd, canRearrange, canEdit, mode } = this.props
+    const { editing, canDelete, canAdd, canRearrange, canEdit, mode, theme } = this.props
     const { id, name, type, artist = null, path, title, selected, status, subtitle, albumArtist = null } = item
     
     if (type == 'COVER') {
       return (
         <CoverItem
           path={path}
+          theme={theme}
         />
       )
     }
@@ -86,6 +88,7 @@ export default class UniversalList extends React.Component {
           subtitle={subtitle}
           url={path}
           artist={artist}
+          theme={theme}
         />
       )
     }
@@ -93,7 +96,7 @@ export default class UniversalList extends React.Component {
     let displayName = title != null ? title : name
     let displayType = artist != null ? artist : type
 
-    const theme = ThemeManager.instance().getCurrentTheme()
+    const themeValue = ThemeManager.instance().getTheme(theme)
 
     return (
       <ListItem
@@ -112,11 +115,6 @@ export default class UniversalList extends React.Component {
         canAddItems={canAdd}
         canDelete={canDelete}
 
-        activeColor={theme.activeColor}
-        passiveColor={theme.lightTextColor}
-        highlightColor={theme.accentColor + '50'}
-        underlayColor={theme.accentBackgroundColor}
-
         onDelete={() => this.handleDelete(item)}
         onTap={() => this.handleTap(item)}
         onLongTap={canEdit ? () => this.handleLongTap(item) : null}
@@ -124,6 +122,8 @@ export default class UniversalList extends React.Component {
 
         move={move}
         moveEnd={moveEnd}
+
+        theme={theme}
       />
     )
   }
@@ -145,13 +145,11 @@ export default class UniversalList extends React.Component {
     }
 
     // If not a filler, proceed with normal tile render.
-    const { editing, canDelete, canAdd, canRearrange, canEdit, mode } = this.props
+    const { editing, canDelete, canAdd, canRearrange, canEdit, mode, theme } = this.props
     const { name, type, artist = null, path, title, selected, status, subtitle, albumArtist = null } = item
     
     let displayName = title != null ? title : name
     let displayType = artist != null ? artist : type
-
-    const theme = ThemeManager.instance().getCurrentTheme()
 
     return (
       <ListTileItem
@@ -171,15 +169,12 @@ export default class UniversalList extends React.Component {
         canAddItems={canAdd}
         canDelete={canDelete}
 
-        activeColor={theme.activeColor}
-        passiveColor={theme.lightTextColor}
-        highlightColor={theme.accentColor + '50'}
-        underlayColor={theme.accentBackgroundColor}
-
         onDelete={() => this.handleDelete(item)}
         onTap={() => this.handleTap(item)}
         onLongTap={canEdit ? () => this.handleLongTap(item) : null}
         onMenu={() => this.handleMenu(item)}
+
+        theme={theme}
       />
     )
   }
@@ -201,7 +196,8 @@ export default class UniversalList extends React.Component {
   }
 
   render() {
-    const { content, refreshing, onRefresh, extraData, mode } = this.props
+    const { content, refreshing, onRefresh, extraData, mode, theme } = this.props
+    const themeValue = ThemeManager.instance().getTheme(theme)
 
     if (mode === 'list') {
       return (
@@ -214,6 +210,7 @@ export default class UniversalList extends React.Component {
           refreshing={refreshing}
           onRefresh={onRefresh}
           extraData={extraData}
+          style={{backgroundColor: themeValue.backgroundColor}}
         />
       )
     } else {
@@ -221,7 +218,7 @@ export default class UniversalList extends React.Component {
 
       return(
         <FlatList
-          style={styles.tileList}
+          style={{...styles.tileList, backgroundColor: themeValue.backgroundColor}}
           data={formatTiledContent(content, numColumns)}
           renderItem={this.renderTileItem}
           keyExtractor={this.keyExtractor}
@@ -274,6 +271,6 @@ const formatTiledContent = (content, numColumns) => {
 const styles = StyleSheet.create({
   tileList: {
     marginHorizontal: 8,
-    marginTop: 4,
+    marginTop: 4
   }
 })

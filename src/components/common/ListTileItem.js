@@ -14,7 +14,7 @@ import PropTypes from 'prop-types'
 import Highlightable from './Highlightable'
 
 // Shadow style that works on both iOS and Android.
-import { elevationShadowStyle } from '../../utils/Styles'
+import { elevationShadowStyle, elevationShadowStyleWithColor } from '../../utils/Styles'
 
 // Themes.
 import ThemeManager from '../../themes/ThemeManager'
@@ -55,10 +55,7 @@ class ListTileItem extends React.Component {
     onLongTap: PropTypes.func,
     
     // Style.
-    activeColor: PropTypes.string.isRequired,
-    passiveColor: PropTypes.string.isRequired,
-    highlightColor: PropTypes.string.isRequired,
-    underlayColor: PropTypes.string.isRequired,
+    theme: PropTypes.string.isRequired
   }
 
   componentDidMount() {
@@ -87,6 +84,7 @@ class ListTileItem extends React.Component {
       id: nextId = null,
       index: nextIndex,
       url: nextUrl,
+      theme: nextTheme
     } = nextProps
         
     const {
@@ -98,6 +96,7 @@ class ListTileItem extends React.Component {
       id = null,
       index,
       url = null,
+      theme
     } = this.props
 
     return title != nextTitle
@@ -108,6 +107,7 @@ class ListTileItem extends React.Component {
       || id != nextId
       || index != nextIndex
       || url != nextUrl
+      || theme != nextTheme
   }
 
   render() {
@@ -118,10 +118,6 @@ class ListTileItem extends React.Component {
       subtitle,
       id,
       selected,
-      activeColor,
-      passiveColor,
-      highlightColor,
-      underlayColor,
       type,
       status,
       canAddItems,
@@ -130,6 +126,7 @@ class ListTileItem extends React.Component {
       width,
       url,
       numColumns,
+      theme
     } = this.props
 
     const padding = styles.wrapper.padding
@@ -138,6 +135,14 @@ class ListTileItem extends React.Component {
     const imageHeight = (height / 2.0) - (shadowPadding / 2.0) + 18 
 
     const { onLongTap = null } = this.props
+
+    const themeValue = ThemeManager.instance().getTheme(theme)
+    const textColor = themeValue.mainTextColor
+    const activeColor = themeValue.activeColor
+    const passiveColor = themeValue.lightTextColor
+    const highlightColor= themeValue.highlightColor
+    const underlayColor = themeValue.accentBackgroundColor
+    const backgroundColor = themeValue.backgroundColor
 
     let statusStyle = (draggable && !editing)
       ? styles.statusWithDraggable
@@ -158,7 +163,7 @@ class ListTileItem extends React.Component {
           icon = <Icon
             name='person'
             style={{fontSize: 70, height: imageHeight}}
-            color={ThemeManager.instance().getCurrentTheme().backgroundColor}
+            color={themeValue.backgroundColor}
           />
         }
         break
@@ -175,7 +180,7 @@ class ListTileItem extends React.Component {
           icon = <Icon
             name='album'
             style={{fontSize: 70, height: imageHeight}}
-            color={ThemeManager.instance().getCurrentTheme().backgroundColor}
+            color={themeValue.backgroundColor}
           />
         }
         break
@@ -189,30 +194,30 @@ class ListTileItem extends React.Component {
       <View style={{...styles.wrapper, height: height, width: width}}>
         <Highlightable
           underlayColor={highlightColor}
-          foregroundColor='#FFFFFF'
+          foregroundColor={backgroundColor}
           duration={250}
           onPress={this.handlePress}
           onLongPress={onLongTap}
           key={'' + id}
           highlighted={selected}
         >
-          <View style={{...styles.itemContainer, height: height - padding * 2, width: width - padding * 2}}>
-            <View style={{...styles.image, width: imageWidth, height: imageHeight}}>
+          <View style={{...styles.itemContainer, ...elevationShadowStyleWithColor(1, themeValue.mainTextColor), height: height - padding * 2, width: width - padding * 2, backgroundColor: backgroundColor}}>
+            <View style={{...styles.image, width: imageWidth, height: imageHeight, backgroundColor: themeValue.tableBackgroundColor}}>
               {icon}
             </View>
             <View style={styles.details}>
               <View style={styles.description}>
-                <Text style={styles.title} numberOfLines={1} ellipsizeMode='tail'>{title}</Text>
+                <Text style={{...styles.title, color: textColor}} numberOfLines={1} ellipsizeMode='tail'>{title}</Text>
               </View>
               <TouchableOpacity
                 onPress={this.handleMenuPress}
                 disabled={editing}
               >
                 {!editing && canAddItems && (
-                  <Icon name='more-vert' color='black' style={styles.status} />
+                  <Icon name='more-vert' color={textColor} style={styles.status} />
                 )}
                 {editing && selected && (
-                  <Icon name='check' color='black' style={styles.status} />
+                  <Icon name='check' color={textColor} style={styles.status} />
                 )}
                 {editing && !selected && 
                   // Placeholder view to keep the text layout the same.
@@ -267,8 +272,6 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   itemContainer: {
-    ...elevationShadowStyle(1),
-    backgroundColor: 'white',
     flexDirection: 'column',
     flex: 1,
     alignItems: 'center',
@@ -277,7 +280,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginTop: 1,
-    backgroundColor: ThemeManager.instance().getCurrentTheme().tableBackgroundColor,
   },
   details: {
     flexDirection: 'row',
@@ -296,7 +298,6 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 1,
     fontWeight: 'bold',
-    color: ThemeManager.instance().getCurrentTheme().mainTextColor,
     fontSize: ThemeManager.instance().getCurrentTheme().subTextSize,
   },
   subtitle: {

@@ -21,6 +21,7 @@ export default class MenuDialog extends React.Component {
         onOptionSelected: PropTypes.func.isRequired,
         title: PropTypes.string,
         selected: PropTypes.any,
+        theme: PropTypes.string.isRequired
     }
     
     static defaultProps = {
@@ -29,17 +30,22 @@ export default class MenuDialog extends React.Component {
     }
 
     render() {
-        const { options, title, selected } = this.props
+        const { options, title, selected, theme } = this.props
+
+        const themeValue = ThemeManager.instance().getTheme(theme)
+        const textColor = themeValue.mainTextColor
+        const backgroundColor = themeValue.backgroundColor
+        const menuWrapperColor = themeValue.dialogBackgroundColor
 
         return ( 
             <TouchableWithoutFeedback onPress={this.handleOutPress}>
-                <View style={styles.menuWrapper}>
-                    <View style={styles.menuContainer}>
-                        <Text style={styles.header}>{title}</Text>
+                <View style={{...styles.menuWrapper, backgroundColor: menuWrapperColor}}>
+                    <View style={{...styles.menuContainer, backgroundColor: backgroundColor}}>
+                        <Text style={{...styles.header, color: textColor}}>{title}</Text>
                         {options.map(opt => {
                             return (
                                 <TouchableHighlight key={opt.value} onPress={() => this.handleOnPress(opt)}>
-                                    <Text style={selected == opt.value ? styles.selected : styles.option}>
+                                    <Text style={{...(selected == opt.value ? styles.selected : styles.option), color: textColor}}>
                                         {opt.title}
                                     </Text>
                                 </TouchableHighlight>
@@ -64,26 +70,22 @@ const styles = StyleSheet.create({
    header: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: ThemeManager.instance().getCurrentTheme().mainTextColor,
         margin: 15,
         marginBottom: 20,
         textAlign: 'center',
     },
     option: {
-        color: ThemeManager.instance().getCurrentTheme().mainTextColor,
         fontSize: 16,
         paddingHorizontal: 20,
         paddingVertical: 15,
     },
     selected: {
-        color: ThemeManager.instance().getCurrentTheme().mainTextColor,
         fontSize: 16,
         paddingHorizontal: 20,
         paddingVertical: 15,
         fontWeight: 'bold',
     },
     menuContainer: {
-        backgroundColor: ThemeManager.instance().getCurrentTheme().backgroundColor,
         shadowColor: 'black',
         shadowRadius: 10,
         shadowOpacity: 0.5,
@@ -96,7 +98,6 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        backgroundColor: ThemeManager.instance().getCurrentTheme().dialogBackgroundColor,
         alignItems: 'center',
         justifyContent: 'center',
     },

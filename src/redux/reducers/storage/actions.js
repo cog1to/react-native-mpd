@@ -41,3 +41,13 @@ export const libraryModeSaved = (mode, error) => ({
     data: mode,
     error: error,
 })
+
+export const saveTheme = (theme) => ({
+    type: types.SAVE_THEME,
+    data: theme,
+})
+
+export const themeChanged = (theme) => ({
+    type: types.THEME_CHANGED,
+    data: theme
+})

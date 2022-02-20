@@ -33,9 +33,7 @@ class ToggleRow extends React.Component {
   }
 
   render() {
-    const { title, subtitle, value, lastRow } = this.props
-
-    const theme = ThemeManager.instance().getCurrentTheme()
+    const { title, subtitle, value, lastRow, theme } = this.props
 
     let style = styles.rowContent
     if (!lastRow) {
@@ -49,9 +47,9 @@ class ToggleRow extends React.Component {
         <View style={styles.row}>
           <View style={style}>
             <View style={styles.rowText}>
-              <Text style={styles.title}>{title}</Text>
+              <Text style={{...styles.title, color: theme.mainTextColor}}>{title}</Text>
               <View style={{ flex: 1, flexDirection: 'row' }}>
-                <Text style={styles.subtitle}>{subtitle}</Text>
+                <Text style={{...styles.subtitle, color: theme.lightTextColor}}>{subtitle}</Text>
               </View>
             </View>
             <View pointerEvents='none' style={styles.switchContainer}>
@@ -80,7 +78,7 @@ class Outputs extends React.Component {
   }
 
   render() {
-    const { outputs } = this.props
+    const { outputs, theme } = this.props
 
     let items = outputs.map((item, index) => ({
       name: item.name,
@@ -90,10 +88,14 @@ class Outputs extends React.Component {
       last: index == outputs.length - 1
     }))
 
+    const themeValue = ThemeManager.instance().getTheme(theme)
+    const backgroundColor = themeValue.tableBackgroundColor
+    const rowGroupBack = themeValue.backgroundColor
+
     return (
       <View style={{flex: 1}}>
-        <ScrollView style={styles.container}>
-          <View style={styles.rowGroup}>
+        <ScrollView style={{...styles.container, backgroundColor: backgroundColor}}>
+          <View style={{...styles.rowGroup, backgroundColor: rowGroupBack}}>
             {items.map((item) => 
               <ToggleRow 
                 key={item.id}
@@ -102,6 +104,7 @@ class Outputs extends React.Component {
                 onTapped={() => this.toggle(item.id)}
                 value={item.enabled ? 1 : 0}
                 lastRow={item.last}
+                theme={themeValue}
               />
             )}
           </View>
@@ -124,7 +127,9 @@ class Outputs extends React.Component {
 
 const mapStateToProps = state => {
   const { outputs } = state
-  return { outputs }
+  const theme = state.storage.theme
+
+  return { outputs, theme }
 }
 
 const mapDispatchToProps = dispatch => {
@@ -140,14 +145,12 @@ export default connect(mapStateToProps, mapDispatchToProps)(Outputs)
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: ThemeManager.instance().getCurrentTheme().tableBackgroundColor,
     },
     rowGroup: {
         ...elevationShadowStyle(2),
         marginVertical: 10,
         marginTop: 20,
         flexDirection: 'column',
-        backgroundColor: ThemeManager.instance().getCurrentTheme().backgroundColor,
     },
     row: {
         paddingLeft: 20,
@@ -171,12 +174,10 @@ const styles = StyleSheet.create({
     title: {        
         fontWeight: Platform.OS === 'android' ? 'normal' : '500',
         fontSize: ThemeManager.instance().getCurrentTheme().mainTextSize,
-        color: ThemeManager.instance().getCurrentTheme().mainTextColor,
         marginBottom: Platform.OS === 'android' ? 0 : 2,
     },
     subtitle: {
         fontSize: ThemeManager.instance().getCurrentTheme().subTextSize,
-        color: ThemeManager.instance().getCurrentTheme().lightTextColor,
     },
     switchContainer: {
         flexDirection: 'row',

@@ -34,7 +34,7 @@ class Playlist extends React.Component {
   }
 
   render() {
-    const { content, navigation, refreshing, queueSize, position } = this.props
+    const { content, navigation, refreshing, queueSize, position, theme } = this.props
 
     return (
       <View style={styles.container}>
@@ -51,6 +51,7 @@ class Playlist extends React.Component {
           onItemMoved={this.handleItemMove}
           onDeleteItems={this.handleItemsDelete}
           confirmDelete={false}
+          theme={theme}
         />
       </View>
     )
@@ -97,6 +98,7 @@ const mapStateToProps = (state, ownProps) => {
     refreshing: state.playlists.loading,
     queueSize: queueSize,
     position: position,
+    theme: state.storage.theme
   }
 }
 

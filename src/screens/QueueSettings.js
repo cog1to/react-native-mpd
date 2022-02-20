@@ -72,9 +72,7 @@ class ToggleRow extends React.Component {
     }
 
     render() {
-        const { title, subtitle, value, lastRow } = this.props
-
-        const theme = ThemeManager.instance().getCurrentTheme()
+        const { title, subtitle, value, lastRow, theme } = this.props
 
         let style = styles.rowContent
         if (!lastRow) {
@@ -88,9 +86,9 @@ class ToggleRow extends React.Component {
                 <View style={styles.row}>
                     <View style={style}>
                         <View style={styles.rowText}>
-                            <Text style={styles.title}>{title}</Text>
+                            <Text style={{...styles.title, color: theme.mainTextColor}}>{title}</Text>
                             <View style={{ flex: 1, flexDirection: 'row' }}>
-                                <Text style={styles.subtitle}>{subtitle}</Text>
+                                <Text style={{...styles.title, color: theme.lightTextColor}}>{subtitle}</Text>
                             </View>
                         </View>
                         <View pointerEvents='none' style={styles.switchContainer}>
@@ -137,12 +135,10 @@ class SliderRow extends React.Component {
     }
 
     render() {
-        const { title, value, lastRow } = this.props
+        const { title, value, lastRow, theme } = this.props
         const { value: newValue } = this.state
 
         const displayValue = newValue != null ? newValue : value
-
-        const theme = ThemeManager.instance().getCurrentTheme()
 
         let style = styles.rowSlider
         if (!lastRow) {
@@ -150,9 +146,9 @@ class SliderRow extends React.Component {
         }
 
         return (
-            <View style={styles.row}>
+            <View style={{...styles.row, backgroundColor: theme.backgroundColor}}>
                 <View style={style}>
-                    <Text style={{...styles.title, marginBottom: 8}}>{title + ': ' + displayValue + 's'}</Text>
+                    <Text style={{...styles.title, marginBottom: 8, color: theme.mainTextColor}}>{title + ': ' + displayValue + 's'}</Text>
                     <Slider 
                         style={{marginLeft: Platform.OS === 'android' ? -10 : -2}} 
                         minimumValue={0.0}
@@ -181,7 +177,7 @@ class OptionsRow extends React.Component {
     }
 
     render() {
-        const { title, subtitle, value, lastRow } = this.props
+        const { title, subtitle, value, lastRow, theme } = this.props
 
         let style = styles.rowContent
         if (!lastRow) {
@@ -192,14 +188,14 @@ class OptionsRow extends React.Component {
             <TouchableHighlight 
                 onPress={this.handleOnPress} 
                 underlayColor='#DDDDDD'>
-                <View style={styles.row}>
+                <View style={{...styles.row, backgroundColor: theme.backgroundColor}}>
                     <View style={style}>
                         <View style={styles.rowText}>
-                            <Text style={styles.title}>{title}</Text>
-                            <Text style={styles.subtitle}>{subtitle}</Text>
+                            <Text style={{...styles.title, color: theme.mainTextColor}}>{title}</Text>
+                            <Text style={{...styles.subtitle, color: theme.lightTextColor}}>{subtitle}</Text>
                         </View>
                         <View pointerEvents='none' style={styles.switchContainer}>
-                            <Text style={styles.title}>{value}</Text>
+                            <Text style={{...styles.title, color: theme.mainTextColor}}>{value}</Text>
                         </View>
                     </View>
                 </View>
@@ -215,33 +211,41 @@ class QueueSettings extends React.Component {
     }
 
     render() {
-        const { consume, random, repeat, single, crossfade, replayGain } = this.props
+        const { consume, random, repeat, single, crossfade, replayGain, theme } = this.props
         const { showingReplayGainModes, showingSingleModes } = this.state
 
         const singleValue = SINGLE_TITLES.find(el => { return el.value == single })
         const replayValue = REPLAY_GAIN_TITLES.find(el => { return el.value == replayGain })
 
+        const themeValue = ThemeManager.instance().getTheme(theme)
+        const backgroundColor = themeValue.tableBackgroundColor
+        const rowGroupBack = themeValue.backgroundColor
+        const logOutColor =  themeValue.lightTextColor
+
         return (
             <View style={{flex: 1}}>
-                <ScrollView style={styles.container}>
-                    <View style={styles.rowGroup}>
+                <ScrollView style={{...styles.container, backgroundColor: backgroundColor}}>
+                    <View style={{...styles.rowGroup, backgroundColor: rowGroupBack}}>
                         <ToggleRow 
                             title='Consume'
                             subtitle='Remove songs from queue when they finish'
                             onTapped={this.handleConsumeChange}
                             value={consume}
+                            theme={themeValue}
                         />
                         <ToggleRow
                             title='Shuffle'
                             subtitle='Randomize play order'
                             onTapped={this.handleRandomChange}
                             value={random}
+                            theme={themeValue}
                         />
                         <ToggleRow
                             title='Repeat'
                             subtitle='Repeat playback'
                             onTapped={this.handleRepeatChange}
                             value={repeat}
+                            theme={themeValue}
                         />
                         <OptionsRow
                             title='Single mode'
@@ -249,6 +253,7 @@ class QueueSettings extends React.Component {
                             onTapped={this.handleSingleChange}
                             value={singleValue.title}
                             lastRow={true}
+                            theme={themeValue}
                         />
                     </View>
                     <View style={styles.rowGroup}>
@@ -256,6 +261,7 @@ class QueueSettings extends React.Component {
                             title='Crossfade'
                             value={crossfade}
                             onNewValue={this.handleCrossfadeChange}
+                            theme={themeValue}
                         />
                         <OptionsRow
                             title='Replay gain mode'
@@ -263,6 +269,7 @@ class QueueSettings extends React.Component {
                             onTapped={this.handleReplayGainChange}
                             value={replayValue.title}
                             lastRow={true}
+                            theme={themeValue}
                         />
  
                     </View>
@@ -378,7 +385,8 @@ class QueueSettings extends React.Component {
 
 const mapStateToProps = state => {
     const { consume, random, repeat, single, crossfade, replayGain } = state.status
-    return { consume, random, repeat, single, crossfade, replayGain }
+    const theme = state.storage.theme
+    return { consume, random, repeat, single, crossfade, replayGain, theme }
 }
 
 const mapDispatchToProps = dispatch => ({
@@ -396,14 +404,12 @@ export default connect(mapStateToProps, mapDispatchToProps)(QueueSettings)
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: ThemeManager.instance().getCurrentTheme().tableBackgroundColor,
     },
     rowGroup: {
         ...elevationShadowStyle(2),
         marginVertical: 10,
         marginTop: 20,
         flexDirection: 'column',
-        backgroundColor: ThemeManager.instance().getCurrentTheme().backgroundColor,
     },
     row: {
         paddingLeft: 20,
@@ -427,12 +433,10 @@ const styles = StyleSheet.create({
     title: {        
         fontWeight: Platform.OS === 'android' ? 'normal' : '500',
         fontSize: ThemeManager.instance().getCurrentTheme().mainTextSize,
-        color: ThemeManager.instance().getCurrentTheme().mainTextColor,
         marginBottom: Platform.OS === 'android' ? 0 : 2,
     },
     subtitle: {
         fontSize: ThemeManager.instance().getCurrentTheme().subTextSize,
-        color: ThemeManager.instance().getCurrentTheme().lightTextColor,
     },
     switchContainer: {
         flexDirection: 'row',

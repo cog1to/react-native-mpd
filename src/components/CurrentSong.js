@@ -11,7 +11,7 @@ import { connect } from 'react-redux';
 
 class CurrentSong extends React.Component {
     render() {
-        const { currentSong, state } = this.props
+        const { currentSong, state, color } = this.props
         if (!currentSong) return null
 
         const { title, album, artist, file } = currentSong              
@@ -28,15 +28,15 @@ class CurrentSong extends React.Component {
         if (state === 'stop') {
             return (
                 <View style={styles.container}>
-                    <Text style={styles.songName}>Player is stopped</Text>
+                    <Text style={{...styles.songName, color: color}}>Player is stopped</Text>
                 </View>
             )
         } else {
             return (
                 <View style={styles.container}>                                 
-                    <Text style={styles.songName} numberOfLines={1}>{actualTitle}</Text>
-                    {artist && (<Text numberOfLines={1} style={styles.albumName}>{artist} - {album ? album : '[Unknown album]'}</Text>)}
-                    {!artist && (<Text numberOfLines={1} style={styles.albumName}>---</Text>)}
+                    <Text style={{...styles.songName, color: color}} numberOfLines={1}>{actualTitle}</Text>
+                    {artist && (<Text numberOfLines={1} style={{...styles.albumName, color: color}}>{artist} - {album ? album : '[Unknown album]'}</Text>)}
+                    {!artist && (<Text numberOfLines={1} style={{...styles.albumName, color: color}}>---</Text>)}
                 </View>
             )
         }
@@ -45,9 +45,10 @@ class CurrentSong extends React.Component {
 
 const mapStateToProps = state => {
     let currentSong = state.currentSong
+
     return {
         currentSong: currentSong,
-        state: state.status.player,
+        state: state.status.player
     }
 }
 
@@ -62,7 +63,6 @@ const styles = StyleSheet.create({
     songName: {
         fontWeight: 'bold',
         fontSize: 20,
-        color: 'black',
         textAlign: 'center',
     },
     albumName: {

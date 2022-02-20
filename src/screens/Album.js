@@ -36,7 +36,7 @@ class Album extends React.Component {
   }
 
   render() {
-    const { navigation, content, loading, queueSize, position, cover, artistCover } = this.props
+    const { navigation, content, loading, queueSize, position, cover, artistCover, theme } = this.props
     const { artist, album } = navigation.state.params
     let songs = (content != null) ? content : []
 
@@ -100,6 +100,7 @@ class Album extends React.Component {
           onRefresh={this.reload}
           position={position}
           queueSize={queueSize}
+          theme={theme}
         />
       </View>
     )
@@ -110,6 +111,7 @@ const mapStateToProps = (state, ownProps) => {
   const { position = null, file = null } = state.currentSong
   const { navigation: { state: { params: { artist, album } } } } = ownProps
   const { archive, artists } = state
+  const theme = state.storage.theme
 
   // Supply with item with ID from the Queue, if possible, and playback status.
   let contentWithIds = null
@@ -148,6 +150,7 @@ const mapStateToProps = (state, ownProps) => {
     position: position,
     cover: url,
     artistCover: artistUrl,
+    theme: theme
   }
 }
 

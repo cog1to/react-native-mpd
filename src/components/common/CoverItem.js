@@ -10,7 +10,8 @@ import ThemeManager from '../../themes/ThemeManager'
 
 export default class CoverItem extends React.Component {
   static propTypes = {
-    path: PropTypes.string
+    path: PropTypes.string,
+    theme: PropTypes.string.isRequired
   }
 
   static defaultProps = {
@@ -22,11 +23,13 @@ export default class CoverItem extends React.Component {
   }
 
   render() {
-    const { path } = this.props
+    const { path, theme } = this.props
     const { failed } = this.state
 
+    const backgroundColor = ThemeManager.instance().getTheme(theme).tableBackgroundColor
+
     return (
-      <View style={styles.cover}>
+      <View style={{...styles.cover, backgroundColor: backgroundColor}}>
         <Image
           source={failed == false && path != null ? { uri: path } : require('../../../assets/images/unknown-album-art-borderless.png')}
           resizeMode='cover'
@@ -48,8 +51,7 @@ const styles = StyleSheet.create({
   cover: {
     width: '100%',
     maxWidth: '100%',
-    aspectRatio: 1,
-    backgroundColor: ThemeManager.instance().getCurrentTheme().tableBackgroundColor,
+    aspectRatio: 1
   },
   image: {
     width: '100%',

@@ -2,15 +2,13 @@
 import React, { Component } from 'react'
 import { connect as reduxConnect } from 'react-redux'
 import { NavigationActions, StackActions } from 'react-navigation'
-import {
-  View,
-  StatusBar,
-  AppState,
-} from 'react-native'
+import { View, StatusBar, AppState } from 'react-native'
+import { Appearance, AppearanceProvider, useColorScheme } from 'react-native-appearance'
 
 // Actions.
 import { connect, error, disconnect, setIntentional } from './redux/reducers/status/actions'
 import { loadArtistArt } from './redux/reducers/artists/actions'
+import { saveTheme, themeChanged } from './redux/reducers/storage/actions'
 
 // Navigator.
 import AppContainer from './Routes'
@@ -119,9 +117,18 @@ class Root extends Component {
   }
 
   componentDidMount() {
-    const { loadArtistArt } = this.props
+    const { loadArtistArt, saveTheme } = this.props
 
     AppState.addEventListener('change', this.handleAppStateChange)
+
+    // Update on dark/light mode switch.
+    this.subscription = Appearance.addChangeListener(({ colorScheme }) => {
+      saveTheme(colorScheme == 'light' ? 'Light' : 'Dark')
+    })
+
+    // Save initial theme value.
+    saveTheme((Appearance.getColorScheme() == 'light') ? 'Light' : 'Dark')
+
     loadArtistArt()
   }
 
@@ -197,7 +204,7 @@ class Root extends Component {
   }
 
   render() {
-    const { error } = this.props
+    const { error, theme } = this.props
     const { reconnectState, timeRemaining } = this.state
 
     const reconnectText = (timeRemaining > 0)
@@ -208,18 +215,23 @@ class Root extends Component {
       ? 'Connection to server lost.'
       : 'Connection to server lost. Trying to reconnect ' + reconnectText + '...'
 
-    const navColor = ThemeManager.instance().getCurrentTheme().accentColor
+    let themeName = theme == 'Light' ? 'light' : 'dark'
+
     return (
       <View style={{flex: 1}}>
-        <StatusBar translucent={true} backgroundColor={navColor} barStyle="light-content" />
-        <AppContainer
-          ref={ nav => { this.navigator = nav } }
-        />
+        <StatusBar translucent={true} barStyle="light-content" />
+        <AppearanceProvider>
+          <AppContainer
+            theme={themeName}
+            ref={ nav => { this.navigator = nav } }
+          />
+        </AppearanceProvider>
         {reconnectState != RECONNECT_STATE.NOTHING && (
           <AppDialog
             prompt={reconnectPrompt}
             cancelButton={{ title: 'Disconnect', onPress: this.handleReconnectCancel }}
             confirmButton={{ title: 'Retry Now', onPress: this.handleRetryNow }}
+            theme={theme}
           />
         )}
         <ErrorBanner error={error} />
@@ -238,6 +250,7 @@ class Root extends Component {
 const mapStateToProps = state => {
   const { error: storageError } = state.storage
   const { error } = state.status
+  const { theme } = state.storage
 
   let actualError = (error != null ? error.message : (storageError != null ? storageError.message : null))
 
@@ -255,6 +268,7 @@ const mapStateToProps = state => {
     intentional: state.status.intentional,
     address: state.storage.address,
     attempt: state.status.attempt,
+    theme: theme
   }
 }
 
@@ -265,6 +279,7 @@ const mapDispatchToProps = dispatch => {
     connect: (host, port, password, attempt) => dispatch(connect(host, port, password, attempt)),
     setIntentional: () => dispatch(setIntentional(true)),
     loadArtistArt: () => dispatch(loadArtistArt()),
+    saveTheme: (theme) => dispatch(saveTheme(theme))
   }
 }
 

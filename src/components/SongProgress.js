@@ -92,21 +92,21 @@ class SongProgress extends React.Component {
   }
 
   render() {
-    const { player, duration, elapsed } = this.props
+    const { player, duration, elapsed, enabledColor, disabledColor, theme } = this.props
     const { value, dragging } = this.state
 
     const disabled = player === 'stop'
-    const style = disabled ? styles.disabled : styles.enabled
+    const color = disabled ? disabledColor : enabledColor
 
     const minimumValue = 0
     const maximumValue = duration > 0 ? duration : 1
 
-    const theme = ThemeManager.instance().getCurrentTheme()
+    const themeValue = ThemeManager.instance().getTheme(theme)
 
     return (
       <Animated.View style={[this.props.style, styles.container]}>
         <Slider
-          style={style}
+          style={{color: color}}
           minimumValue={0}
           maximumValue={maximumValue}
           step={0.5}
@@ -114,15 +114,15 @@ class SongProgress extends React.Component {
           disabled={disabled}
           onValueChange={this.onValueChange}
           onSlidingComplete={this.onSlidingComplete}
-          minimumTrackTintColor={theme.activeColor}
-          thumbTintColor={theme.accentColor}
+          minimumTrackTintColor={themeValue.activeColor}
+          thumbTintColor={themeValue.accentColor}
         />
         {!disabled && (
           <View style={styles.time}>
-            <Text style={styles.timeText}>
+            <Text style={{...styles.timeText, color: enabledColor}}>
               {this.formatTime(elapsed)}
             </Text>
-            <Text style={styles.timeText}>
+            <Text style={{...styles.timeText, color: enabledColor}}>
               {this.formatTime(duration)}
             </Text>
           </View>
@@ -134,11 +134,13 @@ class SongProgress extends React.Component {
 
 const mapStateToProps = state => {
   const { player, elapsed, duration } = state.status
+  const theme = state.storage.theme
 
   return {
     player,
     elapsed,
     duration,
+    theme
   }
 }
 
@@ -163,12 +165,6 @@ const styles = StyleSheet.create({
   },
   timeText: {
     fontSize: 16
-  },
-  enabled: {
-    color: 'black',
-  },
-  disabled: {
-    color: 'lightgray',
   }
 })
 

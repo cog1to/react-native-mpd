@@ -4,6 +4,7 @@ const LightTheme = {
   lightTextColor: '#666666',
   accentColor: '#404550',
   accentBackgroundColor: '#676C78',
+  highlightColor: '#40455050',
   activeColor: '#DEA942',
   mainTextSize: 16,
   subTextSize: 14,
@@ -17,6 +18,8 @@ const LightTheme = {
   dialogBackgroundColor: '#00000099',
   dialogSeparatorColor: '#AFAFAF',
   reversedIconColor: 'white',
+  searchButtonColor: '#404550',
+  navBarColor: '#404550',
 }
 
 export default LightTheme

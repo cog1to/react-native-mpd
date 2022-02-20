@@ -40,10 +40,10 @@ class Controls extends React.Component {
     }
 
     render() {
-        let { state } = this.props
+        let { state, enabledColor, disabledColor } = this.props
 
         const disabled = state === 'stop'
-        const color = disabled ? 'lightgray' : 'black'
+        const color = disabled ? disabledColor : enabledColor
 
         return (
             <View style={styles.container}>
@@ -97,13 +97,5 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         flexDirection: 'column',
         width: 60,
-    },
-    enabled: {
-        fontSize: 30,
-        color: 'black',
-    },
-    disabled: {
-        fontSize: 30,
-        color: 'lightgray',
     }
 })

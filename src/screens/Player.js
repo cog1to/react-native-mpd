@@ -24,6 +24,9 @@ import VolumeControl, { VolumeBarHeight } from '../components/VolumeControl'
 // Player actions.
 import { setVolume } from '../redux/reducers/player/actions'
 
+// Themes.
+import ThemeManager from '../themes/ThemeManager'
+
 // Enable animations on Android.
 if (Platform.OS === 'android') {
   UIManager.setLayoutAnimationEnabledExperimental(true);
@@ -78,7 +81,7 @@ class Player extends React.Component {
 
   render() {
     const { volumeSliderOffset } = this.state
-    const { volume } = this.props
+    const { volume, theme } = this.props
 
     const volumeBarStyle = {
       flex: 1,
@@ -96,14 +99,19 @@ class Player extends React.Component {
       }]
     }
 
+    const themeValue = ThemeManager.instance().getTheme(theme)
+    const backgroundColor = themeValue.backgroundColor
+    const textColor = themeValue.mainTextColor
+    const lightTextColor = theme.lightTextColor
+
     return (
-      <View style={styles.container}>
+      <View style={{...styles.container, backgroundColor: backgroundColor}}>
         <AlbumArt />
-        <CurrentSong />
-        <SongProgress />
-        <Controls />
+        <CurrentSong color={textColor} />
+        <SongProgress enabledColor={textColor} disabledColor={lightTextColor} />
+        <Controls enabledColor={textColor} disabledColor={lightTextColor} />
         <Animated.View style={volumeBarStyle}>
-          <VolumeControl volume={volume} onChange={this.handleVolumeChangeThrottled} />
+          <VolumeControl volume={volume} onChange={this.handleVolumeChangeThrottled} theme={theme} />
         </Animated.View>
       </View>
     )
@@ -112,7 +120,8 @@ class Player extends React.Component {
 
 const mapStateToProps = state => {
   const { volume } = state.status
-  return { volume }
+  const { theme } = state.storage
+  return { volume, theme }
 }
 
 const mapDispatchToProps = dispatch => ({

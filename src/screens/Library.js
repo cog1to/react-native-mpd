@@ -32,7 +32,7 @@ class Library extends React.Component {
   }
 
   render() {
-    const { content, navigation, loading, queueSize, position, mode } = this.props
+    const { content, navigation, loading, queueSize, position, mode, theme } = this.props
     const artists = ((content !== null) ? Object.keys(content) : []).map((name, index) => ({
       icon: index + 1,
       title: name,
@@ -55,6 +55,7 @@ class Library extends React.Component {
           mode={mode}
           onIconTapped={this.onModeSelected}
           position={position}
+          theme={theme}
       />
       </View>
     )
@@ -94,13 +95,15 @@ const mapStateToProps = (state, ownProps) => {
   const { library, loading } = state.library
   const { mode } = state.storage
   const { position = null, file = null } = state.currentSong
+  const theme = state.storage.theme
 
   return {
     content: library,
     loading: loading,
     queueSize: state.queue.length,
+    theme: theme,
     mode,
-    position,
+    position
   }
 }
 

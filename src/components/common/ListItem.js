@@ -24,6 +24,9 @@ import { connect } from 'react-redux'
 import { getArtistArt } from '../../redux/reducers/artists/actions'
 import { getAlbumArt } from '../../redux/reducers/archive/actions'
 
+// Theme.
+import ThemeManager from '../../themes/ThemeManager'
+
 class ListItem extends React.Component {
   static propTypes = {
     // Data.
@@ -51,10 +54,7 @@ class ListItem extends React.Component {
     onLongTap: PropTypes.func,
     
     // Style.
-    activeColor: PropTypes.string.isRequired,
-    passiveColor: PropTypes.string.isRequired,
-    highlightColor: PropTypes.string.isRequired,
-    underlayColor: PropTypes.string.isRequired,
+    theme: PropTypes.string.isRequired,
 
     // Dragging.
     move: PropTypes.func,
@@ -87,6 +87,7 @@ class ListItem extends React.Component {
       id: nextId = null,
       index: nextIndex,
       url: nextUrl,
+      theme: nextTheme,
     } = nextProps
         
     const {
@@ -98,6 +99,7 @@ class ListItem extends React.Component {
       id = null,
       index,
       url = null,
+      theme
     } = this.props
 
     return title != nextTitle
@@ -108,6 +110,7 @@ class ListItem extends React.Component {
       || id != nextId
       || index != nextIndex
       || url != nextUrl
+      || theme != nextTheme
   }
 
   render() {
@@ -118,19 +121,26 @@ class ListItem extends React.Component {
       subtitle,
       id,
       selected,
-      activeColor,
-      passiveColor,
-      highlightColor,
-      underlayColor,
       type,
       status,
       canAddItems,
       canDelete,
       height,
       url,
+      theme
     } = this.props
 
     const { move, moveEnd, onLongTap = null } = this.props
+
+    const themeValue = ThemeManager.instance().getTheme(theme)
+    const activeColor = themeValue.activeColor
+    const passiveColor = themeValue.lightTextColor
+    const highlightColor = themeValue.highlightColor
+    const underlayColor = themeValue.accentBackgroundColor
+    const backgroundColor = themeValue.tableBackgroundColor
+    const mainTextColor = themeValue.mainTextColor
+    const lightTextColor = themeValue.lightTextColor
+    const itemBackgroundColor = themeValue.backgroundColor
 
     let statusStyle = (draggable && !editing)
       ? styles.statusWithDraggable
@@ -145,7 +155,7 @@ class ListItem extends React.Component {
         } else if (status == 'pause') {
           icon = <FontAwesome name='pause' size={20} style={statusStyle} color={activeColor} />
         } else if (id != null) {
-          icon = <Text style={statusStyle}>{"" + id}</Text>
+          icon = <Text style={{...statusStyle, color: mainTextColor}}>{"" + id}</Text>
         } else {
           icon = <FontAwesome name='music' size={22} style={statusStyle} color={passiveColor} />
         }
@@ -197,11 +207,11 @@ class ListItem extends React.Component {
         icon='delete'
         underlayColor={underlayColor}
         onSwipe={this.handleSwipe}
-        id={title}
+        id={''+id+title}
       >
         <Highlightable
           underlayColor={highlightColor}
-          foregroundColor='#FFFFFF'
+          foregroundColor={itemBackgroundColor}
           duration={250}
           onPress={this.handlePress}
           onLongPress={onLongTap}
@@ -224,18 +234,18 @@ class ListItem extends React.Component {
               {icon}
             </View>
             <View style={styles.description}>
-              <Text style={titleStyle} numberOfLines={1} ellipsizeMode='tail'>{title}</Text>
-              <Text style={styles.subtitle}>{realSubtitle}</Text>
+              <Text style={{...titleStyle, color:mainTextColor}} numberOfLines={1} ellipsizeMode='tail'>{title}</Text>
+              <Text style={{...styles.subtitle, color:lightTextColor}}>{realSubtitle}</Text>
             </View>
             <TouchableOpacity
               onPress={this.handleMenuPress}
               disabled={editing}
             >
               {!editing && canAddItems && (
-                <Icon name='more-vert' color='black' style={{...styles.status, fontSize: 20}} />
+                <Icon name='more-vert' color={mainTextColor} style={{...styles.status, fontSize: 20}} />
               )}
               {editing && selected && (
-                <Icon name='check' color='black' style={{...styles.status, fontSize: 20}} />
+                <Icon name='check' color={mainTextColor} style={{...styles.status, fontSize: 20}} />
               )}
               {editing && !selected && 
                 // Placeholder view to keep the text layout the same.
@@ -270,6 +280,7 @@ class ListItem extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   const { type, title, artist = null } = ownProps
   const { artists, archive } = state
+  const { theme } = state.storage
 
   if (type == 'ARTIST' && title.length > 0 && title != 'VA') {
     if (title in artists && artists[title] != null) {
@@ -320,7 +331,6 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: Platform.OS === 'android' ? 'normal' : '500',
     fontSize: 16,
-    color: 'black',
     marginBottom: Platform.OS === 'android' ? 0 : 2,
   },
   titlePlaying: {
@@ -331,7 +341,6 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 13,
-    color: 'gray',
   },
   menuWrapper: {
     position: 'absolute',

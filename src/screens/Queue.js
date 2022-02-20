@@ -53,7 +53,7 @@ class Queue extends React.Component {
   }
 
   render() {
-    const { navigation, content, queueSize } = this.props
+    const { navigation, content, queueSize, theme } = this.props
     const { tempData } = this.state
 
     const data = tempData != null ? tempData : content
@@ -74,6 +74,7 @@ class Queue extends React.Component {
           confirmDelete={false}
           addOptions={options}
           onSelection={this.handleItemSelected}
+          theme={theme}
         />
       </View>
     )
@@ -140,10 +141,12 @@ const queueToList = (state) => {
 const mapStateToProps = state => {
   let queueSize = state.queue.length
   let queue = queueToList(state)
+  let theme = state.storage.theme
 
   return {
     content: queue,
     queueSize: queueSize,
+    theme: theme
   }
 }
 

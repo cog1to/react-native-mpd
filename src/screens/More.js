@@ -36,9 +36,11 @@ class OptionRow extends React.Component {
   }
 
   render() {
-    const { title, lastRow, textStyle, leftPadding } = this.props
+    const { title, lastRow, textStyle, leftPadding, theme } = this.props
 
-    const theme = ThemeManager.instance().getCurrentTheme()
+    const themeValue = ThemeManager.instance().getTheme(theme)
+    const backgroundColor = themeValue.tableBackgroundColor
+    const textColor = themeValue.mainTextColor
 
     let style = styles.rowContent
     if (!lastRow) {
@@ -50,12 +52,12 @@ class OptionRow extends React.Component {
       rowStyle = {...rowStyle, paddingLeft: 0}
     }
 
-    let textStyleResolved = textStyle != null ? textStyle : styles.title
+    let textStyleResolved = (textStyle != null) ? textStyle : {...styles.title, color: textColor}
 
     return (
       <TouchableHighlight 
         onPress={this.handleOnPress} 
-        underlayColor={theme.accentColor+'30'}>
+        underlayColor={themeValue.accentColor+'30'}>
         <View style={rowStyle}>
           <View style={style}>
             <View style={styles.rowText}>
@@ -105,34 +107,45 @@ class More extends React.Component {
   }
 
   render() {
+    const { theme } = this.props
+
+    const themeValue = ThemeManager.instance().getTheme(theme)
+    const backgroundColor = themeValue.tableBackgroundColor
+    const rowGroupBack = themeValue.backgroundColor
+    const logOutColor =  themeValue.lightTextColor
+
     return (
       <View style={{flex: 1}}>
-        <ScrollView style={styles.container}>
-          <View style={styles.rowGroup}>
+        <ScrollView style={{...styles.container, backgroundColor: backgroundColor}}>
+          <View style={{...styles.rowGroup, backgroundColor: rowGroupBack}}>
             <OptionRow 
               title='Search'
               onTapped={() => this.navigate(ROUTES.SEARCH)}
+              theme={theme}
             />
             <OptionRow 
               title='Playlists'
               onTapped={() => this.navigate(ROUTES.PLAYLISTS)}
               lastRow={true}
+              theme={theme}
             />
           </View>
-          <View style={styles.rowGroup}>
+          <View style={{...styles.rowGroup, backgroundColor: rowGroupBack}}>
             <OptionRow 
               title='Outputs'
               onTapped={() => this.navigate(ROUTES.OUTPUTS)}
               lastRow={true}
+              theme={theme}
             />
           </View>
-          <View style={styles.rowGroup}>
+          <View style={{...styles.rowGroup, backgroundColor: rowGroupBack}}>
             <OptionRow 
               title='Log Out'
               onTapped={() => this.handleLogout()}
               lastRow={true}
-              textStyle={styles.logoutTitle}
+              textStyle={{...styles.logoutTitle, color: logOutColor}}
               leftPadding={false}
+              theme={theme}
             />
           </View>
         </ScrollView>
@@ -147,19 +160,21 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-export default connect(null, mapDispatchToProps)(More)
+const mapStateToProps = state => {
+  return { theme: state.storage.theme }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(More)
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    backgroundColor: ThemeManager.instance().getCurrentTheme().tableBackgroundColor,
+    flex: 1
   },
   rowGroup: {
     ...elevationShadowStyle(2),
     marginVertical: 10,
     marginTop: 20,
-    flexDirection: 'column',
-    backgroundColor: ThemeManager.instance().getCurrentTheme().backgroundColor,
+    flexDirection: 'column'
   },
   row: {
     paddingLeft: 20,
@@ -173,13 +188,11 @@ const styles = StyleSheet.create({
   logoutTitle: {
     textAlign: 'center',
     fontWeight: 'bold',
-    fontSize: ThemeManager.instance().getCurrentTheme().mainTextSize,
-    color: ThemeManager.instance().getCurrentTheme().accentColor,
+    fontSize: ThemeManager.instance().getCurrentTheme().mainTextSize
   },
   title: {        
     fontWeight: Platform.OS === 'android' ? 'normal' : '500',
-    fontSize: ThemeManager.instance().getCurrentTheme().mainTextSize,
-    color: ThemeManager.instance().getCurrentTheme().mainTextColor,
+    fontSize: ThemeManager.instance().getCurrentTheme().mainTextSize
   },
   bottomBorder: {
     borderBottomWidth: StyleSheet.hairlineWidth,

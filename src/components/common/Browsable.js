@@ -38,6 +38,9 @@ import { addToPlaylist } from '../../redux/reducers/playlists/actions'
 // Keyboard state listener.
 import KeyboardState from './KeyboardState'
 
+// Themes.
+import ThemeManager from '../../themes/ThemeManager'
+
 // Lodash for debounce method.
 import _ from 'lodash'
 
@@ -240,9 +243,12 @@ class Browsable extends React.Component {
       canRearrange,
       deletePrompt,
       mode,
+      theme
     } = this.props
 
     const { selected, editing, showingDeleteDialog, search } = this.state
+
+    const themeValue = ThemeManager.instance().getTheme(theme)
 
     // Filter based on search field input.
     let filtered = content
@@ -305,7 +311,7 @@ class Browsable extends React.Component {
       <KeyboardState>
         {keyboardInfo => (
           <KeyboardAwareBrowsable {...keyboardInfo}>
-            <View style={{flex: 1}}>
+            <View style={{flex: 1, backgroundColor: themeValue.backgroundColor}}>
               <UniversalList
                 content={items}
                 editing={editing}
@@ -325,6 +331,7 @@ class Browsable extends React.Component {
 
                 extraData={{editing, selected}}
                 mode={mode}
+                theme={theme}
               />
               {showingMenu && (
                 <MenuDialog
@@ -332,6 +339,7 @@ class Browsable extends React.Component {
                   options={options}
                   onHide={this.handleBackPress}
                   onOptionSelected={this.onOptionSelected}
+                  theme={theme}
                 />
               )}
               {showingDeleteDialog && (
@@ -339,6 +347,7 @@ class Browsable extends React.Component {
                   prompt={deleteText}
                   cancelButton={{ title: 'Cancel', onPress: this.handleDeleteCancel }}
                   confirmButton={{ title: 'Delete', onPress: this.handleDeleteConfirm }}
+                  theme={theme}
                 />
               )}
             </View>

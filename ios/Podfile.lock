@@ -57,6 +57,8 @@ PODS:
     - React-cxxreact (= 0.60.0)
     - React-jsi (= 0.60.0)
   - React-jsinspector (0.60.0)
+  - react-native-appearance (0.3.4):
+    - React
   - react-native-randombytes (3.5.3):
     - React
   - react-native-slider (2.0.7):
@@ -89,7 +91,7 @@ PODS:
     - React-fishhook (= 0.60.0)
   - RNCAsyncStorage (1.6.3):
     - React
-  - RNDeviceInfo (5.4.4):
+  - RNDeviceInfo (5.5.3):
     - React
   - RNGestureHandler (1.5.1):
     - React
@@ -113,6 +115,7 @@ DEPENDENCIES:
   - React-jsi (from `../node_modules/react-native/ReactCommon/jsi`)
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
+  - react-native-appearance (from `../node_modules/react-native-appearance`)
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
   - "react-native-slider (from `../node_modules/@react-native-community/slider`)"
   - react-native-udp (from `../node_modules/react-native-udp`)
@@ -161,6 +164,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsiexecutor"
   React-jsinspector:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
+  react-native-appearance:
+    :path: "../node_modules/react-native-appearance"
   react-native-randombytes:
     :path: "../node_modules/react-native-randombytes"
   react-native-slider:
@@ -215,6 +220,7 @@ SPEC CHECKSUMS:
   React-jsi: 8e128c4d0d8febc2977ef617d1c09bb54326069c
   React-jsiexecutor: 7a3554f703a58963ec80b860144ea0f0e9b910e1
   React-jsinspector: d4ed52225912efe0019bb7f1a225aec20f23049a
+  react-native-appearance: fc2014516054585d531e07aa0b40ab0de1d2be85
   react-native-randombytes: 991545e6eaaf700b4ee384c291ef3d572e0b2ca8
   react-native-slider: e36b7de75b35323ee802dae723be8ebbab4c4a3d
   react-native-udp: 4a750f0802d4597252f2cae4a2b3302ee5cfa4fc
@@ -229,7 +235,7 @@ SPEC CHECKSUMS:
   React-RCTVibration: 4ee1cf208ab17a50fafb1c16ffe28fe594a64e4f
   React-RCTWebSocket: fca087d583724aa0e5fef7d911f0f2a28d0f2736
   RNCAsyncStorage: 6b57de0f6cb0dcfd17521af1681fa39001d3efff
-  RNDeviceInfo: d390c040be2e59e2f23c83995bf1cd2f66658b06
+  RNDeviceInfo: 67607dfe9cfbed105838144c40187a8392aa404d
   RNGestureHandler: 7add966bb5d90ee8cf38d4341f87814474357972
   RNReanimated: b2ab0b693dddd2339bd2f300e770f6302d2e960c
   RNVectorIcons: 0bb4def82230be1333ddaeee9fcba45f0b288ed4

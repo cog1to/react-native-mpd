@@ -37,16 +37,17 @@ export default class VolumeControl extends React.Component {
     }
 
     render() {
-        const { volume, onChange } = this.props
+        const { volume, onChange, theme } = this.props
         const { dragging, currentValue } = this.state
 
         const actualVolume = dragging ? currentValue : volume
 
-        const theme = ThemeManager.instance().getCurrentTheme()
+        const themeValue = ThemeManager.instance().getTheme(theme)
+        const backgroundColor = themeValue.toolbarColor
 
         return (
-            <View style={styles.volumeBar}>
-                <Icon name='volume-mute' size={24} color={theme.mainTextColor} style={styles.volumeIcon} />
+            <View style={{...styles.volumeBar, backgroundColor: backgroundColor}}>
+                <Icon name='volume-mute' size={24} color={themeValue.mainTextColor} style={styles.volumeIcon} />
                 <Slider 
                     style={styles.slider}
                     value={actualVolume}
@@ -55,10 +56,10 @@ export default class VolumeControl extends React.Component {
                     step={1}
                     onValueChange={this.handleValueChange}
                     onSlidingComplete={this.onSlidingComplete}
-                    minimumTrackTintColor={theme.activeColor}
-                    thumbTintColor={theme.accentColor}
+                    minimumTrackTintColor={themeValue.activeColor}
+                    thumbTintColor={themeValue.accentColor}
                 />
-                <Icon name='volume-up' size={24} color={theme.mainTextColor} style={styles.volumeIcon} />
+                <Icon name='volume-up' size={24} color={themeValue.mainTextColor} style={styles.volumeIcon} />
             </View>
         )
     }
@@ -73,7 +74,6 @@ const styles = StyleSheet.create({
         top: 0,
         padding: 16,
         paddingVertical: Platform.OS === 'android' ? 16 : 8,
-        backgroundColor: ThemeManager.instance().getCurrentTheme().toolbarColor,
         left: 0,
         right: 0,
         elevation: 1,

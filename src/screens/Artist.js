@@ -33,7 +33,7 @@ class Artist extends React.Component {
   }
 
   render() {
-    const { content, navigation, loading, queueSize, position, mode } = this.props
+    const { content, navigation, loading, queueSize, position, mode, theme } = this.props
 
     let albums = ((content !== null) ? Object.keys(content) : []).map((name, index) => ({
       icon: index + 1,
@@ -58,6 +58,7 @@ class Artist extends React.Component {
           position={position}
           onIconTapped={this.onModeSelected}
           mode={mode}
+          theme={theme}
         />
       </View>
    )
@@ -99,11 +100,13 @@ const mapStateToProps = (state, ownProps) => {
   const { position = null, file = null } = state.currentSong
   const { mode } = state.storage
   const { navigation: { state: { params: { name } } } } = ownProps
+  const theme = state.storage.theme
 
   return {
     content: state.library.library[name],
     loading: state.library.loading,
     queueSize: state.queue.length,
+    theme: theme,
     position,
     mode,
   }

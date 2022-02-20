@@ -12,7 +12,7 @@ import Browsable from '../components/common/Browsable'
 
 class SearchResults extends React.Component {
   render() {
-    const { navigation, queueSize, position } = this.props
+    const { navigation, queueSize, position, theme } = this.props
     const { state: { params: { content } } } = navigation
 
     return (
@@ -25,6 +25,7 @@ class SearchResults extends React.Component {
           canArrange={false}
           queueSize={queueSize}
           position={position}
+          theme={theme}
         />
       </View>
     )
@@ -33,10 +34,12 @@ class SearchResults extends React.Component {
 
 const mapStateToProps = state => {
   const { position = null } = state.currentSong
+  const { theme } = state.storage
 
   return {
     queueSize: state.queue.length,
-    position: position
+    position: position,
+    theme: theme,
   }
 }
 

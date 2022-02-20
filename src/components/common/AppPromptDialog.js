@@ -21,7 +21,10 @@ import KeyboardState from './KeyboardState'
 // Keyboard aware view.
 import KeyboardAwareView from './KeyboardAwareView'
 
-export default class AppDialog extends React.Component {
+// Redux.
+import { connect } from 'react-redux'
+
+class AppPromptDialog extends React.Component {
   static propTypes = {
     prompt: PropTypes.string.isRequired,
     placeholder: PropTypes.string.isRequired,
@@ -62,22 +65,28 @@ export default class AppDialog extends React.Component {
   }
 
   render() {
-    const { prompt, cancelButton, confirmButton, placeholder, knownItems } = this.props
+    const { prompt, cancelButton, confirmButton, placeholder, knownItems, theme } = this.props
     const { name } = this.state
-    const borderBottomColor = ThemeManager.instance().getCurrentTheme().accentColor
+    
+    const borderBottomColor = theme.dialogSeparatorColor
+    const dialogBackgroundColor = theme.dialogBackgroundColor
+    const backgroundColor = theme.backgroundColor
+    const mainTextColor = theme.mainTextColor
+    const buttonTextColor = theme.searchButtonColor
+    const separator = theme.dialogSeparatorColor
 
     const canConfirm = name.length > 0 && knownItems.find((item) => { return item == name }) == undefined
 
     const topOffset = Platform.OS === 'ios' ? 60 : 70
 
     return (
-      <View style={styles.dimOverlay}>
+      <View style={{...styles.dimOverlay, backgroundColor: dialogBackgroundColor}}>
         <KeyboardState>
           {keyboardInfo => (
             <KeyboardAwareView topOffset={topOffset} {...keyboardInfo}>
               {() => (
-                <View style={styles.dialog}>
-                  <Text style={styles.promptText}>
+                <View style={{...styles.dialog, backgroundColor: backgroundColor}}>
+                  <Text style={{...styles.promptText, color: mainTextColor}}>
                     {prompt}
                   </Text>
                   <Input
@@ -90,12 +99,12 @@ export default class AppDialog extends React.Component {
                     marginBottom={20}
                   />
                   {Platform.OS === 'ios' && (
-                    <View style={styles.buttonsContainerIOS}>
+                    <View style={{...styles.buttonsContainerIOS, borderTopColor: separator}}>
                       {cancelButton && (
                         <TouchableOpacity
                           onPress={this.handleCancelPress}
-                          style={styles.cancelButton}>
-                          <Text style={styles.buttonTextIOSCancel}>
+                          style={{...styles.cancelButton, borderRightColor: separator}}>
+                          <Text style={{...styles.buttonTextIOSCancel, color: buttonTextColor}}>
                             {cancelButton.title}
                           </Text>
                         </TouchableOpacity>
@@ -104,7 +113,7 @@ export default class AppDialog extends React.Component {
                         disabled={!canConfirm}
                         onPress={this.handleConfirmPress}
                         style={{...styles.confirmButton, opacity: canConfirm ? 1 : 0.5}}>
-                        <Text style={styles.buttonTextIOS}>
+                        <Text style={{...styles.buttonTextIOS, color: buttonTextColor}}>
                           {confirmButton.title}
                         </Text>
                       </TouchableOpacity>
@@ -115,7 +124,7 @@ export default class AppDialog extends React.Component {
                       {cancelButton && (
                         <TouchableOpacity
                           onPress={this.handleCancelPress}>
-                          <Text style={styles.buttonText}>
+                          <Text style={{...styles.buttonText, color: buttonTextColor}}>
                             {cancelButton.title.toUpperCase()}
                           </Text>
                         </TouchableOpacity>
@@ -124,7 +133,7 @@ export default class AppDialog extends React.Component {
                         onPress={this.handleConfirmPress}
                         disabled={!canConfirm}
                         style={{opacity: canConfirm ? 1 : 0.5}}>
-                        <Text style={styles.buttonTextLast}>
+                        <Text style={{...styles.buttonTextLast, color: buttonTextColor}}>
                           {confirmButton.title.toUpperCase()}
                         </Text>
                       </TouchableOpacity>
@@ -140,6 +149,14 @@ export default class AppDialog extends React.Component {
   }
 }
 
+const mapStateToProps = (state, ownProps) => {
+    const theme = state.storage.theme
+    const themeValue = ThemeManager.instance().getTheme(theme)
+    return { ...ownProps, theme: themeValue }
+}
+
+export default connect(mapStateToProps, null)(AppPromptDialog)
+
 const styles = StyleSheet.create({
   dimOverlay: {
     position: 'absolute',
@@ -147,7 +164,6 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: ThemeManager.instance().getCurrentTheme().dialogBackgroundColor,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -155,7 +171,6 @@ const styles = StyleSheet.create({
     paddingBottom: Platform.OS === 'ios' ? 0 : 15,
     margin: 20,
     minWidth: 300,
-    backgroundColor: 'white',
     borderRadius: Platform.OS === 'ios' ? 12 : 0,
   },
   promptText: {
@@ -164,7 +179,6 @@ const styles = StyleSheet.create({
     fontSize: Platform.OS == 'ios'
       ? ThemeManager.instance().getCurrentTheme().subTextSize
       : ThemeManager.instance().getCurrentTheme().mainTextSize,
-    color: ThemeManager.instance().getCurrentTheme().mainTextColor,
     textAlign: Platform.OS === 'ios' ? 'center' : 'left',
   },
   promptInput: {
@@ -182,22 +196,18 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     alignItems: 'center',
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: ThemeManager.instance().getCurrentTheme().dialogSeparatorColor,
   },
   buttonText: {
-    color: ThemeManager.instance().getCurrentTheme().accentColor,
     fontWeight: 'bold',
     fontSize: 14,
   },
   buttonTextLast: {
-    color: ThemeManager.instance().getCurrentTheme().accentColor,
     fontWeight: 'bold',
     fontSize: 14,
     paddingLeft: 20,
     paddingRight: 20,
   },
   buttonTextIOS: {
-    color: ThemeManager.instance().getCurrentTheme().accentColor,
     fontWeight: 'normal',
     fontSize: 17,
     padding: 12,
@@ -205,7 +215,6 @@ const styles = StyleSheet.create({
     paddingRight: 20,
   },
   buttonTextIOSCancel: {
-    color: ThemeManager.instance().getCurrentTheme().accentColor,
     fontWeight: '500',
     fontSize: 17,
     padding: 12,
@@ -216,7 +225,6 @@ const styles = StyleSheet.create({
     alignItems:'center',
     flexGrow: 1,
     borderRightWidth: StyleSheet.hairlineWidth,
-    borderRightColor: ThemeManager.instance().getCurrentTheme().dialogSeparatorColor,
   },
   confirmButton: {
     flexGrow: 1,

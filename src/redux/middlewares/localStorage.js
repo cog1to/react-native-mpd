@@ -4,6 +4,7 @@ import LocalStorage from '../../storage/LocalStorage'
 
 import { addressLoaded, addressSaved, loadSavedAddress, libraryModeLoaded, libraryModeSaved } from '../reducers/storage/actions'
 import { artistArtLoaded } from '../reducers/artists/actions'
+import { saveTheme, themeChanged } from '../reducers/storage/actions'
 
 export const localStorageMiddleware = store => {
   return next => action => {
@@ -50,6 +51,13 @@ export const localStorageMiddleware = store => {
       {
         LocalStorage.instance().setLibraryMode(action.data, (error) => {
           store.dispatch(libraryModeSaved(action.data, error))
+        })
+        break
+      }
+      case types.SAVE_THEME:
+      {
+        LocalStorage.instance().setTheme(action.data, () => {
+          store.dispatch(themeChanged(action.data, null))
         })
         break
       }

@@ -29,21 +29,28 @@ export default class AppDialog extends React.Component {
     }
 
 	render() {
-		const { prompt, cancelButton, confirmButton } = this.props
+		const { prompt, cancelButton, confirmButton, theme } = this.props
+
+        const themeValue = ThemeManager.instance().getTheme(theme)
+        const textColor = themeValue.mainTextColor
+        const backgroundColor = themeValue.backgroundColor
+        const dialogBackgroundColor = themeValue.dialogBackgroundColor
+        const dialogSeparatorColor = themeValue.dialogSeparatorColor
+        const buttonColor = themeValue.searchButtonColor
 
 		return (
-			<View style={styles.dimOverlay}>
-                <View style={styles.dialog}>
-                    <Text style={styles.promptText}>
+			<View style={{...styles.dimOverlay, backgroundColor: dialogBackgroundColor}}>
+                <View style={{...styles.dialog, backgroundColor: backgroundColor}}>
+                    <Text style={{...styles.promptText, color: textColor}}>
                         {prompt}
                     </Text>
                     {Platform.OS === 'ios' && (
-                        <View style={styles.buttonsContainerIOS}>
+                        <View style={{...styles.buttonsContainerIOS, borderTopColor: dialogSeparatorColor}}>
                             {cancelButton && (
                             	<TouchableOpacity
                                 	onPress={cancelButton.onPress}
-                                	style={styles.cancelButton}>
-                                	<Text style={styles.buttonTextIOSCancel}>
+                                	style={{...styles.cancelButton, borderRightColor: dialogSeparatorColor}}>
+                                	<Text style={{...styles.buttonTextIOSCancel, color: buttonColor}}>
                                    		{cancelButton.title}
                                 	</Text>
                             	</TouchableOpacity>
@@ -51,7 +58,7 @@ export default class AppDialog extends React.Component {
                             <TouchableOpacity 
                                 onPress={confirmButton.onPress}
                                 style={styles.confirmButton}>
-                                <Text style={styles.buttonTextIOS}>
+                                <Text style={{...styles.buttonTextIOS, color: buttonColor}}>
                                    {confirmButton.title}
                                 </Text>
                             </TouchableOpacity>
@@ -61,13 +68,13 @@ export default class AppDialog extends React.Component {
                         <View style={styles.buttonsContainerAndroid}>
                         	{cancelButton && (
                             	<TouchableOpacity onPress={cancelButton.onPress}>
-                                	<Text style={styles.buttonText}>
+                                	<Text style={{...styles.buttonText, color: buttonColor}}>
                                    		{cancelButton.title.toUpperCase()}
                                 	</Text>
                             	</TouchableOpacity>
                             )}
                             <TouchableOpacity onPress={confirmButton.onPress}>
-                                <Text style={styles.buttonTextLast}>
+                                <Text style={{...styles.buttonTextLast, color: buttonColor}}>
                                    {confirmButton.title.toUpperCase()}
                                 </Text>
                             </TouchableOpacity>
@@ -86,7 +93,6 @@ const styles = StyleSheet.create({
         bottom: 0,
         left: 0,
         right: 0,
-        backgroundColor: ThemeManager.instance().getCurrentTheme().dialogBackgroundColor,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -101,7 +107,6 @@ const styles = StyleSheet.create({
         fontSize: Platform.OS == 'ios' 
             ? ThemeManager.instance().getCurrentTheme().subTextSize
             : ThemeManager.instance().getCurrentTheme().mainTextSize,
-        color: ThemeManager.instance().getCurrentTheme().mainTextColor,
         textAlign: Platform.OS === 'ios' ? 'center' : 'left',
     },
     buttonsContainerAndroid: {
@@ -115,22 +120,18 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around',
         alignItems: 'center',
         borderTopWidth: StyleSheet.hairlineWidth,
-        borderTopColor: ThemeManager.instance().getCurrentTheme().dialogSeparatorColor,
     },
     buttonText: {
-        color: ThemeManager.instance().getCurrentTheme().accentColor,
         fontWeight: 'bold',
         fontSize: 14,
     },
     buttonTextLast: {
-        color: ThemeManager.instance().getCurrentTheme().accentColor,
         fontWeight: 'bold',
         fontSize: 14,
         paddingLeft: 20,
         paddingRight: 20,
     },
     buttonTextIOS: {
-        color: ThemeManager.instance().getCurrentTheme().accentColor,
         fontWeight: 'normal',
         fontSize: 17,
         padding: 12,
@@ -138,7 +139,6 @@ const styles = StyleSheet.create({
         paddingRight: 20,
     },
     buttonTextIOSCancel: {
-        color: ThemeManager.instance().getCurrentTheme().accentColor,
         fontWeight: '500',
         fontSize: 17,
         padding: 12,
@@ -149,7 +149,6 @@ const styles = StyleSheet.create({
     	alignItems:'center',
     	flexGrow: 1,
     	borderRightWidth: StyleSheet.hairlineWidth,
-    	borderRightColor: ThemeManager.instance().getCurrentTheme().dialogSeparatorColor,
     },
     confirmButton: {
     	flexGrow: 1,

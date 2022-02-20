@@ -38,7 +38,7 @@ class Browse extends React.Component {
   // Rendering.
 
   render() {
-    const { content, navigation, refreshing, queueSize, position } = this.props
+    const { content, navigation, refreshing, queueSize, position, theme } = this.props
 
     return (
       <View style={styles.container}>
@@ -53,6 +53,7 @@ class Browse extends React.Component {
           position={position}
           navigation={navigation}
           mode='list'
+          theme={theme}
         />
       </View>
     )
@@ -101,7 +102,8 @@ const mapStateToProps = (state, ownProps) => {
   const { navigation: { state: { params: { dir = [''] } } } } = ownProps
   const { tree, refreshing } = state.browser
   const { position = null, file = null } = state.currentSong
-
+  let theme = state.storage.theme
+  
   // Get content without playlistst. They are displayed in a separate screen.
   let content = tree != null ? nodeFromPath(dir, tree).children : []
   content = content.filter(item => { return item.type !== 'PLAYLIST' })
@@ -124,6 +126,7 @@ const mapStateToProps = (state, ownProps) => {
   return {
     ...ownProps,
     content: contentWithIds,
+    theme: theme,
     refreshing,
     queueSize,
     position,

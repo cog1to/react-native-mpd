@@ -55,12 +55,12 @@ const navigationHeader = {
   headerStyle: {
     paddingTop: Platform.OS === 'android' ? 24 : 12,
     height: Platform.OS === 'android' ? 56 + 24 : 44,
-    backgroundColor: ThemeManager.instance().getCurrentTheme().accentColor,
+    backgroundColor: '#404550'
   },
   headerTitleStyle: {
-    color: ThemeManager.instance().getCurrentTheme().navigationBarIconColor
+    color: '#FFFFFF'
   },
-  headerTintColor: ThemeManager.instance().getCurrentTheme().navigationBarIconColor,
+  headerTintColor: '#FFFFFF',
 }
 
 const getTabBarIcon = icon => ({ tintColor }) => {
@@ -393,9 +393,15 @@ const TabNavigator = createBottomTabNavigator(
       showLabel: false,
       style: {
         elevation: 20,
-        backgroundColor: ThemeManager.instance().getCurrentTheme().toolbarColor,
+        backgroundColor: {
+          light: '#F5F5F5',
+          dark: '#171717'
+        },
       },
-      activeTintColor: ThemeManager.instance().getCurrentTheme().accentColor,
+      activeTintColor: {
+        light: '#404550',
+        dark: '#d9e3f0'
+      }
     }
   }
 )
@@ -412,7 +418,7 @@ const AppNavigator = createStackNavigator({
     screen: TabNavigator,
     navigationOptions: {
       header: null,
-      gesturesEnabled: false,
+      gesturesEnabled: false
     }
   }
 })
