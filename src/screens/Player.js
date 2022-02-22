@@ -102,7 +102,7 @@ class Player extends React.Component {
     const themeValue = ThemeManager.instance().getTheme(theme)
     const backgroundColor = themeValue.backgroundColor
     const textColor = themeValue.mainTextColor
-    const lightTextColor = theme.lightTextColor
+    const lightTextColor = themeValue.lightTextColor
 
     return (
       <View style={{...styles.container, backgroundColor: backgroundColor}}>
