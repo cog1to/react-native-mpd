@@ -24,12 +24,13 @@ export default class Input extends React.Component {
         placeholder: '',
         placeholderColor: ThemeManager.instance().getCurrentTheme().placeholderColor,
         borderBottomColor: ThemeManager.instance().getCurrentTheme().activeColor,
+        textColor: ThemeManager.instance().getCurrentTheme().mainTextColor,
         marginHorizontal: 0,
         marginBottom: null
     }
 
     render() {
-        const { borderBottomColor, marginHorizontal, marginBottom, placeholderColor } = this.props
+        const { borderBottomColor, marginHorizontal, marginBottom, placeholderColor, textColor } = this.props
 
         let style = {
             marginLeft: marginHorizontal,
@@ -47,7 +48,7 @@ export default class Input extends React.Component {
                     {...this.props}
                     marginHorizontal={0}
                     marginBottom={0}
-                    style={{...this.props.style, ...styles.textInput}}
+                    style={{...this.props.style, ...styles.textInput, color: textColor}}
                     underlineColorAndroid='transparent'
                     placeholderTextColor={placeholderColor}
                 />

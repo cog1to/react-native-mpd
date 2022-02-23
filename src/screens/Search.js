@@ -183,6 +183,7 @@ class Search extends React.Component {
     const borderBottomColor = themeValue.accentColor
     const backgroundColor = themeValue.backgroundColor
     const searchButtonColor = themeValue.searchButtonColor
+    const textColor = themeValue.mainTextColor
 
     return (
       <SafeAreaView style={{...styles.container, backgroundColor: backgroundColor}}>
@@ -199,6 +200,7 @@ class Search extends React.Component {
                       onChangeText={(text) => this.onChangeText(text, tag)}
                       value={criteria[tag]}
                       placeholderColor={themeValue.placeholderColor}
+                      textColor={textColor}
                     />
                   )
                 })}
