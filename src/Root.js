@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import { connect as reduxConnect } from 'react-redux'
 import { NavigationActions, StackActions } from 'react-navigation'
 import { View, StatusBar, AppState } from 'react-native'
-import { Appearance, AppearanceProvider, useColorScheme } from 'react-native-appearance'
+import { Appearance, useColorScheme } from 'react-native'
 
 // Actions.
 import { connect, error, disconnect, setIntentional } from './redux/reducers/status/actions'
@@ -220,12 +220,10 @@ class Root extends Component {
     return (
       <View style={{flex: 1}}>
         <StatusBar translucent={true} barStyle="light-content" />
-        <AppearanceProvider>
           <AppContainer
             theme={themeName}
             ref={ nav => { this.navigator = nav } }
           />
-        </AppearanceProvider>
         {reconnectState != RECONNECT_STATE.NOTHING && (
           <AppDialog
             prompt={reconnectPrompt}

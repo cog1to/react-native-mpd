@@ -1,7 +1,7 @@
 import LocalStorage from '../storage/LocalStorage'
 import LightTheme from './Light'
 import DarkTheme from './Dark'
-import { Appearance } from 'react-native-appearance'
+import { Appearance } from 'react-native'
 // Redux.
 import { store } from 'react-redux'
 import { saveTheme, themeChanged } from '../redux/reducers/storage/actions'
