@@ -16,8 +16,6 @@ target 'Yamd' do
 
   pod 'RNDeviceInfo', :path => '../node_modules/react-native-device-info'
 
-  pod 'react-native-appearance', :path => '../node_modules/react-native-appearance'
-
   target 'YamdTests' do
     inherit! :complete
     # Pods for testing

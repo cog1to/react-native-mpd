@@ -9,12 +9,12 @@ import {
   KeyboardAvoidingView,
   Platform,
   Dimensions,
-  SafeAreaView,
   UIManager,
   Animated,
   TouchableOpacity
 } from 'react-native'
 import Input from '../components/common/Input'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 // Actions.
 import { connect } from '../redux/reducers/status/actions'

@@ -5,7 +5,6 @@ import {
   Button,
   StyleSheet,
   Platform,
-  SafeAreaView,
   TouchableOpacity,
   Text
 } from 'react-native'
@@ -32,6 +31,8 @@ import ThemeManager from '../themes/ThemeManager'
 
 // Safe area check.
 import { isIphoneX } from '../utils/IsIphoneX';
+
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 Fields = [
   { ID: 'TITLE', title: 'Title', tag: 'title', },

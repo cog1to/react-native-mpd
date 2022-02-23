@@ -209,10 +209,10 @@ PODS:
   - React-jsinspector (0.66.0)
   - React-logger (0.66.0):
     - glog
-  - react-native-appearance (0.3.4):
-    - React
   - react-native-randombytes (3.5.3):
     - React
+  - react-native-safe-area-context (3.4.1):
+    - React-Core
   - react-native-slider (2.0.7):
     - React
   - react-native-udp (2.6.1):
@@ -343,8 +343,8 @@ DEPENDENCIES:
   - React-jsiexecutor (from `../node_modules/react-native/ReactCommon/jsiexecutor`)
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
-  - react-native-appearance (from `../node_modules/react-native-appearance`)
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
+  - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - "react-native-slider (from `../node_modules/@react-native-community/slider`)"
   - react-native-udp (from `../node_modules/react-native-udp`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
@@ -406,10 +406,10 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/jsinspector"
   React-logger:
     :path: "../node_modules/react-native/ReactCommon/logger"
-  react-native-appearance:
-    :path: "../node_modules/react-native-appearance"
   react-native-randombytes:
     :path: "../node_modules/react-native-randombytes"
+  react-native-safe-area-context:
+    :path: "../node_modules/react-native-safe-area-context"
   react-native-slider:
     :path: "../node_modules/@react-native-community/slider"
   react-native-udp:
@@ -472,8 +472,8 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 6a05173dc0142abc582bd4edd2d23146b8cc218a
   React-jsinspector: be95ad424ba9f7b817aff22732eb9b1b810a000a
   React-logger: 9a9cd87d4ea681ae929b32ef580638ff1b50fb24
-  react-native-appearance: fc2014516054585d531e07aa0b40ab0de1d2be85
   react-native-randombytes: 991545e6eaaf700b4ee384c291ef3d572e0b2ca8
+  react-native-safe-area-context: 5b8a418400eb3d8364aa87300e865c0262cc17b9
   react-native-slider: e36b7de75b35323ee802dae723be8ebbab4c4a3d
   react-native-udp: 4a750f0802d4597252f2cae4a2b3302ee5cfa4fc
   React-perflogger: 1f554c2b684e2f484f9edcdfdaeedab039fbaca8
@@ -496,6 +496,6 @@ SPEC CHECKSUMS:
   TcpSockets: 8d839b9b14f6f344d98e4642ded13ab3112b462d
   Yoga: c11abbf5809216c91fcd62f5571078b83d9b6720
 
-PODFILE CHECKSUM: b43c43f72253ec0c413acc64e5e92dd784ec577d
+PODFILE CHECKSUM: f132f6c58a0cc80a93c75bf75e8e6a209b53b698
 
 COCOAPODS: 1.11.2
