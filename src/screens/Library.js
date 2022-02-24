@@ -56,6 +56,7 @@ class Library extends React.Component {
           onIconTapped={this.onModeSelected}
           position={position}
           theme={theme}
+          canFilter={true}
       />
       </View>
     )

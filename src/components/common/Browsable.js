@@ -8,6 +8,7 @@ import {
   BackHandler,
   LayoutAnimation,
   UIManager,
+  TextInput
 } from 'react-native'
 
 // Device info.
@@ -27,6 +28,9 @@ import MenuDialog from './MenuDialog'
 
 // Delete dialog.
 import AppDialog from './AppDialog'
+
+// Bar button
+import BarButton from './BarButton'
 
 // Redux.
 import { connect } from 'react-redux'
@@ -160,6 +164,7 @@ class Browsable extends React.Component {
     canEdit: PropTypes.bool.isRequired,
     canDelete: PropTypes.bool.isRequired,
     canRearrange: PropTypes.bool.isRequired,
+    canFilter: PropTypes.bool.isRequired,
     addOptions: PropTypes.arrayOf(PropTypes.shape({
       value: PropTypes.string.isRequired,
       title: PropTypes.string.isRequired,
@@ -195,6 +200,7 @@ class Browsable extends React.Component {
     canEdit: true,
     canDelete: false,
     canRearrange: false,
+    canFilter: false,
     deletePrompt: null,
     onItemMoved: null,
     confirmDelete: true,
@@ -206,19 +212,32 @@ class Browsable extends React.Component {
   // Global handlers.
 
   componentDidMount() {
+    const { theme, canFilter, navigation } = this.props
+    const themeValue = ThemeManager.instance().getTheme(theme)
+
     if (Platform.OS === 'android') {
       BackHandler.addEventListener('hardwareBackPress', this.handleBackPress)
     }
 
-    this.props.navigation.setParams({
-      onCancelEditing: this.onCancelEditing,
-      onNavigationButtonPressed: this.onNavigationButtonPressed,
-      onGlobalSelectionToggled: this.onGlobalSelectionToggled,
-      onMenu: this.onSearch,
-      onCancelSearch: this.onCancelSearch,
-      onSearchChange: _.debounce(this.onSearchChange, 300),
-      mode: this.props.mode,
+    navigation.setOptions({
+      headerRight: () => { 
+        if (canFilter == true) {
+          return (<BarButton onPress={this.onSearch} icon='filter-list' theme={themeValue} padding={0} />)
+        } else {
+          return null
+        }
+      }
     })
+
+    // navigation.setParams({
+    //   onCancelEditing: this.onCancelEditing,
+    //   onNavigationButtonPressed: this.onNavigationButtonPressed,
+    //   onGlobalSelectionToggled: this.onGlobalSelectionToggled,
+    //   onMenu: this.onSearch,
+    //   onCancelSearch: this.onCancelSearch,
+    //   onSearchChange: _.debounce(this.onSearchChange, 300),
+    //   mode: this.props.mode,
+    // })
   }
 
   componentWillUnmount() {
@@ -702,20 +721,52 @@ class Browsable extends React.Component {
   // Filter.
 
   onSearch = () => {
-    const { navigation } = this.props
+    const { navigation, theme } = this.props
+    const themeValue = ThemeManager.instance().getTheme(theme)
 
     LayoutAnimation.configureNext(MainLayoutAnimation)
     navigation.setParams({ searching: true, searchText: null })
+    navigation.setOptions({
+      headerTitle: () => {
+        return (
+          <View style={styles.searchBarHeader}>
+            <View style={{...styles.searchBarBackground, backgroundColor: themeValue.backgroundColor}}>
+              <TextInput
+                value={navigation.params?.searchText}
+                style={{...styles.searchBarTextInput, color: themeValue.mainTextColor}} placeholder='Filter list...'
+                placeholderTextColor={themeValue.placeholderColor}
+                onChangeText={this.onSearchChange}
+              />
+            </View>
+          </View>
+        )
+      },
+      headerRight: () => {
+        return (<BarButton onPress={this.onCancelSearch} icon='clear' theme={themeValue} padding={0} />)
+      }
+    })
   }
 
   onCancelSearch = () => {
-    const { navigation } = this.props
+    const { navigation, canFilter, theme } = this.props
+    const themeValue = ThemeManager.instance().getTheme(theme)
 
     this.setState({
       search: null,
     })
 
     LayoutAnimation.configureNext(MainLayoutAnimation)
+    
+    navigation.setOptions({
+      headerTitle: null,
+      headerRight: () => { 
+        if (canFilter == true) {
+          return (<BarButton onPress={this.onSearch} icon='filter-list' theme={themeValue} padding={0} />)
+        } else {
+          return null
+        }
+      }
+    })
     navigation.setParams({ searching: false })
   }
 
@@ -738,3 +789,22 @@ const mapDispatchToProps = dispatch => {
 }
 
 export default connect(null, mapDispatchToProps)(Browsable)
+
+const styles = StyleSheet.create({
+  searchBarBackground: {
+    backgroundColor: 'white',
+    left: Platform.OS === 'android' ? 0 : 4,
+    right: Platform.OS === 'android' ? 0 : 4,
+    borderRadius: 8,
+    height: 30,
+    width: '85%'
+  },
+  searchBarTextInput: {
+    flex: 1,
+    marginHorizontal: Platform.OS === 'android' ? 4 : 12,
+  },
+  searchBarHeader: {
+    marginHorizontal: 8,
+    flex: 1,
+  },
+})

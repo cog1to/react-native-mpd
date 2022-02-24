@@ -54,6 +54,7 @@ class Browse extends React.Component {
           navigation={navigation}
           mode='list'
           theme={theme}
+          canFilter={true}
         />
       </View>
     )
