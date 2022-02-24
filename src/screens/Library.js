@@ -53,10 +53,11 @@ class Library extends React.Component {
           refreshing={loading}
           queueSize={queueSize}
           mode={mode}
-          onIconTapped={this.onModeSelected}
           position={position}
           theme={theme}
           canFilter={true}
+          canSelectMode={true}
+          onIconTapped={this.onModeSelected}
       />
       </View>
     )

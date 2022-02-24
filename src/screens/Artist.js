@@ -56,10 +56,11 @@ class Artist extends React.Component {
           onRefresh={this.reload}
           queueSize={queueSize}
           position={position}
-          onIconTapped={this.onModeSelected}
           mode={mode}
           theme={theme}
           canFilter={true}
+          canSelectMode={true}
+          onIconTapped={this.onModeSelected}
         />
       </View>
    )

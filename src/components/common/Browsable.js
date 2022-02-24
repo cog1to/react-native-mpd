@@ -165,6 +165,7 @@ class Browsable extends React.Component {
     canDelete: PropTypes.bool.isRequired,
     canRearrange: PropTypes.bool.isRequired,
     canFilter: PropTypes.bool.isRequired,
+    canSelectMode: PropTypes.bool.isRequired,
     addOptions: PropTypes.arrayOf(PropTypes.shape({
       value: PropTypes.string.isRequired,
       title: PropTypes.string.isRequired,
@@ -201,6 +202,7 @@ class Browsable extends React.Component {
     canDelete: false,
     canRearrange: false,
     canFilter: false,
+    canSelectMode: false,
     deletePrompt: null,
     onItemMoved: null,
     confirmDelete: true,
@@ -212,32 +214,15 @@ class Browsable extends React.Component {
   // Global handlers.
 
   componentDidMount() {
-    const { theme, canFilter, navigation } = this.props
-    const themeValue = ThemeManager.instance().getTheme(theme)
-
     if (Platform.OS === 'android') {
       BackHandler.addEventListener('hardwareBackPress', this.handleBackPress)
     }
 
-    navigation.setOptions({
-      headerRight: () => { 
-        if (canFilter == true) {
-          return (<BarButton onPress={this.onSearch} icon='filter-list' theme={themeValue} padding={0} />)
-        } else {
-          return null
-        }
-      }
-    })
+    this.updateNavigationBar(false)
+  }
 
-    // navigation.setParams({
-    //   onCancelEditing: this.onCancelEditing,
-    //   onNavigationButtonPressed: this.onNavigationButtonPressed,
-    //   onGlobalSelectionToggled: this.onGlobalSelectionToggled,
-    //   onMenu: this.onSearch,
-    //   onCancelSearch: this.onCancelSearch,
-    //   onSearchChange: _.debounce(this.onSearchChange, 300),
-    //   mode: this.props.mode,
-    // })
+  componentDidUpdate(prevProps, prevState) {
+    this.updateNavigationBar(this.state.searching ?? false)
   }
 
   componentWillUnmount() {
@@ -725,26 +710,8 @@ class Browsable extends React.Component {
     const themeValue = ThemeManager.instance().getTheme(theme)
 
     LayoutAnimation.configureNext(MainLayoutAnimation)
-    navigation.setParams({ searching: true, searchText: null })
-    navigation.setOptions({
-      headerTitle: () => {
-        return (
-          <View style={styles.searchBarHeader}>
-            <View style={{...styles.searchBarBackground, backgroundColor: themeValue.backgroundColor}}>
-              <TextInput
-                value={navigation.params?.searchText}
-                style={{...styles.searchBarTextInput, color: themeValue.mainTextColor}} placeholder='Filter list...'
-                placeholderTextColor={themeValue.placeholderColor}
-                onChangeText={this.onSearchChange}
-              />
-            </View>
-          </View>
-        )
-      },
-      headerRight: () => {
-        return (<BarButton onPress={this.onCancelSearch} icon='clear' theme={themeValue} padding={0} />)
-      }
-    })
+    this.setState({searching: true})
+    this.updateNavigationBar(true)
   }
 
   onCancelSearch = () => {
@@ -756,20 +723,49 @@ class Browsable extends React.Component {
     })
 
     LayoutAnimation.configureNext(MainLayoutAnimation)
-    
-    navigation.setOptions({
-      headerTitle: null,
-      headerRight: () => { 
-        if (canFilter == true) {
-          return (<BarButton onPress={this.onSearch} icon='filter-list' theme={themeValue} padding={0} />)
-        } else {
-          return null
-        }
-      }
-    })
-    navigation.setParams({ searching: false })
+    this.setState({searching: false})
+    this.updateNavigationBar(false)
   }
 
+  updateNavigationBar = (searchEnabled) => {
+    const { theme, canFilter, navigation, canSelectMode, mode, onIconTapped } = this.props
+    const themeValue = ThemeManager.instance().getTheme(theme)
+    const icon = mode == 'list' ? 'view-module' : 'view-list'
+
+    if (searchEnabled == true) {
+      navigation.setOptions({
+        headerTitle: () => {
+          return (
+            <View style={styles.searchBarHeader}>
+              <View style={{...styles.searchBarBackground, backgroundColor: themeValue.backgroundColor}}>
+                <TextInput
+                  value={navigation.params?.searchText}
+                  style={{...styles.searchBarTextInput, color: themeValue.mainTextColor}} placeholder='Filter list...'
+                  placeholderTextColor={themeValue.placeholderColor}
+                  onChangeText={this.onSearchChange}
+                />
+              </View>
+            </View>
+          )
+        },
+        headerRight: () => {
+          return (<BarButton onPress={this.onCancelSearch} icon='clear' theme={themeValue} padding={0} />)
+        }
+      })
+    } else {
+      navigation.setOptions({
+        headerRight: () => { 
+          return (
+            <View style={styles.rightEditingHeader}>
+              {canSelectMode ? <BarButton onPress={() => onIconTapped(icon)} icon={icon} theme={themeValue} style={{paddingRight: 12}} /> : null}
+              {canFilter ? <BarButton onPress={this.onSearch} icon='filter-list' theme={themeValue} /> : null}
+            </View>
+          )
+        },
+        headerTitle: null
+      })
+    }
+  }
 }
 
 // Redux setup.
@@ -806,5 +802,9 @@ const styles = StyleSheet.create({
   searchBarHeader: {
     marginHorizontal: 8,
     flex: 1,
+  },
+  rightEditingHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
   },
 })

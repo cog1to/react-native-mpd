@@ -7,10 +7,10 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 
 export default class BarButton extends React.Component {
   render() {
-    const { onPress, theme, icon, padding } = this.props
+    const { onPress, theme, icon, style } = this.props
 
     return (
-      <TouchableOpacity onPress={onPress} style={{ paddingHorizontal: padding }}>
+      <TouchableOpacity onPress={onPress} style={{...style}}>
         <Icon
           name={icon}
           size={24}
