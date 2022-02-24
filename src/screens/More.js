@@ -9,7 +9,6 @@ import {
   Alert,
 } from 'react-native'
 import PropTypes from 'prop-types'
-import { CommonActions } from '@react-navigation/native'
 
 // Actions.
 import { disconnect } from '../redux/reducers/status/actions'

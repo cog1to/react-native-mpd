@@ -5,7 +5,7 @@ import {
   FlatList,
   Text,
 } from 'react-native'
-import { CommonActions } from '@react-navigation/native'
+import { StackActions } from '@react-navigation/native'
 
 // Redux.
 import { connect } from 'react-redux'
@@ -70,13 +70,9 @@ class Artist extends React.Component {
     const { navigation, route } = this.props
     const artistName = route.params.name
 
-    const action = CommonActions.navigate({
-      params: {
-        album: item.name,
-        artist: artistName,
-      },
-      name: 'Album',
-      key: 'Album'
+    const action = StackActions.push('Album', {
+      album: item.name,
+      artist: artistName,
     })
     navigation.dispatch(action)
   }

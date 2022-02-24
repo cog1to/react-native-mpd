@@ -7,7 +7,7 @@ import {
 } from 'react-native'
 
 // Navigation actions.
-import { CommonActions } from '@react-navigation/native'
+import { StackActions } from '@react-navigation/native'
 
 // Browsable common logic.
 import Browsable from '../components/common/Browsable'
@@ -73,13 +73,9 @@ class Browse extends React.Component {
     const newDir = dir.slice()
     newDir.push(item.name)
 
-    const action = CommonActions.navigate({
-      name: 'Browse', 
-      key: 'Browse' + newDir,
-      params: {
-        name: item.name,
-        dir: newDir
-      }
+    const action = StackActions.push('Browse', {
+      name: item.name,
+      dir: newDir
     })
     navigation.dispatch(action)
   }
