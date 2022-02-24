@@ -75,6 +75,7 @@ export default class Highlightable extends React.Component {
       {
          toValue: endValue,
          duration: duration/2,
+         useNativeDriver: false
       }
     ).start(() => this.onAnimationEnded(endValue))
   }
@@ -100,7 +101,8 @@ export default class Highlightable extends React.Component {
         
     const highlightColor = this.animatedValue.interpolate({
       inputRange: [0, 1],
-      outputRange: [foregroundColor, underlayColor]
+      outputRange: [foregroundColor, underlayColor],
+      useNativeDriver: true
     })
 
     const style = {

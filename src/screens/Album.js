@@ -3,7 +3,7 @@ import {
   View,
   StyleSheet,
 } from 'react-native'
-import { NavigationActions } from 'react-navigation'
+import { CommonActions } from '@react-navigation/native'
 
 // Items list.
 import Browsable from '../components/common/Browsable'
@@ -31,13 +31,13 @@ class Album extends React.Component {
 
   reload = () => {
     const { loadSongs, content } = this.props
-    const { artist, album } = this.props.navigation.state.params
+    const { artist, album } = this.props.route.params
     loadSongs(artist, album)
   }
 
   render() {
-    const { navigation, content, loading, queueSize, position, cover, artistCover, theme } = this.props
-    const { artist, album } = navigation.state.params
+    const { navigation, route, content, loading, queueSize, position, cover, artistCover, theme } = this.props
+    const { artist, album } = route.params
     let songs = (content != null) ? content : []
 
     // Check if album has multiple artists. In this case using artist title will be wrong.
@@ -109,7 +109,7 @@ class Album extends React.Component {
 
 const mapStateToProps = (state, ownProps) => {
   const { position = null, file = null } = state.currentSong
-  const { navigation: { state: { params: { artist, album } } } } = ownProps
+  const { route: { params: { artist, album } } } = ownProps
   const { archive, artists } = state
   const theme = state.storage.theme
 

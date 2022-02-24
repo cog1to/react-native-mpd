@@ -7,9 +7,7 @@ import {
   Platform,
   TextInput,
 } from 'react-native'
-import { createAppContainer } from 'react-navigation'
-import { createStackNavigator } from 'react-navigation-stack'
-import { createBottomTabNavigator } from 'react-navigation-tabs'
+
 import FontAwesome, { SolidIcons } from 'react-native-fontawesome'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import FontAwesomeIcon from 'react-native-vector-icons/FontAwesome5'
@@ -31,454 +29,237 @@ import Playlists from './screens/Playlists'
 import Playlist from './screens/Playlist'
 import Outputs from './screens/Outputs'
 
-const iconColor = ThemeManager.instance().getCurrentTheme().navigationBarIconColor
-const textColor = ThemeManager.instance().getCurrentTheme().navigationBarTextColor
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { useTheme } from '@react-navigation/native'
 
 import store from './redux/store'
 
-const iconsFromButtons = (icons, navigation) => {
-  return icons.map((icon) => {
-    return (
-      <TouchableOpacity
-        key={icon}
-        onPress={() => navigation.getParam('onNavigationButtonPressed')(icon)}
-        style={styles.headerButton}>
-        <Icon name={icon}
-          size={24}
-          color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor}
-        />
-      </TouchableOpacity>
-    )
-  })
-}
-const navigationHeader = {
-  headerStyle: {
-    paddingTop: Platform.OS === 'android' ? 24 : 12,
-    height: Platform.OS === 'android' ? 56 + 24 : 44,
-    backgroundColor: '#404550'
-  },
-  headerTitleStyle: {
-    color: '#FFFFFF'
-  },
-  headerTintColor: '#FFFFFF',
-}
+// Icon text.
+const iconColor = ThemeManager.instance().getCurrentTheme().navigationBarIconColor
+const textColor = ThemeManager.instance().getCurrentTheme().navigationBarTextColor
 
-const getTabBarIcon = icon => ({ tintColor }) => {
-  return (<FontAwesomeIcon name={icon} size={20} color={tintColor} solid />)
+// Browse.
+const BrowseStack = createNativeStackNavigator()
+function BrowseNavigator({ navigation, route }) {
+  const { colors } = useTheme()
+
+  return (
+    <BrowseStack.Navigator>
+      <BrowseStack.Screen 
+        name="Browse"
+        key={"Browse-"+route.params?.name ?? ""}
+        component={Browse} 
+        initialParams={{ name: 'Browse', dir: [''], allSelected: false }} 
+        options={({route}) => ({ headerShown: true, headerStyle: { backgroundColor: colors.navbar }, title: route.params.name, headerTintColor: '#fff'})}
+      />
+      <BrowseStack.Screen 
+        name="Playlists" 
+        component={Playlists} 
+        options={{ headerShown: true, title: "", headerStyle: { backgroundColor: colors.navbar }, headerTintColor: '#fff'}}
+      />
+    </BrowseStack.Navigator>
+  )
 }
 
+// Library.
+const LibraryStack = createNativeStackNavigator()
+function LibraryNavigator() {
+  const { colors } = useTheme()
 
-const getMaterialTabBarIcon = icon => ({ tintColor }) => (
-  <Icon name={icon} size={24} color={tintColor} />
-)
-
-const barOptionsFromState = ({ title, navigation, icons = ['playlist-add'], hideTitle = false, regularIcon }) => {
-  let options = {
-    title: hideTitle && navigation.getParam('editing') === true ? null : title,
-    ...navigationHeader
-  }
-
-  const allSelected = navigation.getParam('allSelected')
-  let globalSelectionIcon = allSelected ? 'checkbox-multiple-blank-outline' : 'checkbox-multiple-marked-outline'
-
-  let theme = ThemeManager.instance().getCurrentTheme()
-  options.headerStyle.backgroundColor = theme.navBarColor
-
-  if (navigation.getParam('editing') === true) {
-    options.headerLeft = (
-      <TouchableOpacity
-        onPress={navigation.getParam('onCancelEditing')}
-        style={styles.headerLeftButton}
-      >
-        <Icon
-          name='clear'
-          size={24}
-          color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor}
-        />
-      </TouchableOpacity>
-    )
-
-    let buttons = iconsFromButtons(icons, navigation)
-    options.headerRight = (
-      <View style={styles.rightEditingHeader}>
-        <TouchableOpacity
-          onPress={() => navigation.getParam('onGlobalSelectionToggled')(!allSelected)}
-          style={styles.headerButton}
-        >
-          <MaterialCommunityIcon
-            name={globalSelectionIcon}
-            size={24}
-            color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor}
-          />
-        </TouchableOpacity>
-        {buttons}
-      </View>
-    )
-  } else if (navigation.getParam('searching') === true) {
-    options.headerRight = null
-    options.headerLeft = null
-    options.headerTitle = (
-      <View style={styles.header}>
-        <View style={styles.searchBarHeader}>
-          <View style={{...styles.searchBarBackground, backgroundColor: theme.backgroundColor}} />
-          <TextInput
-            value={navigation.getParam('searchText')}
-            style={{...styles.searchBarTextInput, color: theme.mainTextColor}} placeholder='Filter list...'
-            placeholderTextColor={theme.placeholderColor}
-            onChangeText={navigation.getParam('onSearchChange')}
-          />
-        </View>
-        <TouchableOpacity
-          onPress={navigation.getParam('onCancelSearch')}
-          style={styles.headerButton}
-        >
-          <Icon
-            name='clear'
-            size={24}
-            color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor}
-          />
-        </TouchableOpacity>
-      </View>
-    )
-  } else {
-    if (regularIcon != null) {
-      if (Array.isArray(regularIcon)) {
-        let buttons = iconsFromButtons(regularIcon, navigation) 
-        options.headerRight = (
-          <View style={styles.rightEditingHeader}>
-            {buttons}
-          </View>
-        )
-      } else {
-        options.headerRight = (
-          <View style={styles.rightEditingHeader}>
-            <TouchableOpacity onPress={navigation.getParam('onMenu')} style={styles.headerButton}>
-              <Icon
-                name={regularIcon}
-                size={24}
-                color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor}
-              />
-            </TouchableOpacity>
-          </View>
-        )
-      }
-    }
-  }
-
-  return options
+  return (
+    <LibraryStack.Navigator>
+      <LibraryStack.Screen
+        name="Library"
+        key="Library"
+        component={Library}
+        initialParams={{ mode: store.getState().storage.mode }}
+        options={{ headerShown: true, headerStyle: { backgroundColor: colors.navbar, title: "Library" }, headerTintColor: '#fff'}}
+      />
+      <LibraryStack.Screen
+        name="Artist"
+        key="Artist"
+        component={Artist}
+        initialParams={{ mode: store.getState().storage.mode }}
+        options={({route}) => ({ headerShown: true, headerStyle: { backgroundColor: colors.navbar }, title: route.params.name, headerBackTitleVisible: true, headerTintColor: '#fff' })} 
+      />
+      <LibraryStack.Screen
+        name="Album"
+        key="Album"
+        component={Album}
+        initialParams={{ mode: store.getState().storage.mode }}
+        options={({route}) => ({ headerShown: true, headerStyle: { backgroundColor: colors.navbar }, title: route.params.album, headerTintColor: '#fff' })} 
+      />
+    </LibraryStack.Navigator>
+  )
 }
 
-const BrowseNavigator = createStackNavigator(
-  {
-    Browse: {
-      screen: Browse,
-      params: { name: null, dir: [''], allSelected: false, },
-      navigationOptions: ({ navigation }) => barOptionsFromState({
-        title: navigation.state.params.name == null ? 'Browse' : navigation.state.params.name,
-        navigation: navigation,
-        hideTitle: true,
-        regularIcon: 'filter-list',
-      })
-    },
-    Playlists: {
-      screen: Playlists,
-      params: { callback: null },
-      navigationOptions: ({ navigation }) => barOptionsFromState({
-        title: 'Playlists',
-        navigation: navigation,
-        hideTitle: true,
-        icons: (navigation.state.params.callback != null) ? [] : ['delete'],
-        regularIcon: (navigation.state.params.callback != null) ? 'add' : null,
-      })
-    }
-  },
-  {
-    navigationOptions: {
-      tabBarIcon: getTabBarIcon('folder-open'),
-    },
-    defaultNavigationOptions: navigationHeader,
-  }
-)
+// Queue.
+const QueueStack = createNativeStackNavigator()
+function QueueNavigator() {
+  const { colors } = useTheme()
 
-const QueueNavigator = createStackNavigator(
-  {
-    Queue: {
-      screen: Queue,
-      params: { allSelected: false, },
-      navigationOptions: ({ navigation }) => barOptionsFromState({
-        title: 'Queue',
-        navigation: navigation,
-        icons: ['playlist-add', 'delete'],
-        regularIcon: 'settings',
-      })
-    },
-    QueueSettings: {
-      screen: QueueSettings,
-      navigationOptions: {
-        title: 'Settings',
-      }
-    },
-    Playlists: {
-      screen: Playlists,
-      params: { callback: null },
-      navigationOptions: ({ navigation }) => barOptionsFromState({
-        title: 'Playlists',
-        navigation: navigation,
-        hideTitle: true,
-        icons: (navigation.state.params.callback != null) ? [] : ['add', 'delete'],
-        regularIcon: (navigation.state.params.callback != null) ? 'add' : null,
-      })
-    }
-  },
-  {
-    navigationOptions: {
-      tabBarIcon: getTabBarIcon('list-ul'),
-    },
-    defaultNavigationOptions: navigationHeader,
-  }
-)
-
-const PlayerNavigator = createStackNavigator(
-  {
-    Player: {
-      screen: Player,
-      navigationOptions: ({ navigation }) => ({
-        ...navigationHeader,
-        title: 'Now Playing',
-        headerRight: (
-          <TouchableOpacity onPress={navigation.getParam('onVolumeToggle')} style={styles.headerButton}>
-            <Icon
-              name='volume-down'
-              size={24}
-              color={ThemeManager.instance().getCurrentTheme().navigationBarIconColor}
-            />
-          </TouchableOpacity>
-        ),
-      }),
-    }
-  },
-  {
-    navigationOptions: {
-      tabBarIcon: getTabBarIcon('play-circle'),
-    },
-    defaultNavigationOptions: navigationHeader,
-  }
-)
-
-const searchResultsTitleFromLength = (length) => {
-  let prefix = 'Found ' + length
-
-  if (length == 1) {
-    prefix += ' track'
-  } else {
-    prefix += ' tracks'
-  }
-
-  return prefix
+  return (
+    <QueueStack.Navigator>
+      <QueueStack.Screen
+        name="Queue"
+        key="Queue"
+        component={Queue} 
+        options={{ headerShown: true, headerStyle: { backgroundColor: colors.navbar }, title: "Queue", headerTintColor: '#fff'}}
+      />
+      <QueueStack.Screen
+        name="QueueSettings"
+        key="QueueSettings"
+        component={QueueSettings}
+        options={{ headerShown: true, headerStyle: { backgroundColor: colors.navbar }, title: "Settings", headerTintColor: '#fff'}}
+      />
+      <QueueStack.Screen
+        name="Playlists"
+        key="Playlists"
+        component={Playlists}
+        options={{ headerShown: true, headerStyle: { backgroundColor: colors.navbar }, title: "", headerTintColor: '#fff'}}
+      />
+    </QueueStack.Navigator>
+  )
 }
 
-const MoreNavigator = createStackNavigator(
-  {
-    More: {
-      screen: More,
-      navigationOptions: ({ navigation }) => ({
-        title: 'More',
-      })
-    },
-    Search: {
-      screen: Search,
-      navigationOptions: ({ navigation }) => ({
-        title: 'Search',
-      })
-    },
-    SearchResults: {
-      screen: SearchResults,
-      params: { content: [], allSelected: false, },
-      navigationOptions: ({ navigation }) => barOptionsFromState({
-        title: searchResultsTitleFromLength(navigation.state.params.content.length),
-        navigation: navigation,
-      })
-    },
-    Playlists: {
-      screen: Playlists,
-      params: { callback: null },
-      navigationOptions: ({ navigation }) => barOptionsFromState({
-        title: 'Playlists',
-        navigation: navigation,
-        hideTitle: true,
-        icons: (navigation.state.params.callback != null) ? [] : ['playlist-add', 'delete'],
-        regularIcon: (navigation.state.params.callback != null) ? 'add' : null,
-      })
-    },
-    Playlist: {
-      screen: Playlist,
-      params: { name: null, allSelected: false, },
-      navigationOptions: ({ navigation }) => barOptionsFromState({
-        title: navigation.state.params.name,
-        navigation: navigation,
-        hideTitle: true,
-        regularIcon: null,
-      })
-    },
-    Outputs: {
-      screen: Outputs,
-      navigationOptions: {
-        title: 'Outputs',
-      }
-    }
-  },
-  {
-    navigationOptions: {
-      tabBarIcon: getTabBarIcon('ellipsis-h'),
-    },
-    defaultNavigationOptions: navigationHeader,
-  }
-)
+// More.
+const MoreStack = createNativeStackNavigator()
+function MoreNavigator() {
+  const { colors } = useTheme()
 
-const LibraryNavigator = createStackNavigator(
-  {
-    Library: {
-      screen: Library,
-      navigationOptions: ({ navigation }) => barOptionsFromState({
-        title: 'Library',
-        navigation: navigation,
-        regularIcon: [(navigation.getParam('mode') === 'tiles') ? 'view-list' : 'view-module', 'filter-list'],
-      }),
-      params: { mode: store.getState().storage.mode },
-    },
-    Artist: {
-      screen: Artist,
-      navigationOptions: ({ navigation }) => barOptionsFromState({
-        title: navigation.getParam('name'),
-        navigation: navigation,
-        regularIcon: [(navigation.getParam('mode') === 'tiles') ? 'view-list' : 'view-module', 'filter-list'],
-      }),
-      params: { mode: store.getState().storage.mode },
-    },
-    Album: {
-      screen: Album,
-      navigationOptions: ({ navigation }) => barOptionsFromState({
-        title: null,
-        navigation: navigation,
-        hideTitle: true,
-        regularIcon: 'filter-list',
-      })
-    },
-    Playlists: {
-      screen: Playlists,
-      params: { callback: null },
-      navigationOptions: ({ navigation }) => barOptionsFromState({
-        title: 'Playlists',
-        navigation: navigation,
-        hideTitle: true,
-        icons: (navigation.state.params.callback != null) ? [] : ['add', 'delete'],
-        regularIcon: (navigation.state.params.callback != null) ? 'add' : null,
-      })
-    }
-  },
-  {
-    navigationOptions: {
-      tabBarIcon: getMaterialTabBarIcon('library-music')
-    },
-    defaultNavigationOptions: navigationHeader,
-  }
-)
+  return (
+    <MoreStack.Navigator>
+      <MoreStack.Screen
+        name="More"
+        key="More"
+        component={More}
+        options={{ headerShown: true, headerStyle: { backgroundColor: colors.navbar }, title: "More", headerTintColor: '#fff'}}
+      />
+      <MoreStack.Screen
+        name="Search"
+        key="Search"
+        component={Search}
+        options={{ headerShown: true, headerStyle: { backgroundColor: colors.navbar }, title: "Search", headerTintColor: '#fff'}}
+      />
+      <MoreStack.Screen
+        name="SearchResults"
+        key="SearchResults"
+        component={SearchResults}
+        options={{ headerShown: true, headerStyle: { backgroundColor: colors.navbar }, title: "", headerTintColor: '#fff'}}
+      />
+      <MoreStack.Screen
+        name="Playlists"
+        key="Playlists"
+        component={Playlists}
+        options={{ headerShown: true, headerStyle: { backgroundColor: colors.navbar }, title: "Playlists", headerTintColor: '#fff'}}
+      />
+      <MoreStack.Screen
+        name="Playlist"
+        key="Playlist"
+        component={Playlist}
+        options={{ headerShown: true, headerStyle: { backgroundColor: colors.navbar }, title: "", headerTintColor: '#fff'}}
+      />
+      <MoreStack.Screen
+        name="Outputs"
+        key="Outputs"
+        component={Outputs}
+        options={{ headerShown: true, headerStyle: { backgroundColor: colors.navbar }, title: "Outputs", headerTintColor: '#fff'}}
+      />
+    </MoreStack.Navigator>
+  )
+}
 
-const TabNavigator = createBottomTabNavigator(
-  {
-    Browse: BrowseNavigator,
-    Library: LibraryNavigator,
-    Player: PlayerNavigator,
-    Queue: QueueNavigator,
-    More: MoreNavigator,
-  },
-  {
-    tabBarOptions: {
-      showLabel: false,
-      style: {
-        elevation: 20,
-        backgroundColor: {
-          light: '#F5F5F5',
-          dark: '#171717'
-        },
-      },
-      activeTintColor: {
-        light: '#404550',
-        dark: '#d9e3f0'
-      }
-    }
-  }
-)
+// Player stack
+const PlayerStack = createNativeStackNavigator()
+function PlayerNavigator() {
+  const { colors } = useTheme()
 
-const AppNavigator = createStackNavigator({
-  Login: {
-    screen: Login,
-    navigationOptions: {
-      header: null,
-      gesturesEnabled: false,
-    }
-  },
-  Home: {
-    screen: TabNavigator,
-    navigationOptions: {
-      header: null,
-      gesturesEnabled: false
-    }
-  }
-})
+  return (
+    <PlayerStack.Navigator>
+      <PlayerStack.Screen
+        name="Player"
+        key="Player"
+        component={Player}
+        options={{ headerShown: true, headerStyle: { backgroundColor: colors.navbar }, title: "Player", headerTintColor: '#fff'}}
+      />
+    </PlayerStack.Navigator>
+  )
+}
 
-export default createAppContainer(AppNavigator)
+// Tabs.
+const Tab = createBottomTabNavigator();
 
-const styles = StyleSheet.create({
-  headerButton: {
-    height: '100%',
-    aspectRatio: Platform.OS === 'android' ? 0.7 : 1.0,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerLeftButton: {
-    flexDirection: 'row',
-    height: '100%',
-    aspectRatio: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  headerText: {
-    color: 'black',
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  rightEditingHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginRight: 10,
-  },
-  headerTextButton: {
-    color: ThemeManager.instance().getCurrentTheme().navigationBarTextColor,
-    fontWeight: 'bold',
-    fontSize: 18,
-  },
-  searchBarBackground: {
-    position: 'absolute',
-    top: Platform.OS === 'android' ? 12 : 6,
-    bottom: Platform.OS === 'android' ? 12 : 6,
-    backgroundColor: 'white',
-    left: Platform.OS === 'android' ? 0 : 4,
-    right: Platform.OS === 'android' ? 0 : 4,
-    borderRadius: 8,
-  },
-  searchBarTextInput: {
-    flex: 1,
-    marginHorizontal: Platform.OS === 'android' ? 4 : 12,
-  },
-  searchBarHeader: {
-    marginHorizontal: 8,
-    flex: 1,
-  },
-  header: {
-    flex: 1,
-    flexDirection: 'row',
-    marginHorizontal: 10,
-    alignItems: 'center',
-  },
-})
+function TabsNavigator() {
+  const { colors } = useTheme()
+
+  return (
+    <Tab.Navigator 
+      screenOptions={({route}) => ({
+        tabBarStyle: { backgroundColor: {light: "#F5F5F5", dark: "#171717"} },
+        tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
+
+            let iconColor = focused ? color : ThemeManager.instance().getCurrentTheme().accentBackgroundColor
+
+            if (route.name === 'TabBrowse') {
+              iconName = 'folder-open'
+            } else if (route.name === 'TabLibrary') {
+              iconName = 'library-music'
+              return <Icon name={iconName} size={24} color={iconColor} />
+            } else if (route.name === 'TabPlayer') {
+              iconName = 'play-circle'
+            } else if (route.name === "TabQueue") {
+              iconName = 'list-ul'
+            } else if (route.name === "TabMore") {
+              iconName = 'ellipsis-h'
+            }
+
+            return <FontAwesomeIcon name={iconName} size={20} color={iconColor} solid />
+          }
+      })}
+    >
+      <Tab.Screen 
+        name="TabBrowse" 
+        component={BrowseNavigator} 
+        options={{ headerShown: false, tabBarShowLabel: false }} 
+      />
+      <Tab.Screen 
+        name="TabLibrary" 
+        component={LibraryNavigator}
+        options={{ headerShown: false, tabBarShowLabel: false }}
+      />
+      <Tab.Screen 
+        name="TabPlayer" 
+        component={PlayerNavigator} 
+        options={({ route, navigation }) => ({ 
+          headerShown: false, 
+          tabBarShowLabel: false
+        })} 
+      />
+      <Tab.Screen
+        name="TabQueue"
+        component={QueueNavigator}
+        options={{ headerShown: false, tabBarShowLabel: false }}
+      />
+      <Tab.Screen
+        name="TabMore"
+        component={MoreNavigator}
+        options={{ headerShown: false, tabBarShowLabel: false }}
+      />
+    </Tab.Navigator>
+  );
+}
+
+// Login stack.
+const Stack = createNativeStackNavigator();
+function createMainStack() {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
+      <Stack.Screen name="Home" component={TabsNavigator} options={{ headerShown: false }}/>
+    </Stack.Navigator>
+  );
+}
+
+export default createMainStack()

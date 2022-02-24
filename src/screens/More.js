@@ -9,7 +9,7 @@ import {
   Alert,
 } from 'react-native'
 import PropTypes from 'prop-types'
-import { NavigationActions } from 'react-navigation'
+import { CommonActions } from '@react-navigation/native'
 
 // Actions.
 import { disconnect } from '../redux/reducers/status/actions'
@@ -80,10 +80,7 @@ class More extends React.Component {
   navigate = (route) => {
     const { navigation } = this.props
 
-    const action = NavigationActions.navigate({
-      routeName: route,
-    })
-    navigation.dispatch(action)
+    navigation.navigate(route)
   }
 
   handleLogout = () => {

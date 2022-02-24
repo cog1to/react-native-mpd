@@ -9,7 +9,7 @@ import {
   Text
 } from 'react-native'
 import PropTypes from 'prop-types'
-import { NavigationActions } from 'react-navigation'
+import { CommonActions } from '@react-navigation/native'
 
 // Device info.
 import DeviceInfo from 'react-native-device-info'
@@ -112,6 +112,7 @@ class KeyboardAwareSearchForm extends React.Component {
   }
 }
 
+
 class Search extends React.Component {
   state = {
     dirty: false,
@@ -125,11 +126,11 @@ class Search extends React.Component {
       item.status = 'none'
     })
 
-    const action = NavigationActions.navigate({
+    const action = CommonActions.navigate({
       params: {
         content: content,
       },
-      routeName: 'SearchResults',
+      name: 'SearchResults',
     })
     navigation.dispatch(action)
   }
@@ -186,7 +187,7 @@ class Search extends React.Component {
     const textColor = themeValue.mainTextColor
 
     return (
-      <SafeAreaView style={{...styles.container, backgroundColor: backgroundColor}}>
+      <View style={{...styles.container, backgroundColor: backgroundColor}}>
         <KeyboardState>
           {keyboardInfo => (
             <KeyboardAwareSearchForm {...keyboardInfo}>
@@ -213,7 +214,7 @@ class Search extends React.Component {
             </KeyboardAwareSearchForm>
           )}
         </KeyboardState>
-      </SafeAreaView>
+      </View>
     )
   }
 }

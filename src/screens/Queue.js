@@ -4,8 +4,9 @@ import {
   StyleSheet,
 } from 'react-native'
 
-// Queue List component.
+// Components.
 import Browsable, { OPTIONS } from '../components/common/Browsable'
+import BarButton from '../components/common/BarButton'
 
 // Redux.
 import { connect } from 'react-redux'
@@ -13,6 +14,9 @@ import { connect } from 'react-redux'
 // Actions.
 import { setCurrentSong, deleteSongs, clear, moveSong }  from '../redux/reducers/queue/actions'
 import { playPause } from '../redux/reducers/player/actions'
+
+// Theme.
+import ThemeManager from '../themes/ThemeManager'
 
 const compareLists = (left, right) => {
   if (left.length != right.length) {
@@ -39,7 +43,14 @@ class Queue extends React.Component {
   }
 
   componentDidMount() {
-    this.props.navigation.setParams({ onMenu: this.handleMenuPress })
+    const { navigation, theme } = this.props
+    const themeValue = ThemeManager.instance().getTheme(theme)
+
+    navigation.setOptions({
+      headerRight: () => {
+        return (<BarButton onPress={this.handleMenuPress} icon='settings' theme={themeValue} />)
+      }
+    })
   }
 
   static getDerivedStateFromProps(props, state) {

@@ -5,7 +5,7 @@ import {
   FlatList,
   Text,
 } from 'react-native'
-import { NavigationActions } from 'react-navigation'
+import { CommonActions } from '@react-navigation/native'
 
 // Redux.
 import { connect } from 'react-redux'
@@ -64,11 +64,12 @@ class Library extends React.Component {
   onNavigate = (item) => {
     const { navigation } = this.props
 
-    const action = NavigationActions.navigate({
+    const action = CommonActions.navigate({
       params: {
         name: item.name,
       },
-      routeName: 'Artist',
+      name: 'Artist',
+      key: 'Artist-'+item.name
     })
     navigation.dispatch(action)
   }

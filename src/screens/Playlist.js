@@ -28,8 +28,8 @@ class Playlist extends React.Component {
   }
 
   reload = () => {
-    const { navigation, getPlaylist } = this.props
-    const { state: { params: { name } } } = navigation
+    const { navigation, route, getPlaylist } = this.props
+    const { params: { name } } = route
     getPlaylist(name)
   }
 
@@ -74,7 +74,7 @@ class Playlist extends React.Component {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const { navigation: { state: { params: { name = null } } } } = ownProps
+  const { route: { params: { name = null } } } = ownProps
   const playlist = state.playlists.playlists.find(item => { return item.name == name })
   const { position = null, file = null } = state.currentSong
 

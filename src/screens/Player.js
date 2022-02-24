@@ -8,8 +8,12 @@ import {
   UIManager,
   Animated,
   Platform,
+  TouchableOpacity
 } from 'react-native'
 import _ from 'lodash'
+
+// Icons.
+import Icon from 'react-native-vector-icons/MaterialIcons'
 
 // Redux.
 import { connect } from 'react-redux'
@@ -20,6 +24,7 @@ import Controls from '../components/Controls'
 import AlbumArt from '../components/AlbumArt'
 import CurrentSong from '../components/CurrentSong'
 import VolumeControl, { VolumeBarHeight } from '../components/VolumeControl'
+import BarButton from '../components/common/BarButton'
 
 // Player actions.
 import { setVolume } from '../redux/reducers/player/actions'
@@ -50,10 +55,13 @@ class Player extends React.Component {
   }
 
   componentDidMount() {
-    const { navigation } = this.props
+    const { navigation, theme } = this.props
+    const themeValue = ThemeManager.instance().getTheme(theme)
 
-    navigation.setParams({
-      onVolumeToggle: this.onVolumeToggle,
+    navigation.setOptions({
+      headerRight: () => {
+        return (<BarButton onPress={this.onVolumeToggle} icon='volume-down' theme={themeValue} padding={0} />)
+      }
     })
   }
 

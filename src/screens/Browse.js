@@ -7,7 +7,7 @@ import {
 } from 'react-native'
 
 // Navigation actions.
-import { NavigationActions } from 'react-navigation'
+import { CommonActions } from '@react-navigation/native'
 
 // Browsable common logic.
 import Browsable from '../components/common/Browsable'
@@ -30,8 +30,8 @@ class Browse extends React.Component {
   }
 
   reload = () => {
-    const { navigation, loadCurrentDir } = this.props
-    const { state: { params: { dir } } } = navigation
+    const { navigation, loadCurrentDir, route } = this.props
+    const { params: { dir } } = route
     loadCurrentDir(dir, true)
   }
 
@@ -66,19 +66,19 @@ class Browse extends React.Component {
   }
 
   onNavigate = (item) => {
-    const { navigation } = this.props
-    const { state: { params: { dir } } } = navigation
+    const { navigation, route } = this.props
+    const { params: { dir } } = route
 
     const newDir = dir.slice()
     newDir.push(item.name)
 
-    const action = NavigationActions.navigate({
+    const action = CommonActions.navigate({
+      name: 'Browse', 
+      key: 'Browse' + newDir,
       params: {
         name: item.name,
-        dir: newDir,
-      },
-      routeName: 'Browse',
-      key: 'Browse' + newDir,
+        dir: newDir
+      }
     })
     navigation.dispatch(action)
   }
@@ -99,7 +99,7 @@ const nodeFromPath = (path, tree) => {
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const { navigation: { state: { params: { dir = [''] } } } } = ownProps
+  const { route: { params: { dir = [''] } } } = ownProps
   const { tree, refreshing } = state.browser
   const { position = null, file = null } = state.currentSong
   let theme = state.storage.theme

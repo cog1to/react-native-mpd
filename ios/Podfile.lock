@@ -317,6 +317,9 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
+  - RNScreens (3.12.0):
+    - React-Core
+    - React-RCTImage
   - RNVectorIcons (6.6.0):
     - React
   - TcpSockets (3.3.2):
@@ -363,6 +366,7 @@ DEPENDENCIES:
   - RNDeviceInfo (from `../node_modules/react-native-device-info`)
   - RNGestureHandler (from `../node_modules/react-native-gesture-handler`)
   - RNReanimated (from `../node_modules/react-native-reanimated`)
+  - RNScreens (from `../node_modules/react-native-screens`)
   - RNVectorIcons (from `../node_modules/react-native-vector-icons`)
   - TcpSockets (from `../node_modules/react-native-tcp`)
   - Yoga (from `../node_modules/react-native/ReactCommon/yoga`)
@@ -446,6 +450,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-gesture-handler"
   RNReanimated:
     :path: "../node_modules/react-native-reanimated"
+  RNScreens:
+    :path: "../node_modules/react-native-screens"
   RNVectorIcons:
     :path: "../node_modules/react-native-vector-icons"
   TcpSockets:
@@ -492,6 +498,7 @@ SPEC CHECKSUMS:
   RNDeviceInfo: 67607dfe9cfbed105838144c40187a8392aa404d
   RNGestureHandler: 7add966bb5d90ee8cf38d4341f87814474357972
   RNReanimated: b04ef2a4f0cb61b062bbcf033f84a9e470f4f60b
+  RNScreens: 2559f98b0835103cbef3b26ba77fa61d4bb37ae7
   RNVectorIcons: 0bb4def82230be1333ddaeee9fcba45f0b288ed4
   TcpSockets: 8d839b9b14f6f344d98e4642ded13ab3112b462d
   Yoga: c11abbf5809216c91fcd62f5571078b83d9b6720

@@ -14,7 +14,7 @@ import {
 import DeviceInfo from 'react-native-device-info'
 
 // Navigation.
-import { NavigationActions, StackActions } from 'react-navigation'
+import { CommonActions, StackActions } from '@react-navigation/native'
 
 // Prop Types.
 import PropTypes from 'prop-types'
@@ -663,12 +663,12 @@ class Browsable extends React.Component {
   navigateToPlaylists = (paths) => {
     const { addToPlaylist, navigation } = this.props
 
-    const action = NavigationActions.navigate({
+    const action = CommonActions.navigate({
+      name: 'Playlists',
+      key: 'selectPlaylist',
       params: {
         callback: (name) => this.addToPlaylist(name, paths)
-      },
-      routeName: 'Playlists',
-      key: 'selectPlaylist',
+      }
     })
     navigation.dispatch(action)
   }
@@ -677,7 +677,7 @@ class Browsable extends React.Component {
     const { navigation, addToPlaylist } = this.props
 
     // Pop the stack.
-    const popAction = StackActions.pop({ n: 1 })
+    const popAction = StackActions.pop(1)
     navigation.dispatch(popAction)
 
     // Close the menu.
@@ -687,7 +687,7 @@ class Browsable extends React.Component {
       showingMenu: false,
       selected: [],
     })
-    this.props.navigation.setParams({ editing: false })
+    //this.props.navigation.setParams({ editing: false })
 
     // Perform an action.
     addToPlaylist(name, paths)

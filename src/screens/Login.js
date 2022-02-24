@@ -117,21 +117,24 @@ class Login extends React.Component {
           source={require('../../assets/images/yamp_big_logo.png')}
           style={{resizeMode: 'contain', width: imageHeight, height: imageHeight, opacity }} />
         <Input
-          style={{...styles.input, color: themeValue.activeColor}}
+          style={{...styles.input}}
+          textColor={themeValue.activeColor}
           placeholderColor={placeholderTextColor}
           placeholder='Host'
           onChangeText={this.handleHostChange}
           selectionColor='#ffffff'
           value={host} />
         <Input
-          style={{...styles.input, color: themeValue.activeColor}}
+          style={{...styles.input}}
+          textColor={themeValue.activeColor}
           placeholderColor={placeholderTextColor}
           selectionColor='#ffffff'
           placeholder='Port'
           onChangeText={this.handlePortChange}
           value={port} />
         <Input
-          style={{...styles.input, color: themeValue.activeColor}}
+          style={{...styles.input}}
+          textColor={themeValue.activeColor}
           placeholderColor={placeholderTextColor}
           placeholder='Password (optional)'
           selectionColor='#ffffff'
