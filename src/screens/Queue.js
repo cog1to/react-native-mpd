@@ -42,17 +42,6 @@ class Queue extends React.Component {
     navigation.navigate('QueueSettings')
   }
 
-  componentDidMount() {
-    const { navigation, theme } = this.props
-    const themeValue = ThemeManager.instance().getTheme(theme)
-
-    navigation.setOptions({
-      headerRight: () => {
-        return (<BarButton onPress={this.handleMenuPress} icon='settings' theme={themeValue} />)
-      }
-    })
-  }
-
   static getDerivedStateFromProps(props, state) {
     if (state.tempData != null && compareLists(state.tempData, props.content)) {
       return {
@@ -86,6 +75,8 @@ class Queue extends React.Component {
           addOptions={options}
           onSelection={this.handleItemSelected}
           theme={theme}
+          defaultIcon='settings'
+          onIconTapped={this.handleMenuPress}
         />
       </View>
     )

@@ -728,16 +728,17 @@ class Browsable extends React.Component {
   }
 
   updateNavigationBar = (searchEnabled) => {
-    const { theme, canFilter, navigation, canSelectMode, mode, onIconTapped } = this.props
+    const { theme, canFilter, navigation, canSelectMode, mode, onIconTapped, defaultIcon } = this.props
     const themeValue = ThemeManager.instance().getTheme(theme)
     const icon = mode == 'list' ? 'view-module' : 'view-list'
+    const width = '85%' //dir.length == 0 ? '85%' : '60%'
 
     if (searchEnabled == true) {
       navigation.setOptions({
         headerTitle: () => {
           return (
             <View style={styles.searchBarHeader}>
-              <View style={{...styles.searchBarBackground, backgroundColor: themeValue.backgroundColor}}>
+              <View style={{...styles.searchBarBackground, backgroundColor: themeValue.backgroundColor, width: width}}>
                 <TextInput
                   value={navigation.params?.searchText}
                   style={{...styles.searchBarTextInput, color: themeValue.mainTextColor}} placeholder='Filter list...'
@@ -750,19 +751,22 @@ class Browsable extends React.Component {
         },
         headerRight: () => {
           return (<BarButton onPress={this.onCancelSearch} icon='clear' theme={themeValue} padding={0} />)
-        }
+        },
+        headerBackVisible: false,
       })
     } else {
       navigation.setOptions({
         headerRight: () => { 
           return (
             <View style={styles.rightEditingHeader}>
+              {defaultIcon != null ? <BarButton onPress={() => onIconTapped(icon)} icon={defaultIcon} theme={themeValue} /> : null}
               {canSelectMode ? <BarButton onPress={() => onIconTapped(icon)} icon={icon} theme={themeValue} style={{paddingRight: 12}} /> : null}
               {canFilter ? <BarButton onPress={this.onSearch} icon='filter-list' theme={themeValue} /> : null}
             </View>
           )
         },
-        headerTitle: null
+        headerTitle: null,
+        headerBackVisible: true,
       })
     }
   }
@@ -792,8 +796,7 @@ const styles = StyleSheet.create({
     left: Platform.OS === 'android' ? 0 : 4,
     right: Platform.OS === 'android' ? 0 : 4,
     borderRadius: 8,
-    height: 30,
-    width: '85%'
+    height: 30
   },
   searchBarTextInput: {
     flex: 1,
