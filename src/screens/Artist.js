@@ -59,6 +59,7 @@ class Artist extends React.Component {
           onIconTapped={this.onModeSelected}
           mode={mode}
           theme={theme}
+          canFilter={true}
         />
       </View>
    )

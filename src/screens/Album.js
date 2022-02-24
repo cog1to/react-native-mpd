@@ -101,6 +101,7 @@ class Album extends React.Component {
           position={position}
           queueSize={queueSize}
           theme={theme}
+          canFilter={true}
         />
       </View>
     )
