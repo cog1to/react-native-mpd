@@ -31,6 +31,7 @@ import AppDialog from './AppDialog'
 
 // Bar button
 import BarButton from './BarButton'
+import MaterialBarButton from './MaterialBarButton'
 
 // Redux.
 import { connect } from 'react-redux'
@@ -163,6 +164,7 @@ class Browsable extends React.Component {
     canAdd: PropTypes.bool.isRequired,
     canEdit: PropTypes.bool.isRequired,
     canDelete: PropTypes.bool.isRequired,
+    canSwipeDelete: PropTypes.bool.isRequired,
     canRearrange: PropTypes.bool.isRequired,
     canFilter: PropTypes.bool.isRequired,
     canSelectMode: PropTypes.bool.isRequired,
@@ -200,6 +202,7 @@ class Browsable extends React.Component {
     canAdd: true,
     canEdit: true,
     canDelete: false,
+    canSwipeDelete: false,
     canRearrange: false,
     canFilter: false,
     canSelectMode: false,
@@ -244,6 +247,7 @@ class Browsable extends React.Component {
       position,
       canEdit,
       canDelete,
+      canSwipeDelete,
       canRearrange,
       deletePrompt,
       mode,
@@ -323,7 +327,7 @@ class Browsable extends React.Component {
                 onRefresh={onRefresh}
 
                 canAdd={canAdd}
-                canDelete={canDelete}
+                canDelete={canSwipeDelete}
                 canRearrange={canRearrange}
                 canEdit={canEdit}
 
@@ -425,11 +429,7 @@ class Browsable extends React.Component {
       selected: newSelected,
     })
 
-    // Update navigation bar state.
-    navigation.setParams({
-      editing: true,
-      allSelected: newSelected.length === content.length
-    })
+    
   }
 
   handleMenuTapped = (item) => {
@@ -590,19 +590,11 @@ class Browsable extends React.Component {
 
       this.setState({
         selected: items,
-      })
-
-      // Update navigation bar state.
-      navigation.setParams({
         allSelected: true,
       })
     } else {
       this.setState({
         selected: [],
-      })
-
-      // Update navigation bar state.
-      navigation.setParams({
         allSelected: false,
       })
     }
@@ -691,7 +683,6 @@ class Browsable extends React.Component {
       showingMenu: false,
       selected: [],
     })
-    //this.props.navigation.setParams({ editing: false })
 
     // Perform an action.
     addToPlaylist(name, paths)
@@ -728,12 +719,35 @@ class Browsable extends React.Component {
   }
 
   updateNavigationBar = (searchEnabled) => {
-    const { theme, canFilter, navigation, canSelectMode, mode, onIconTapped, defaultIcon } = this.props
+    const { theme, canFilter, navigation, canSelectMode, mode, onIconTapped, defaultIcon, canDelete, addOptions } = this.props
+    const { editing, allSelected } = this.state
     const themeValue = ThemeManager.instance().getTheme(theme)
     const icon = mode == 'list' ? 'view-module' : 'view-list'
-    const width = '85%' //dir.length == 0 ? '85%' : '60%'
+    const width = '85%'
 
-    if (searchEnabled == true) {
+    if (editing == true) {
+      let selectionIcon = (allSelected == true) ? 'checkbox-multiple-blank-outline' : 'checkbox-multiple-marked-outline'
+
+      navigation.setOptions({
+        headerTitle: null,
+        headerRight: () => { 
+          return (
+            <View style={styles.rightEditingHeader}>
+              <MaterialBarButton onPress={() => this.onGlobalSelectionToggled(!allSelected)} icon={selectionIcon} theme={themeValue} style={{paddingLeft: 12}} />
+              {addOptions.length != 0 ? <BarButton onPress={() => this.onNavigationButtonPressed('playlist-add')} icon='playlist-add' theme={themeValue} style={{paddingLeft: 12}} /> : null}
+              {canDelete ? <BarButton onPress={this.onHandleDelete} icon='delete' theme={themeValue} style={{paddingLeft: 12}} /> : null}
+              
+            </View>
+          )
+        },
+        headerLeft: () => { 
+          return (
+            <BarButton onPress={this.onCancelEditing} icon='clear' theme={themeValue} />
+          )
+        },
+        headerBackVisible: false,
+      })
+    } else if (searchEnabled == true) {
       navigation.setOptions({
         headerTitle: () => {
           return (
@@ -759,13 +773,14 @@ class Browsable extends React.Component {
         headerRight: () => { 
           return (
             <View style={styles.rightEditingHeader}>
-              {defaultIcon != null ? <BarButton onPress={() => onIconTapped(icon)} icon={defaultIcon} theme={themeValue} /> : null}
-              {canSelectMode ? <BarButton onPress={() => onIconTapped(icon)} icon={icon} theme={themeValue} style={{paddingRight: 12}} /> : null}
-              {canFilter ? <BarButton onPress={this.onSearch} icon='filter-list' theme={themeValue} /> : null}
+              {defaultIcon != null ? <BarButton onPress={() => onIconTapped(icon)} icon={defaultIcon} theme={themeValue} style={{paddingLeft: 12}} /> : null}
+              {canSelectMode ? <BarButton onPress={() => onIconTapped(icon)} icon={icon} theme={themeValue} style={{paddingLeft: 12}} /> : null}
+              {canFilter ? <BarButton onPress={this.onSearch} icon='filter-list' theme={themeValue} style={{paddingLeft: 12}} /> : null}
             </View>
           )
         },
         headerTitle: null,
+        headerLeft: null,
         headerBackVisible: true,
       })
     }

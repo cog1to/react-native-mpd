@@ -55,7 +55,6 @@ class Playlists extends React.Component {
   }
 
   componentDidMount() {
-    this.props.navigation.dispatch(CommonActions.setParams({ onMenu: this.handleMenuPress }))
     Moment.locale('en')
     this.reload()
   }
@@ -84,7 +83,7 @@ class Playlists extends React.Component {
 
   render() {
     const { content, navigation, refreshing, queueSize, theme, route } = this.props
-    const { showingNewDialog, showingDeleteDialog } = this.state
+    const { showingNewDialog } = this.state
 
     const callback = route.params?.callback ?? null
     const canAddItems = callback == null
@@ -103,10 +102,13 @@ class Playlists extends React.Component {
           queueSize={queueSize}
           canAdd={canAddItems}
           canEdit={canAddItems}
-          canDelete={false}
+          canDelete={true}
+          canSwipeDelete={false}
           navigation={navigation}
           onDeleteItems={this.handleDelete}
           deletePrompt={{single: 'Delete selected playlist?', multiple: 'Delete %% selected playlists?'}}
+          defaultIcon={callback != null ? 'add' : null}
+          onIconTapped={this.handleMenuPress}
           theme={theme}
         />
         {showingNewDialog && (

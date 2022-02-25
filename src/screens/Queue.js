@@ -67,6 +67,7 @@ class Queue extends React.Component {
           navigation={navigation}
           canEdit={true}
           canDelete={true}
+          canSwipeDelete={true}
           canRearrange={true}
           queueSize={queueSize}
           onItemMoved={this.handleItemMove}
