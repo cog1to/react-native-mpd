@@ -75,9 +75,6 @@ class Library extends React.Component {
   onModeSelected = (icon) => {
     let switchMode = (mode) => {
       this.props.saveLibraryMode(mode)
-      this.props.navigation.setParams({
-        mode: mode
-      })
     }
 
     if (icon === 'view-list') {

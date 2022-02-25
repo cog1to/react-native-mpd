@@ -85,13 +85,16 @@ class Queue extends React.Component {
 
   // Events.
 
-  handleItemMove = ({ data, row, to }) => {
+  handleItemMove = ({ data, from, to }) => {
+    const oldData = this.state.tempData != null ? this.state.tempData : this.props.content
+    let oldId = oldData[from].id
+
     this.setState({
       tempData: data,
     })
 
     const { moveSong } = this.props
-    moveSong(row.id, to)
+    moveSong(oldId, to)
   }
 
   handleItemsDelete = (items) => {

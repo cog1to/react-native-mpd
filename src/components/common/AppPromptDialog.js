@@ -125,19 +125,24 @@ class AppPromptDialog extends React.Component {
                     </View>
                   )}
                   {Platform.OS === 'android' && (
-                    <View style={styles.buttonsContainerAndroid}>
+                    <View style={{...styles.buttonsContainerAndroid, backgroundColor: activeColor}}>
                       {cancelButton && (
                         <TouchableOpacity
-                          onPress={this.handleCancelPress}>
+                          activeOpacity={0.5}
+                          onPress={this.handleCancelPress}
+                          style={{backgroundColor: backgroundColor}}
+                        >
                           <Text style={{...styles.buttonText, color: buttonTextColor}}>
                             {cancelButton.title.toUpperCase()}
                           </Text>
                         </TouchableOpacity>
                       )}
                       <TouchableOpacity
+                        activeOpacity={0.5}
                         onPress={this.handleConfirmPress}
                         disabled={!canConfirm}
-                        style={{opacity: canConfirm ? 1 : 0.5}}>
+                        style={{backgroundColor: (canConfirm ? backgroundColor : disabledColor)}}
+                      >
                         <Text style={{...styles.buttonTextLast, color: buttonTextColor}}>
                           {confirmButton.title.toUpperCase()}
                         </Text>

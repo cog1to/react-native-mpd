@@ -382,10 +382,6 @@ class Browsable extends React.Component {
           // First update own state.
           this.setState({
             selected: newSelected,
-          })
-
-          // Update navigation bar state.
-          navigation.setParams({
             allSelected: newSelected.length === content.length
           })
         }
@@ -395,10 +391,6 @@ class Browsable extends React.Component {
         // First update own state.
         this.setState({
           selected: newSelected,
-        })
-
-        // Update navigation bar state.
-        navigation.setParams({
           allSelected: newSelected.length === content.length
         })
       }
@@ -491,7 +483,6 @@ class Browsable extends React.Component {
       showingMenu: false,
       selected: [],
     })
-    this.props.navigation.setParams({ editing: false })
   }
 
   handleBackPress = () => {
@@ -526,8 +517,6 @@ class Browsable extends React.Component {
   onCancelEditing = () => {
     const { navigation } = this.props
     const { selected, search } = this.state
-
-    navigation.setParams({ editing: false, searchText: search })
 
     LayoutAnimation.configureNext(MainLayoutAnimation)
     this.setState({
@@ -638,10 +627,6 @@ class Browsable extends React.Component {
       editing: false,
       selected: [],
       showingDeleteDialog: false,
-    })
-
-    navigation.setParams({
-      editing: false
     })
 
     // Call the delete callback.

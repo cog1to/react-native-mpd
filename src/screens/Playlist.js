@@ -61,13 +61,13 @@ class Playlist extends React.Component {
   
   handleItemMove = (data) => {
     const { from, to } = data
-    const { playlistMove, navigation: { state: { params: { name } } } } = this.props
+    const { playlistMove, route: { params: { name } } } = this.props
 
     playlistMove(name, from, to)
   }
 
   handleItemsDelete = (items) => {
-    const { playlistDelete, navigation: { state: { params: { name } } } } = this.props
+    const { playlistDelete, route: { params: { name } } } = this.props
 
     playlistDelete(name, items.map(item => { return item.index }))
   }
