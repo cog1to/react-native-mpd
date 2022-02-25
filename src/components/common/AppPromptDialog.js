@@ -74,6 +74,8 @@ class AppPromptDialog extends React.Component {
     const mainTextColor = theme.mainTextColor
     const buttonTextColor = theme.searchButtonColor
     const separator = theme.dialogSeparatorColor
+    const disabledColor = theme.disabledColor
+    const activeColor = theme.accentColor
 
     const canConfirm = name.length > 0 && knownItems.find((item) => { return item == name }) == undefined
 
@@ -95,25 +97,28 @@ class AppPromptDialog extends React.Component {
                     placeholder={placeholder}
                     onChangeText={this.onChangeText}
                     value={name}
+                    textColor={mainTextColor}
                     marginHorizontal={25}
                     marginBottom={20}
                   />
                   {Platform.OS === 'ios' && (
-                    <View style={{...styles.buttonsContainerIOS, borderTopColor: separator}}>
+                    <View style={{...styles.buttonsContainerIOS, borderTopColor: separator, backgroundColor: activeColor}}>
                       {cancelButton && (
                         <TouchableOpacity
+                          activeOpacity={0.5}
                           onPress={this.handleCancelPress}
-                          style={{...styles.cancelButton, borderRightColor: separator}}>
-                          <Text style={{...styles.buttonTextIOSCancel, color: buttonTextColor}}>
+                          style={{...styles.cancelButton, borderRightColor: separator, backgroundColor: backgroundColor}}>
+                          <Text style={{...styles.buttonTextIOSCancel, color: mainTextColor}}>
                             {cancelButton.title}
                           </Text>
                         </TouchableOpacity>
                       )}
                       <TouchableOpacity
                         disabled={!canConfirm}
+                        activeOpacity={0.5}
                         onPress={this.handleConfirmPress}
-                        style={{...styles.confirmButton, opacity: canConfirm ? 1 : 0.5}}>
-                        <Text style={{...styles.buttonTextIOS, color: buttonTextColor}}>
+                        style={{...styles.confirmButton, backgroundColor: (canConfirm ? backgroundColor : disabledColor)}}>
+                        <Text style={{...styles.buttonTextIOSCancel, color: (canConfirm ? mainTextColor: buttonTextColor)}}>
                           {confirmButton.title}
                         </Text>
                       </TouchableOpacity>
@@ -172,6 +177,7 @@ const styles = StyleSheet.create({
     margin: 20,
     minWidth: 300,
     borderRadius: Platform.OS === 'ios' ? 12 : 0,
+    overflow: 'hidden'
   },
   promptText: {
     margin: 25,

@@ -659,12 +659,8 @@ class Browsable extends React.Component {
   navigateToPlaylists = (paths) => {
     const { addToPlaylist, navigation } = this.props
 
-    const action = CommonActions.navigate({
-      name: 'Playlists',
-      key: 'selectPlaylist',
-      params: {
-        callback: (name) => this.addToPlaylist(name, paths)
-      }
+    const action = StackActions.push('Playlists', {
+      callback: (name) => this.addToPlaylist(name, paths)
     })
     navigation.dispatch(action)
   }
