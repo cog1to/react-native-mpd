@@ -46,6 +46,9 @@ import KeyboardState from './KeyboardState'
 // Themes.
 import ThemeManager from '../../themes/ThemeManager'
 
+// Safe area view.
+import { SafeAreaView } from 'react-native-safe-area-context'
+
 // Lodash for debounce method.
 import _ from 'lodash'
 
@@ -135,7 +138,7 @@ class KeyboardAwareBrowsable extends React.Component {
 
     const containerStyle = (layout != null)
       ? (Platform.OS === 'ios'
-        ? { height: keyboardVisible ? (screenY - layout.y - (hasSafeArea ? 88 : 64)) : layout.height, width: '100%' }
+        ? { height: keyboardVisible ? (screenY - layout.y - (hasSafeArea ? 88 : 64)) : '100%', width: '100%' }
         : { height: keyboardVisible ? (screenY - layout.y - 80) : layout.height, width: '100%' })
       : { height: '100%', width: '100%' }
 
@@ -315,53 +318,68 @@ class Browsable extends React.Component {
       }
     }
 
+    let hasSafeArea = function() {
+      let device = DeviceInfo.getDeviceId()
+      if (device.startsWith("iPhone")) {
+        let model = parseInt(device.split(',')[0].substring("iPhone".length))
+        if (model >= 11) {
+          return true
+        }
+      }
+      return false
+    }()
+
+    const safeAreaEdges = ['right', 'left']
+
     return (
-      <KeyboardState>
-        {keyboardInfo => (
-          <KeyboardAwareBrowsable {...keyboardInfo}>
-            <View style={{flex: 1, backgroundColor: themeValue.backgroundColor}}>
-              <UniversalList
-                content={items}
-                editing={editing}
-                refreshing={refreshing}
-                onRefresh={onRefresh}
+      <SafeAreaView edges={safeAreaEdges}>
+        <KeyboardState>
+          {keyboardInfo => (
+            <KeyboardAwareBrowsable {...keyboardInfo}>
+              <View style={{flex: 1, backgroundColor: themeValue.backgroundColor}}>
+                <UniversalList
+                  content={items}
+                  editing={editing}
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
 
-                canAdd={canAdd}
-                canDelete={canSwipeDelete}
-                canRearrange={canRearrange}
-                canEdit={canEdit}
+                  canAdd={canAdd}
+                  canDelete={canSwipeDelete}
+                  canRearrange={canRearrange}
+                  canEdit={canEdit}
 
-                onItemTapped={this.handleItemTapped}
-                onItemMenu={this.handleMenuTapped}
-                onItemLongTapped={this.handleItemLongTapped}
-                onItemMoved={this.handleItemMoved}
-                onItemDelete={this.handleItemDelete}
+                  onItemTapped={this.handleItemTapped}
+                  onItemMenu={this.handleMenuTapped}
+                  onItemLongTapped={this.handleItemLongTapped}
+                  onItemMoved={this.handleItemMoved}
+                  onItemDelete={this.handleItemDelete}
 
-                extraData={{editing, selected}}
-                mode={mode}
-                theme={theme}
-              />
-              {showingMenu && (
-                <MenuDialog
-                  title='Add items...'
-                  options={options}
-                  onHide={this.handleBackPress}
-                  onOptionSelected={this.onOptionSelected}
+                  extraData={{editing, selected}}
+                  mode={mode}
                   theme={theme}
                 />
-              )}
-              {showingDeleteDialog && (
-                <AppDialog
-                  prompt={deleteText}
-                  cancelButton={{ title: 'Cancel', onPress: this.handleDeleteCancel }}
-                  confirmButton={{ title: 'Delete', onPress: this.handleDeleteConfirm }}
-                  theme={theme}
-                />
-              )}
-            </View>
-          </KeyboardAwareBrowsable>
-        )}
-      </KeyboardState>
+                {showingMenu && (
+                  <MenuDialog
+                    title='Add items...'
+                    options={options}
+                    onHide={this.handleBackPress}
+                    onOptionSelected={this.onOptionSelected}
+                    theme={theme}
+                  />
+                )}
+                {showingDeleteDialog && (
+                  <AppDialog
+                    prompt={deleteText}
+                    cancelButton={{ title: 'Cancel', onPress: this.handleDeleteCancel }}
+                    confirmButton={{ title: 'Delete', onPress: this.handleDeleteConfirm }}
+                    theme={theme}
+                  />
+                )}
+              </View>
+            </KeyboardAwareBrowsable>
+          )}
+        </KeyboardState>
+      </SafeAreaView>
     )
   }
 

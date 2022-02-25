@@ -24,7 +24,7 @@ import ErrorBanner from './components/ErrorBanner'
 import AppDialog from './components/common/AppDialog'
 
 // Safe area view.
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context'
 
 // Possible reconnect states.
 RECONNECT_STATE = {
@@ -240,21 +240,23 @@ class Root extends Component {
     let themeName = theme == 'Light' ? lightTheme : darkTheme
 
     return (
-      <View style={{flex: 1}}>
-        <StatusBar translucent={true} barStyle="light-content" />
-          <NavigationContainer ref={ nav => { this.navigator = nav } } theme={themeName}>
-            {AppContainer}
-          </NavigationContainer>
-        {reconnectState != RECONNECT_STATE.NOTHING && (
-          <AppDialog
-            prompt={reconnectPrompt}
-            cancelButton={{ title: 'Disconnect', onPress: this.handleReconnectCancel }}
-            confirmButton={{ title: 'Retry Now', onPress: this.handleRetryNow }}
-            theme={theme}
-          />
-        )}
-        <ErrorBanner error={error} />
-      </View>
+      <SafeAreaProvider>
+        <View style={{flex: 1}}>
+          <StatusBar translucent={true} barStyle="light-content" />
+            <NavigationContainer ref={ nav => { this.navigator = nav } } theme={themeName}>
+              {AppContainer}
+            </NavigationContainer>
+          {reconnectState != RECONNECT_STATE.NOTHING && (
+            <AppDialog
+              prompt={reconnectPrompt}
+              cancelButton={{ title: 'Disconnect', onPress: this.handleReconnectCancel }}
+              confirmButton={{ title: 'Retry Now', onPress: this.handleRetryNow }}
+              theme={theme}
+            />
+          )}
+          <ErrorBanner error={error} />
+        </View>
+      </SafeAreaProvider>
     )
   }
 

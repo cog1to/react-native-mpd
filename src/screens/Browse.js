@@ -41,7 +41,7 @@ class Browse extends React.Component {
     const { content, navigation, refreshing, queueSize, position, theme } = this.props
 
     return (
-      <View style={styles.container}>
+      <View style={styles.container}>        
         <Browsable
           content={content}
           onNavigate={this.onNavigate}
