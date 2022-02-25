@@ -13,7 +13,6 @@ target 'Yamd' do
 
   pod 'DoubleConversion', :podspec => '../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec'
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
-
   pod 'RNDeviceInfo', :path => '../node_modules/react-native-device-info'
 
   target 'YamdTests' do
