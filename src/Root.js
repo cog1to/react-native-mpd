@@ -26,6 +26,8 @@ import AppDialog from './components/common/AppDialog'
 // Safe area view.
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context'
 
+import _ from 'lodash';
+
 // Possible reconnect states.
 RECONNECT_STATE = {
   NOTHING: 'NOTHING',
@@ -117,15 +119,20 @@ class Root extends Component {
     }
   }
 
+  handleColorModeChange = ({colorScheme}) => {
+    const { saveTheme } = this.props
+    saveTheme(Appearance.getColorScheme() == 'light' ? 'Light' : 'Dark')
+  }
+
   componentDidMount() {
     const { loadArtistArt, saveTheme } = this.props
 
     AppState.addEventListener('change', this.handleAppStateChange)
 
-    // Update on dark/light mode switch.
-    this.subscription = Appearance.addChangeListener(({ colorScheme }) => {
-      saveTheme(colorScheme == 'light' ? 'Light' : 'Dark')
-    })
+    this.subscription = Appearance.addChangeListener(_.throttle(this.handleColorModeChange, 1000, {
+      leading: false,
+      trailing: true
+    }));
 
     // Save initial theme value.
     saveTheme((Appearance.getColorScheme() == 'light') ? 'Light' : 'Dark')
@@ -134,6 +141,7 @@ class Root extends Component {
   }
 
   componentWillUnmount() {
+    Appearance.removeChangeListener(this.subscription)
     AppState.removeEventListener('change', this.handleAppStateChange)
   }
 
