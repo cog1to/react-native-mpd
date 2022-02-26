@@ -224,11 +224,21 @@ class Browsable extends React.Component {
       BackHandler.addEventListener('hardwareBackPress', this.handleBackPress)
     }
 
-    this.updateNavigationBar(false)
+    // Workaround for a navbar color bug:
+    // -------------------------------------------------------------------------------------------
+    // The navbar color is set in the Navigator function, but from there we can't set header's
+    // buttons with callbacks to component's methods. But if we do set them in componentDidMount()
+    // or componentDidUpdate(), there's a 50% chance that navbar color won't get applied.
+    // Maybe this will go away completely if I rework every component into a pure function with
+    // useLayoutEffect() hook, but for now I have to fix it by artificially delaying the code 
+    // that adds the navbar buttons...
+    _.delay(() => {this.updateNavigationBar(this.state.searching ?? false)}, 500)
   }
 
   componentDidUpdate(prevProps, prevState) {
-    this.updateNavigationBar(this.state.searching ?? false)
+    if (this.state.searching != prevState.searching || this.state.editing != prevState.editing || this.state.allSelected != prevState.allSelected) {
+      this.updateNavigationBar(this.state.searching ?? false)
+    }
   }
 
   componentWillUnmount() {
@@ -722,7 +732,7 @@ class Browsable extends React.Component {
     const { editing, allSelected } = this.state
     const themeValue = ThemeManager.instance().getTheme(theme)
     const icon = mode == 'list' ? 'view-module' : 'view-list'
-    const width = '85%'
+    const width = '83%'
 
     if (editing == true) {
       let selectionIcon = (allSelected == true) ? 'checkbox-multiple-blank-outline' : 'checkbox-multiple-marked-outline'
@@ -780,7 +790,7 @@ class Browsable extends React.Component {
         },
         headerTitle: null,
         headerLeft: null,
-        headerBackVisible: true,
+        headerBackVisible: true
       })
     }
   }

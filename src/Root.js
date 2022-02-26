@@ -4,7 +4,7 @@ import { connect as reduxConnect } from 'react-redux'
 import { View, StatusBar, AppState } from 'react-native'
 import { Appearance, useColorScheme } from 'react-native'
 import { CommonActions } from '@react-navigation/native'
-import { NavigationContainer, DefaultTheme } from '@react-navigation/native'
+import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native'
 
 // Actions.
 import { connect, error, disconnect, setIntentional } from './redux/reducers/status/actions'
@@ -26,6 +26,7 @@ import AppDialog from './components/common/AppDialog'
 // Safe area view.
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context'
 
+// Lodash for async operations.
 import _ from 'lodash';
 
 // Possible reconnect states.
@@ -222,7 +223,7 @@ class Root extends Component {
       : 'Connection to server lost. Trying to reconnect ' + reconnectText + '...'
 
     let darkTheme = {
-      ...DefaultTheme,
+      ...DarkTheme,
       dark: true,
       colors: {
         ...DefaultTheme.colors,
@@ -230,6 +231,7 @@ class Root extends Component {
         background: '#171717',
         navbar: '#2B2E36',
         text: '#EFEFEF',
+        card: '#2B2E36'
       }
     }
 
@@ -242,16 +244,17 @@ class Root extends Component {
         background: '#F5F5F5',
         navbar: '#404550',
         text: '#EFEFEF',
+        card: '#404550'
       }
     }
 
-    let themeName = theme == 'Light' ? lightTheme : darkTheme
+    let themeValue = theme == 'Light' ? lightTheme : darkTheme
 
     return (
       <SafeAreaProvider>
         <View style={{flex: 1}}>
           <StatusBar translucent={true} barStyle="light-content" />
-            <NavigationContainer ref={ nav => { this.navigator = nav } } theme={themeName}>
+            <NavigationContainer ref={ nav => { this.navigator = nav } } theme={themeValue}>
               {AppContainer}
             </NavigationContainer>
           {reconnectState != RECONNECT_STATE.NOTHING && (

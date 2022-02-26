@@ -35,10 +35,6 @@ import { useTheme } from '@react-navigation/native'
 
 import store from './redux/store'
 
-// Icon text.
-const iconColor = ThemeManager.instance().getCurrentTheme().navigationBarIconColor
-const textColor = ThemeManager.instance().getCurrentTheme().navigationBarTextColor
-
 // Browse.
 const BrowseStack = createNativeStackNavigator()
 function BrowseNavigator({ navigation, route }) {
@@ -74,7 +70,7 @@ function LibraryNavigator() {
         key="Library"
         component={Library}
         initialParams={{ mode: store.getState().storage.mode }}
-        options={{ headerShown: true, headerStyle: { backgroundColor: colors.navbar, title: "Library" }, headerTintColor: '#fff'}}
+        options={{ headerShown: true, headerStyle: { backgroundColor: colors.navbar }, headerTintColor: '#fff', title: "Library"}}
       />
       <LibraryStack.Screen
         name="Artist"
@@ -200,7 +196,7 @@ function TabsNavigator() {
         tabBarIcon: ({ focused, color, size }) => {
             let iconName;
 
-            let iconColor = focused ? color : ThemeManager.instance().getCurrentTheme().accentBackgroundColor
+            let iconColor = focused ? color : ThemeManager.instance().getCurrentTheme().highlightColor
 
             if (route.name === 'TabBrowse') {
               iconName = 'folder-open'
@@ -232,10 +228,7 @@ function TabsNavigator() {
       <Tab.Screen 
         name="TabPlayer" 
         component={PlayerNavigator} 
-        options={({ route, navigation }) => ({ 
-          headerShown: false, 
-          tabBarShowLabel: false
-        })} 
+        options={{ headerShown: false, tabBarShowLabel: false }}
       />
       <Tab.Screen
         name="TabQueue"
@@ -257,7 +250,7 @@ function createMainStack() {
   return (
     <Stack.Navigator>
       <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
-      <Stack.Screen name="Home" component={TabsNavigator} options={{ headerShown: false }}/>
+      <Stack.Screen name="Home" component={TabsNavigator} options={{ headerShown: false, gestureEnabled: false }}/>
     </Stack.Navigator>
   );
 }
