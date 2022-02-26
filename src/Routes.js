@@ -177,7 +177,7 @@ function PlayerNavigator() {
         name="Player"
         key="Player"
         component={Player}
-        options={{ headerShown: true, headerStyle: { backgroundColor: colors.navbar }, title: "Player", headerTintColor: '#fff'}}
+        options={{ headerShown: true, headerStyle: { backgroundColor: colors.navbar }, title: "Now Playing", headerTintColor: '#fff'}}
       />
     </PlayerStack.Navigator>
   )
