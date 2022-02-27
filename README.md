@@ -11,7 +11,7 @@ Obviously, since it's an MPD front-end, you'll need a running MPD instance confi
 
 For iOS builds, you'll need Xcode 13.2 & Cocoapods 1.11.x. [Homebrew](https://brew.sh) is your friend if you want to install Cocoapods without spending an extra hour figuring out what part of Ruby is not working again.
 
-For Android, you'll need Android SDK 30 & Java 13 evironment (I use OpenJDK 13). If you don't do much Android development, chances are you'll need to download it from [OpenJDK Archive](http://jdk.java.net/archive/). You'll also need to tell gradle to use it, either by modifying your JAVA_HOME, adding JDK path to the PATH, or adding `org.gradle.java.home` parameter to `android/gradle.properties` config.
+For Android, you'll need Android SDK 30 for building the app, and Java 13 environment for running Gradle 6.9 (I use OpenJDK 13). If you don't do much Android development, chances are you'll need to download it from [OpenJDK Archive](http://jdk.java.net/archive/). You'll also need to tell gradle to use it, either by modifying your JAVA_HOME, adding JDK path to the PATH, or adding `org.gradle.java.home` parameter to `android/gradle.properties` config.
 
 #### Node version
 I use the following versions:
@@ -30,7 +30,7 @@ pod install
 ```
 
 #### Linking native packages.
-Because we're using sockets, we have to "node-ify" core node modules and link them with the app. For that purpose we run `rn-nodeify` and `react-native link` commands after installing all the dependencies. // TODO: Check if this is still needed since linking is done automatically now.
+Because we're using sockets, we have to "node-ify" core node modules and link them with the app. For that purpose we run `rn-nodeify` and `react-native link` commands after installing all the dependencies.
 ```
 npx rn-nodeify --install --hack
 npx react-native link
@@ -54,11 +54,12 @@ npx react-native run-android/run-ios
 
 To specify iOS simulator to run on, add something like `--simulator "iPhone 8 Plus"`, replacing the quoted string with whatever simulator you want.
 
+To specify Android device/simulator, add `--deviceId emulator-5554`, replacing the ID with your device or emulator ID. List of all connected devices can be found by running `adb devices`.
+
 ## Building release apps
 
 ### iOS
-// TODO
-
+Open `ios/Yamd.workspace` with Xcode, select `any device` as a target, and then `Product->Archive` from the top menu.
 
 ### Android
 // TODO

@@ -248,7 +248,7 @@ class Root extends Component {
       }
     }
 
-    let themeValue = theme == 'Light' ? lightTheme : darkTheme
+    let themeValue = theme === 'Dark' ? darkTheme : lightTheme
 
     return (
       <SafeAreaProvider>
