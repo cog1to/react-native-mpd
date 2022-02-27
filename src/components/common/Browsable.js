@@ -342,7 +342,7 @@ class Browsable extends React.Component {
       return false
     }()
 
-    const safeAreaEdges = ['right', 'left']
+    const safeAreaEdges = ['right', 'left', 'bottom']
 
     return (
       <SafeAreaView edges={safeAreaEdges}>
