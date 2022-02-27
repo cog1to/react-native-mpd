@@ -139,7 +139,7 @@ class KeyboardAwareBrowsable extends React.Component {
     const containerStyle = (layout != null)
       ? (Platform.OS === 'ios'
         ? { height: keyboardVisible ? (screenY - layout.y - (hasSafeArea ? 88 : 64)) : '100%', width: '100%' }
-        : { height: keyboardVisible ? (screenY - layout.y - 80) : layout.height, width: '100%' })
+        : { height: keyboardVisible ? (screenY - layout.y - 80) : '100%', width: '100%' })
       : { height: '100%', width: '100%' }
 
     return (
@@ -718,14 +718,10 @@ class Browsable extends React.Component {
 
   onCancelSearch = () => {
     const { navigation, canFilter, theme } = this.props
-    const themeValue = ThemeManager.instance().getTheme(theme)
-
-    this.setState({
-      search: null,
-    })
+    const themeValue = ThemeManager.instance().getTheme(theme)                                                                               
 
     if (Platform.OS != 'android') { LayoutAnimation.configureNext(MainLayoutAnimation) }
-    this.setState({searching: false})
+    this.setState({search: null, searching: false})
   }
 
   updateNavigationBar = (searchEnabled) => {
@@ -762,6 +758,7 @@ class Browsable extends React.Component {
       let textInputStyle = Platform.OS === 'android' ? styles.searchBarTextInputAndroid : styles.searchBarTextInputIOS
       
       navigation.setOptions({
+        title: null,
         headerTitle: () => {
           return (
             <View style={styles.searchBarHeader}>
