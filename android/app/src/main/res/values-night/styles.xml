@@ -1,6 +1,6 @@
 <resources>
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
-        <item name="colorAccent">#404550</item>
+        <item name="colorAccent">#616878</item>
     </style>
 </resources>

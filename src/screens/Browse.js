@@ -38,7 +38,7 @@ class Browse extends React.Component {
   // Rendering.
 
   render() {
-    const { content, navigation, refreshing, queueSize, position, theme } = this.props
+    const { content, navigation, refreshing, queueSize, position, theme, route: { title } } = this.props
 
     return (
       <View style={styles.container}>        
@@ -55,6 +55,7 @@ class Browse extends React.Component {
           mode='list'
           theme={theme}
           canFilter={true}
+          title={title}
         />
       </View>
     )

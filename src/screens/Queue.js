@@ -53,7 +53,7 @@ class Queue extends React.Component {
   }
 
   render() {
-    const { navigation, content, queueSize, theme } = this.props
+    const { navigation, content, queueSize, theme, route: { title } } = this.props
     const { tempData } = this.state
 
     const data = tempData != null ? tempData : content
@@ -78,6 +78,8 @@ class Queue extends React.Component {
           theme={theme}
           defaultIcon='settings'
           onIconTapped={this.handleMenuPress}
+          mode='list'
+          title={title}
         />
       </View>
     )

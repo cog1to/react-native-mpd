@@ -32,7 +32,7 @@ class Library extends React.Component {
   }
 
   render() {
-    const { content, navigation, loading, queueSize, position, mode, theme } = this.props
+    const { content, navigation, loading, queueSize, position, mode, theme, route: { title } } = this.props
     const artists = ((content !== null) ? Object.keys(content) : []).map((name, index) => ({
       icon: index + 1,
       title: name,
@@ -58,6 +58,7 @@ class Library extends React.Component {
           canFilter={true}
           canSelectMode={true}
           onIconTapped={this.onModeSelected}
+          title={title}
       />
       </View>
     )

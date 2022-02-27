@@ -110,6 +110,8 @@ class Playlists extends React.Component {
           defaultIcon={callback != null ? 'add' : null}
           onIconTapped={this.handleMenuPress}
           theme={theme}
+          mode='list'
+          title={route.title}
         />
         {showingNewDialog && (
           <AppPromptDialog

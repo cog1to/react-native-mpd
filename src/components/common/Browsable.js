@@ -213,8 +213,7 @@ class Browsable extends React.Component {
     onItemMoved: null,
     confirmDelete: true,
     onRefresh: null,
-    refreshing: null,
-    mode: 'list'
+    refreshing: null
   }
 
   // Global handlers.
@@ -236,7 +235,11 @@ class Browsable extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.state.searching != prevState.searching || this.state.editing != prevState.editing || this.state.allSelected != prevState.allSelected) {
+    if (this.state.searching != prevState.searching 
+      || this.state.editing != prevState.editing 
+      || this.state.allSelected != prevState.allSelected
+      || this.props.mode != prevProps.mode
+    ) {
       this.updateNavigationBar(this.state.searching ?? false)
     }
   }
@@ -437,7 +440,7 @@ class Browsable extends React.Component {
     const { navigation, content } = this.props
 
     // Setup transition to editing state.
-    LayoutAnimation.configureNext(MainLayoutAnimation)
+    if (Platform.OS != 'android') { LayoutAnimation.configureNext(MainLayoutAnimation) }
 
     // Add item to selected list.
     let newSelected = this.state.selected.slice()
@@ -463,7 +466,7 @@ class Browsable extends React.Component {
     let newSelected = selected.slice()
     newSelected.push(item)
 
-    LayoutAnimation.configureNext(MainLayoutAnimation)
+    if (Platform.OS != 'android') { LayoutAnimation.configureNext(MainLayoutAnimation) }
     this.setState({
       showingMenu: true,
       selected: newSelected,
@@ -505,7 +508,7 @@ class Browsable extends React.Component {
       return
     }
 
-    LayoutAnimation.configureNext(MainLayoutAnimation, this.onCancelEditing)
+    if (Platform.OS != 'android') { LayoutAnimation.configureNext(MainLayoutAnimation, this.onCancelEditing) }
     this.setState({
       editing: false,
       showingMenu: false,
@@ -523,7 +526,7 @@ class Browsable extends React.Component {
         newSelected = []
       }
 
-      LayoutAnimation.configureNext(MainLayoutAnimation)
+      if (Platform.OS != 'android') { LayoutAnimation.configureNext(MainLayoutAnimation) }
       this.setState({
         showingMenu: false,
         selected: newSelected,
@@ -546,7 +549,7 @@ class Browsable extends React.Component {
     const { navigation } = this.props
     const { selected, search } = this.state
 
-    LayoutAnimation.configureNext(MainLayoutAnimation)
+    if (Platform.OS != 'android') { LayoutAnimation.configureNext(MainLayoutAnimation) }
     this.setState({
       selected: [],
       editing: false,
@@ -650,7 +653,7 @@ class Browsable extends React.Component {
     const { navigation, onDeleteItems } = this.props
 
     // Reset editing state.
-    LayoutAnimation.configureNext(MainLayoutAnimation)
+    if (Platform.OS != 'android') { LayoutAnimation.configureNext(MainLayoutAnimation) }
     this.setState({
       editing: false,
       selected: [],
@@ -686,7 +689,7 @@ class Browsable extends React.Component {
     navigation.dispatch(popAction)
 
     // Close the menu.
-    LayoutAnimation.configureNext(MainLayoutAnimation, this.onCancelEditing)
+    if (Platform.OS != 'android') { LayoutAnimation.configureNext(MainLayoutAnimation, this.onCancelEditing) }
     this.setState({
       editing: false,
       showingMenu: false,
@@ -708,10 +711,9 @@ class Browsable extends React.Component {
   onSearch = () => {
     const { navigation, theme } = this.props
     const themeValue = ThemeManager.instance().getTheme(theme)
-
-    LayoutAnimation.configureNext(MainLayoutAnimation)
+ 
+    if (Platform.OS != 'android') { LayoutAnimation.configureNext(MainLayoutAnimation) }
     this.setState({searching: true})
-    this.updateNavigationBar(true)
   }
 
   onCancelSearch = () => {
@@ -722,22 +724,22 @@ class Browsable extends React.Component {
       search: null,
     })
 
-    LayoutAnimation.configureNext(MainLayoutAnimation)
+    if (Platform.OS != 'android') { LayoutAnimation.configureNext(MainLayoutAnimation) }
     this.setState({searching: false})
-    this.updateNavigationBar(false)
   }
 
   updateNavigationBar = (searchEnabled) => {
-    const { theme, canFilter, navigation, canSelectMode, mode, onIconTapped, defaultIcon, canDelete, addOptions } = this.props
+    const { theme, canFilter, navigation, canSelectMode, mode, onIconTapped, defaultIcon, canDelete, addOptions, title } = this.props
     const { editing, allSelected } = this.state
     const themeValue = ThemeManager.instance().getTheme(theme)
-    const icon = mode == 'list' ? 'view-module' : 'view-list'
+    const icon = (mode == 'list') ? 'view-module' : 'view-list'
     const width = '83%'
 
     if (editing == true) {
       let selectionIcon = (allSelected == true) ? 'checkbox-multiple-blank-outline' : 'checkbox-multiple-marked-outline'
 
       navigation.setOptions({
+        title: null,
         headerTitle: null,
         headerRight: () => { 
           return (
@@ -757,6 +759,8 @@ class Browsable extends React.Component {
         headerBackVisible: false,
       })
     } else if (searchEnabled == true) {
+      let textInputStyle = Platform.OS === 'android' ? styles.searchBarTextInputAndroid : styles.searchBarTextInputIOS
+      
       navigation.setOptions({
         headerTitle: () => {
           return (
@@ -764,7 +768,7 @@ class Browsable extends React.Component {
               <View style={{...styles.searchBarBackground, backgroundColor: themeValue.backgroundColor, width: width}}>
                 <TextInput
                   value={navigation.params?.searchText}
-                  style={{...styles.searchBarTextInput, color: themeValue.mainTextColor}} placeholder='Filter list...'
+                  style={{...textInputStyle, color: themeValue.mainTextColor}} placeholder='Filter list...'
                   placeholderTextColor={themeValue.placeholderColor}
                   onChangeText={this.onSearchChange}
                 />
@@ -779,6 +783,7 @@ class Browsable extends React.Component {
       })
     } else {
       navigation.setOptions({
+        title: title,
         headerRight: () => { 
           return (
             <View style={styles.rightEditingHeader}>
@@ -822,9 +827,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     height: 30
   },
-  searchBarTextInput: {
-    flex: 1,
-    marginHorizontal: Platform.OS === 'android' ? 4 : 12,
+  searchBarTextInputIOS: {
+    marginHorizontal: 12,
+    flex: 1
+  },
+  searchBarTextInputAndroid: {
+    marginTop: -2,
+    marginHorizontal: 4,
+    height: 36
   },
   searchBarHeader: {
     marginHorizontal: 8,

@@ -122,7 +122,7 @@ class Root extends Component {
 
   handleColorModeChange = ({colorScheme}) => {
     const { saveTheme } = this.props
-    saveTheme(Appearance.getColorScheme() == 'light' ? 'Light' : 'Dark')
+    saveTheme(Appearance.getColorScheme() == 'dark' ?  'Dark': 'Light')
   }
 
   componentDidMount() {
@@ -136,7 +136,7 @@ class Root extends Component {
     }));
 
     // Save initial theme value.
-    saveTheme((Appearance.getColorScheme() == 'light') ? 'Light' : 'Dark')
+    saveTheme((Appearance.getColorScheme() == 'dark') ? 'Dark' : 'Light')
 
     loadArtistArt()
   }

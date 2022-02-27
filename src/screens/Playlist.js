@@ -34,7 +34,7 @@ class Playlist extends React.Component {
   }
 
   render() {
-    const { content, navigation, refreshing, queueSize, position, theme } = this.props
+    const { content, navigation, refreshing, queueSize, position, theme, route: { params: { name } } } = this.props
 
     return (
       <View style={styles.container}>
@@ -52,6 +52,8 @@ class Playlist extends React.Component {
           onDeleteItems={this.handleItemsDelete}
           confirmDelete={false}
           theme={theme}
+          mode='list'
+          title={name}
         />
       </View>
     )

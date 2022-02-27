@@ -192,7 +192,7 @@ function TabsNavigator() {
   return (
     <Tab.Navigator 
       screenOptions={({route}) => ({
-        tabBarStyle: { backgroundColor: {light: "#F5F5F5", dark: "#171717"} },
+        tabBarStyle: { backgroundColor: ThemeManager.instance().getCurrentTheme().toolbarColor },
         tabBarIcon: ({ focused, color, size }) => {
             let iconName;
 

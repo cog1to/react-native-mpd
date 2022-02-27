@@ -99,7 +99,7 @@ class AppPromptDialog extends React.Component {
                     value={name}
                     textColor={mainTextColor}
                     marginHorizontal={25}
-                    marginBottom={20}
+                    marginBottom={Platform.OS === 'ios' ? 20 : 10}
                   />
                   {Platform.OS === 'ios' && (
                     <View style={{...styles.buttonsContainerIOS, borderTopColor: separator, backgroundColor: activeColor}}>
@@ -125,12 +125,12 @@ class AppPromptDialog extends React.Component {
                     </View>
                   )}
                   {Platform.OS === 'android' && (
-                    <View style={{...styles.buttonsContainerAndroid, backgroundColor: activeColor}}>
+                    <View style={{...styles.buttonsContainerAndroid, backgroundColor: backgroundColor}}>
                       {cancelButton && (
                         <TouchableOpacity
                           activeOpacity={0.5}
                           onPress={this.handleCancelPress}
-                          style={{backgroundColor: backgroundColor}}
+                          style={{backgroundColor: backgroundColor, paddingVertical: 5}}
                         >
                           <Text style={{...styles.buttonText, color: buttonTextColor}}>
                             {cancelButton.title.toUpperCase()}
@@ -141,7 +141,7 @@ class AppPromptDialog extends React.Component {
                         activeOpacity={0.5}
                         onPress={this.handleConfirmPress}
                         disabled={!canConfirm}
-                        style={{backgroundColor: (canConfirm ? backgroundColor : disabledColor)}}
+                        style={{backgroundColor: (canConfirm ? backgroundColor : disabledColor), borderRadius: 8, marginHorizontal: 8, paddingVertical: 5}}
                       >
                         <Text style={{...styles.buttonTextLast, color: buttonTextColor}}>
                           {confirmButton.title.toUpperCase()}
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   dialog: {
-    paddingBottom: Platform.OS === 'ios' ? 0 : 15,
+    paddingBottom: Platform.OS === 'ios' ? 0 : 8,
     margin: 20,
     minWidth: 300,
     borderRadius: Platform.OS === 'ios' ? 12 : 0,
