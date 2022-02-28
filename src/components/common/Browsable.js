@@ -779,7 +779,6 @@ class Browsable extends React.Component {
         headerBackVisible: false,
       })
     } else {
-      console.log(title)
       navigation.setOptions({
         title: title,
         headerRight: () => { 

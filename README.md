@@ -29,6 +29,9 @@ cd ios
 pod install
 ```
 
+#### Fixing bunding stage for iOS
+If you don't have React Native installed globally, you'll need to fix the bundling script to point to `node` executable. Otherwise Archive and/or Build commands will fail.
+
 #### Linking native packages.
 Because we're using sockets, we have to "node-ify" core node modules and link them with the app. For that purpose we run `rn-nodeify` and `react-native link` commands after installing all the dependencies.
 ```
@@ -54,7 +57,7 @@ npx react-native run-android/run-ios
 
 To specify iOS simulator to run on, add something like `--simulator "iPhone 8 Plus"`, replacing the quoted string with whatever simulator you want.
 
-To specify Android device/simulator, add `--deviceId emulator-5554`, replacing the ID with your device or emulator ID. List of all connected devices can be found by running `adb devices`.
+To specify Android device/simulator, add `--deviceId emulator-5554`, replacing the ID with your device or emulator ID. List of all connected devices can be found by running `adb devices`. For connecting to the MPD on emulator, use `10.0.2.2` for the host.
 
 ## Building release apps
 
