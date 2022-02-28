@@ -729,8 +729,7 @@ class Browsable extends React.Component {
     const { editing, allSelected } = this.state
     const themeValue = ThemeManager.instance().getTheme(theme)
     const icon = (mode == 'list') ? 'view-module' : 'view-list'
-    const width = '83%'
-
+    
     if (editing == true) {
       let selectionIcon = (allSelected == true) ? 'checkbox-multiple-blank-outline' : 'checkbox-multiple-marked-outline'
 
@@ -749,7 +748,7 @@ class Browsable extends React.Component {
         },
         headerLeft: () => { 
           return (
-            <BarButton onPress={this.onCancelEditing} icon='clear' theme={themeValue} />
+            <BarButton onPress={this.onCancelEditing} icon='clear' theme={themeValue} style={{...styles.cancelEditingButtonStyle}} />
           )
         },
         headerBackVisible: false,
@@ -762,7 +761,7 @@ class Browsable extends React.Component {
         headerTitle: () => {
           return (
             <View style={styles.searchBarHeader}>
-              <View style={{...styles.searchBarBackground, backgroundColor: themeValue.backgroundColor, width: width}}>
+              <View style={{...styles.searchBarBackground, backgroundColor: themeValue.backgroundColor}}>
                 <TextInput
                   value={navigation.params?.searchText}
                   style={{...textInputStyle, color: themeValue.mainTextColor}} placeholder='Filter list...'
@@ -774,24 +773,26 @@ class Browsable extends React.Component {
           )
         },
         headerRight: () => {
-          return (<BarButton onPress={this.onCancelSearch} icon='clear' theme={themeValue} padding={0} />)
+          return (<BarButton onPress={this.onCancelSearch} icon='clear' theme={themeValue} style={{...styles.cancelSearchButtonStyle}} />)
         },
+        headerLeft: null,
         headerBackVisible: false,
       })
     } else {
+      console.log(title)
       navigation.setOptions({
         title: title,
         headerRight: () => { 
           return (
             <View style={styles.rightEditingHeader}>
-              {defaultIcon != null ? <BarButton onPress={() => onIconTapped(icon)} icon={defaultIcon} theme={themeValue} style={{paddingLeft: 12}} /> : null}
-              {canSelectMode ? <BarButton onPress={() => onIconTapped(icon)} icon={icon} theme={themeValue} style={{paddingLeft: 12}} /> : null}
-              {canFilter ? <BarButton onPress={this.onSearch} icon='filter-list' theme={themeValue} style={{paddingLeft: 12}} /> : null}
+              {defaultIcon != null ? <BarButton onPress={() => onIconTapped(icon)} icon={defaultIcon} theme={themeValue} style={{...styles.navigationButtonStyle}} /> : null}
+              {canSelectMode ? <BarButton onPress={() => onIconTapped(icon)} icon={icon} theme={themeValue} style={{...styles.navigationButtonStyle}} /> : null}
+              {canFilter ? <BarButton onPress={this.onSearch} icon='filter-list' theme={themeValue} style={{...styles.navigationButtonStyle}} /> : null}
             </View>
           )
         },
         headerTitle: null,
-        headerLeft: null,
+        headerLeft: undefined,
         headerBackVisible: true
       })
     }
@@ -816,29 +817,74 @@ const mapDispatchToProps = dispatch => {
 
 export default connect(null, mapDispatchToProps)(Browsable)
 
-const styles = StyleSheet.create({
-  searchBarBackground: {
-    backgroundColor: 'white',
-    left: Platform.OS === 'android' ? 0 : 4,
-    right: Platform.OS === 'android' ? 0 : 4,
-    borderRadius: 8,
-    height: 30
-  },
-  searchBarTextInputIOS: {
-    marginHorizontal: 12,
-    flex: 1
-  },
-  searchBarTextInputAndroid: {
-    marginTop: -2,
-    marginHorizontal: 4,
-    height: 36
-  },
-  searchBarHeader: {
-    marginHorizontal: 8,
-    flex: 1,
-  },
-  rightEditingHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-})
+const styles = StyleSheet.create(
+  Platform.OS === 'ios' ? {
+    searchBarBackground: {
+      backgroundColor: 'white',
+      left: Platform.OS === 'android' ? 0 : 4,
+      right: Platform.OS === 'android' ? 0 : 4,
+      borderRadius: 8,
+      height: 30
+    },
+    searchBarTextInputIOS: {
+      marginHorizontal: 12,
+      flex: 1
+    },
+    searchBarTextInputAndroid: {
+      marginTop: -2,
+      marginHorizontal: 4,
+      height: 36
+    },
+    searchBarHeader: {
+      marginHorizontal: 8,
+      flex: 1,
+    },
+    rightEditingHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    cancelEditingButtonStyle: {
+      paddingRight: 8
+    }
+  } : {
+    searchBarBackground: {
+      backgroundColor: 'white',
+      left: Platform.OS === 'android' ? 0 : 4,
+      right: Platform.OS === 'android' ? 0 : 4,
+      borderRadius: 8,
+      height: 30,
+      flexGrow: 1,
+      width: '100%'
+    },
+    searchBarTextInputIOS: {
+      marginHorizontal: 12,
+      flex: 1
+    },
+    searchBarTextInputAndroid: {
+      marginHorizontal: 4,
+      height: 36,
+    },
+    searchBarHeader: {
+      alignItems: 'center',
+      marginHorizontal: 8,
+      flex: 1,
+      height: 64,
+      flexDirection: 'row'
+    },
+    rightEditingHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingRight: 16,
+    },
+    cancelSearchButtonStyle: {
+      paddingLeft: 0,
+      paddingRight: 16
+    },
+    navigationButtonStyle: {
+      paddingLeft: 12
+    },
+    cancelEditingButtonStyle: {
+      paddingHorizontal: 16
+    }
+  }
+)

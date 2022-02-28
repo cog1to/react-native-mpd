@@ -103,6 +103,7 @@ class Album extends React.Component {
           theme={theme}
           canFilter={true}
           mode='list'
+          title={album}
         />
       </View>
     )

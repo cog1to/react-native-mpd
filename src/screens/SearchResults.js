@@ -26,7 +26,7 @@ class SearchResults extends React.Component {
           queueSize={queueSize}
           position={position}
           theme={theme}
-          title={title}
+          title="Search Results"
           mode='list'
         />
       </View>

@@ -32,11 +32,18 @@ import Outputs from './screens/Outputs'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { useTheme } from '@react-navigation/native'
+import { createStackNavigator } from '@react-navigation/stack';
 
 import store from './redux/store'
 
+// Selecting a stack implementation based on the platform. Android has layout issues 
+// with nativeStackNavigator that are breaking header view if keyboard was presented.
+// I could not find any good solution to it except switching to React-Native own
+// Stack navigator. Because of this issue Android has to fall back to Stack navigator.
+const createNavigatorFactory = Platform.OS === 'android' ? createStackNavigator : createNativeStackNavigator
+
 // Browse.
-const BrowseStack = createNativeStackNavigator()
+const BrowseStack = createNavigatorFactory()
 function BrowseNavigator({ navigation, route }) {
   const { colors } = useTheme()
 
@@ -59,7 +66,7 @@ function BrowseNavigator({ navigation, route }) {
 }
 
 // Library.
-const LibraryStack = createNativeStackNavigator()
+const LibraryStack = createNavigatorFactory()
 function LibraryNavigator() {
   const { colors } = useTheme()
 
@@ -91,7 +98,7 @@ function LibraryNavigator() {
 }
 
 // Queue.
-const QueueStack = createNativeStackNavigator()
+const QueueStack = createNavigatorFactory()
 function QueueNavigator() {
   const { colors } = useTheme()
 
@@ -120,7 +127,7 @@ function QueueNavigator() {
 }
 
 // More.
-const MoreStack = createNativeStackNavigator()
+const MoreStack = createNavigatorFactory()
 function MoreNavigator() {
   const { colors } = useTheme()
 
@@ -142,7 +149,7 @@ function MoreNavigator() {
         name="SearchResults"
         key="SearchResults"
         component={SearchResults}
-        options={{ headerShown: true, headerStyle: { backgroundColor: colors.navbar }, title: "", headerTintColor: '#fff'}}
+        options={{ headerShown: true, headerStyle: { backgroundColor: colors.navbar }, title: "Search Results", headerTintColor: '#fff'}}
       />
       <MoreStack.Screen
         name="Playlists"
@@ -154,7 +161,7 @@ function MoreNavigator() {
         name="Playlist"
         key="Playlist"
         component={Playlist}
-        options={{ headerShown: true, headerStyle: { backgroundColor: colors.navbar }, title: "", headerTintColor: '#fff'}}
+        options={({route}) => ({ headerShown: true, headerStyle: { backgroundColor: colors.navbar }, title: route.params.name, headerTintColor: '#fff'})}
       />
       <MoreStack.Screen
         name="Outputs"
@@ -167,7 +174,7 @@ function MoreNavigator() {
 }
 
 // Player stack
-const PlayerStack = createNativeStackNavigator()
+const PlayerStack = createNavigatorFactory()
 function PlayerNavigator() {
   const { colors } = useTheme()
 

@@ -60,7 +60,7 @@ class Player extends React.Component {
 
     navigation.setOptions({
       headerRight: () => {
-        return (<BarButton onPress={this.onVolumeToggle} icon='volume-down' theme={themeValue} padding={0} />)
+        return (<BarButton onPress={this.onVolumeToggle} icon='volume-down' theme={themeValue} style={{padding: Platform.OS === 'android' ? 16 : 0}} />)
       }
     })
   }

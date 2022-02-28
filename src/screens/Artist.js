@@ -61,6 +61,7 @@ class Artist extends React.Component {
           canFilter={true}
           canSelectMode={true}
           onIconTapped={this.onModeSelected}
+          title={route.params.name}
         />
       </View>
    )
