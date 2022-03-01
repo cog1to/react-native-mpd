@@ -215,8 +215,6 @@ PODS:
     - React-Core
   - react-native-slider (2.0.7):
     - React
-  - react-native-udp (2.6.1):
-    - React
   - React-perflogger (0.66.0)
   - React-RCTActionSheet (0.66.0):
     - React-Core/RCTActionSheetHeaders (= 0.66.0)
@@ -322,7 +320,7 @@ PODS:
     - React-RCTImage
   - RNVectorIcons (6.6.0):
     - React
-  - TcpSockets (3.3.2):
+  - TcpSockets (4.0.0):
     - React
   - Yoga (1.14.0)
 
@@ -349,7 +347,6 @@ DEPENDENCIES:
   - react-native-randombytes (from `../node_modules/react-native-randombytes`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - "react-native-slider (from `../node_modules/@react-native-community/slider`)"
-  - react-native-udp (from `../node_modules/react-native-udp`)
   - React-perflogger (from `../node_modules/react-native/ReactCommon/reactperflogger`)
   - React-RCTActionSheet (from `../node_modules/react-native/Libraries/ActionSheetIOS`)
   - React-RCTAnimation (from `../node_modules/react-native/Libraries/NativeAnimation`)
@@ -416,8 +413,6 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-slider:
     :path: "../node_modules/@react-native-community/slider"
-  react-native-udp:
-    :path: "../node_modules/react-native-udp"
   React-perflogger:
     :path: "../node_modules/react-native/ReactCommon/reactperflogger"
   React-RCTActionSheet:
@@ -481,7 +476,6 @@ SPEC CHECKSUMS:
   react-native-randombytes: 991545e6eaaf700b4ee384c291ef3d572e0b2ca8
   react-native-safe-area-context: 5b8a418400eb3d8364aa87300e865c0262cc17b9
   react-native-slider: e36b7de75b35323ee802dae723be8ebbab4c4a3d
-  react-native-udp: 4a750f0802d4597252f2cae4a2b3302ee5cfa4fc
   React-perflogger: 1f554c2b684e2f484f9edcdfdaeedab039fbaca8
   React-RCTActionSheet: 610d5a5d71ab4808734782c8bca6a12ec3563672
   React-RCTAnimation: ec6ed97370ace32724c253f29f0586cafcab8126
@@ -500,9 +494,9 @@ SPEC CHECKSUMS:
   RNReanimated: b04ef2a4f0cb61b062bbcf033f84a9e470f4f60b
   RNScreens: 2559f98b0835103cbef3b26ba77fa61d4bb37ae7
   RNVectorIcons: 0bb4def82230be1333ddaeee9fcba45f0b288ed4
-  TcpSockets: 8d839b9b14f6f344d98e4642ded13ab3112b462d
+  TcpSockets: 359ca53398b6ad72727c00ac393f37caccfcc935
   Yoga: c11abbf5809216c91fcd62f5571078b83d9b6720
 
-PODFILE CHECKSUM: f132f6c58a0cc80a93c75bf75e8e6a209b53b698
+PODFILE CHECKSUM: 29ba0cf3bb4d384ae6cb1c7d196329d670d2ec1a
 
 COCOAPODS: 1.11.2

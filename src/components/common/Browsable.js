@@ -342,7 +342,7 @@ class Browsable extends React.Component {
       return false
     }()
 
-    const safeAreaEdges = ['right', 'left', 'bottom']
+    const safeAreaEdges = (Platform.OS === 'android' ? ['right', 'left', 'bottom'] : ['right', 'left'])
 
     return (
       <SafeAreaView edges={safeAreaEdges}>
@@ -823,7 +823,8 @@ const styles = StyleSheet.create(
       left: Platform.OS === 'android' ? 0 : 4,
       right: Platform.OS === 'android' ? 0 : 4,
       borderRadius: 8,
-      height: 30
+      height: 30,
+      width: '82%'
     },
     searchBarTextInputIOS: {
       marginHorizontal: 12,
@@ -844,6 +845,9 @@ const styles = StyleSheet.create(
     },
     cancelEditingButtonStyle: {
       paddingRight: 8
+    },
+    navigationButtonStyle: {
+      paddingLeft: 12
     }
   } : {
     searchBarBackground: {
