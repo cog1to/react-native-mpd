@@ -23,6 +23,15 @@ I can't guarantee that the project will build with any other version.
 #### Installing packages
 `npx npm install`
 
+#### Linking native packages.
+// TODO: Broken. We don't need all of the packages that `rn-nodeify` adds by default. At bare minimum `react-native-tcp` should be installed, but maybe nothing more. For iOS, installing both `react-native-tcp` and `react-native-udp` actually breaks the build due to duplicating symbols in the libraries.
+
+Because we're using sockets, we have to "node-ify" core node modules and link them with the app. For that purpose we run `rn-nodeify` and `react-native link` commands after installing all the dependencies.
+```
+npx rn-nodeify 'react-native-tcp' --install --hack
+npx react-native link
+```
+
 #### Adding podfiles for iOS
 ```bash
 cd ios
@@ -31,13 +40,6 @@ pod install
 
 #### Fixing bunding stage for iOS
 If you don't have React Native installed globally, you'll need to fix the bundling script to point to `node` executable. Otherwise Archive and/or Build commands will fail.
-
-#### Linking native packages.
-Because we're using sockets, we have to "node-ify" core node modules and link them with the app. For that purpose we run `rn-nodeify` and `react-native link` commands after installing all the dependencies.
-```
-npx rn-nodeify --install --hack
-npx react-native link
-```
 
 ## Running
 Just run
@@ -57,12 +59,12 @@ npx react-native run-android/run-ios
 
 To specify iOS simulator to run on, add something like `--simulator "iPhone 8 Plus"`, replacing the quoted string with whatever simulator you want.
 
-To specify Android device/simulator, add `--deviceId emulator-5554`, replacing the ID with your device or emulator ID. List of all connected devices can be found by running `adb devices`. For connecting to the MPD on emulator, use `10.0.2.2` for the host.
+To specify Android device/simulator, add `--deviceId emulator-5554`, replacing the ID with your device or emulator ID. List of all connected devices can be found by running `adb devices`. For connecting to the locally run MPD on emulator, use `10.0.2.2` for the host value.
 
 ## Building release apps
 
 ### iOS
-Open `ios/Yamd.workspace` with Xcode, select `any device` as a target, and then `Product->Archive` from the top menu.
+Open `ios/Yamd.workspace` with Xcode, select `Any device` as a target, and then `Product->Archive` from the top menu.
 
 ### Android
-// TODO
+Open `android` project folder in Android Studio and select `Build -> Generate Signed Build APK`.

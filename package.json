@@ -3,9 +3,7 @@
   "version": "1.2",
   "private": true,
   "scripts": {
-    "start": "react-native start",
-    "test": "jest",
-    "postinstall": "rn-nodeify --install react-native-tcp --hack"
+    "start": "react-native start"
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.6.3",
