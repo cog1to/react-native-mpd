@@ -4,8 +4,9 @@ import {
   StyleSheet,
 } from 'react-native'
 
-// Queue List component.
+// Components.
 import Browsable, { OPTIONS } from '../components/common/Browsable'
+import BarButton from '../components/common/BarButton'
 
 // Redux.
 import { connect } from 'react-redux'
@@ -13,6 +14,9 @@ import { connect } from 'react-redux'
 // Actions.
 import { setCurrentSong, deleteSongs, clear, moveSong }  from '../redux/reducers/queue/actions'
 import { playPause } from '../redux/reducers/player/actions'
+
+// Theme.
+import ThemeManager from '../themes/ThemeManager'
 
 const compareLists = (left, right) => {
   if (left.length != right.length) {
@@ -38,10 +42,6 @@ class Queue extends React.Component {
     navigation.navigate('QueueSettings')
   }
 
-  componentDidMount() {
-    this.props.navigation.setParams({ onMenu: this.handleMenuPress })
-  }
-
   static getDerivedStateFromProps(props, state) {
     if (state.tempData != null && compareLists(state.tempData, props.content)) {
       return {
@@ -53,7 +53,7 @@ class Queue extends React.Component {
   }
 
   render() {
-    const { navigation, content, queueSize, theme } = this.props
+    const { navigation, content, queueSize, theme, route: { title } } = this.props
     const { tempData } = this.state
 
     const data = tempData != null ? tempData : content
@@ -67,6 +67,7 @@ class Queue extends React.Component {
           navigation={navigation}
           canEdit={true}
           canDelete={true}
+          canSwipeDelete={true}
           canRearrange={true}
           queueSize={queueSize}
           onItemMoved={this.handleItemMove}
@@ -75,6 +76,10 @@ class Queue extends React.Component {
           addOptions={options}
           onSelection={this.handleItemSelected}
           theme={theme}
+          defaultIcon='settings'
+          onIconTapped={this.handleMenuPress}
+          mode='list'
+          title={title}
         />
       </View>
     )
@@ -82,13 +87,16 @@ class Queue extends React.Component {
 
   // Events.
 
-  handleItemMove = ({ data, row, to }) => {
+  handleItemMove = ({ data, from, to }) => {
+    const oldData = this.state.tempData != null ? this.state.tempData : this.props.content
+    let oldId = oldData[from].id
+
     this.setState({
       tempData: data,
     })
 
     const { moveSong } = this.props
-    moveSong(row.id, to)
+    moveSong(oldId, to)
   }
 
   handleItemsDelete = (items) => {

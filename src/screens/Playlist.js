@@ -28,13 +28,13 @@ class Playlist extends React.Component {
   }
 
   reload = () => {
-    const { navigation, getPlaylist } = this.props
-    const { state: { params: { name } } } = navigation
+    const { navigation, route, getPlaylist } = this.props
+    const { params: { name } } = route
     getPlaylist(name)
   }
 
   render() {
-    const { content, navigation, refreshing, queueSize, position, theme } = this.props
+    const { content, navigation, refreshing, queueSize, position, theme, route: { params: { name } } } = this.props
 
     return (
       <View style={styles.container}>
@@ -52,6 +52,8 @@ class Playlist extends React.Component {
           onDeleteItems={this.handleItemsDelete}
           confirmDelete={false}
           theme={theme}
+          mode='list'
+          title={name}
         />
       </View>
     )
@@ -61,20 +63,20 @@ class Playlist extends React.Component {
   
   handleItemMove = (data) => {
     const { from, to } = data
-    const { playlistMove, navigation: { state: { params: { name } } } } = this.props
+    const { playlistMove, route: { params: { name } } } = this.props
 
     playlistMove(name, from, to)
   }
 
   handleItemsDelete = (items) => {
-    const { playlistDelete, navigation: { state: { params: { name } } } } = this.props
+    const { playlistDelete, route: { params: { name } } } = this.props
 
     playlistDelete(name, items.map(item => { return item.index }))
   }
 }
 
 const mapStateToProps = (state, ownProps) => {
-  const { navigation: { state: { params: { name = null } } } } = ownProps
+  const { route: { params: { name = null } } } = ownProps
   const playlist = state.playlists.playlists.find(item => { return item.name == name })
   const { position = null, file = null } = state.currentSong
 

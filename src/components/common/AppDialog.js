@@ -36,7 +36,9 @@ export default class AppDialog extends React.Component {
         const backgroundColor = themeValue.backgroundColor
         const dialogBackgroundColor = themeValue.dialogBackgroundColor
         const dialogSeparatorColor = themeValue.dialogSeparatorColor
-        const buttonColor = themeValue.searchButtonColor
+        const buttonColor = themeValue.mainTextColor
+        const activeColor = themeValue.accentColor
+        const separator = theme.dialogSeparatorColor
 
 		return (
 			<View style={{...styles.dimOverlay, backgroundColor: dialogBackgroundColor}}>
@@ -45,20 +47,22 @@ export default class AppDialog extends React.Component {
                         {prompt}
                     </Text>
                     {Platform.OS === 'ios' && (
-                        <View style={{...styles.buttonsContainerIOS, borderTopColor: dialogSeparatorColor}}>
+                        <View style={{...styles.buttonsContainerIOS, borderTopColor: dialogSeparatorColor, backgroundColor: activeColor}}>
                             {cancelButton && (
                             	<TouchableOpacity
+                                    activeOpacity={0.5}
                                 	onPress={cancelButton.onPress}
-                                	style={{...styles.cancelButton, borderRightColor: dialogSeparatorColor}}>
+                                	style={{...styles.cancelButton, backgroundColor: backgroundColor}}>
                                 	<Text style={{...styles.buttonTextIOSCancel, color: buttonColor}}>
                                    		{cancelButton.title}
                                 	</Text>
                             	</TouchableOpacity>
                             )}
-                            <TouchableOpacity 
+                            <TouchableOpacity
+                                activeOpacity={0.5}
                                 onPress={confirmButton.onPress}
-                                style={styles.confirmButton}>
-                                <Text style={{...styles.buttonTextIOS, color: buttonColor}}>
+                                style={{...styles.confirmButton, borderLeftColor: dialogSeparatorColor, backgroundColor: backgroundColor, borderLeftWidth: 0.5}}>
+                                <Text style={{...styles.buttonTextIOSCancel, color: buttonColor}}>
                                    {confirmButton.title}
                                 </Text>
                             </TouchableOpacity>
@@ -101,6 +105,7 @@ const styles = StyleSheet.create({
         margin: 20,
         backgroundColor: 'white',
         borderRadius: Platform.OS === 'ios' ? 12 : 0,
+        overflow: 'hidden'
     },
     promptText: {
         margin: 25,

@@ -8,8 +8,12 @@ import {
   UIManager,
   Animated,
   Platform,
+  TouchableOpacity
 } from 'react-native'
 import _ from 'lodash'
+
+// Icons.
+import Icon from 'react-native-vector-icons/MaterialIcons'
 
 // Redux.
 import { connect } from 'react-redux'
@@ -20,6 +24,7 @@ import Controls from '../components/Controls'
 import AlbumArt from '../components/AlbumArt'
 import CurrentSong from '../components/CurrentSong'
 import VolumeControl, { VolumeBarHeight } from '../components/VolumeControl'
+import BarButton from '../components/common/BarButton'
 
 // Player actions.
 import { setVolume } from '../redux/reducers/player/actions'
@@ -49,12 +54,27 @@ class Player extends React.Component {
     volumeSliderOffset: new Animated.Value(0),
   }
 
-  componentDidMount() {
-    const { navigation } = this.props
+  updateNavigationBar = () => {
+    const { navigation, theme } = this.props
+    const themeValue = ThemeManager.instance().getTheme(theme)
 
-    navigation.setParams({
-      onVolumeToggle: this.onVolumeToggle,
+    navigation.setOptions({
+      headerRight: () => {
+        return (<BarButton onPress={this.onVolumeToggle} icon='volume-down' theme={themeValue} style={{padding: Platform.OS === 'android' ? 16 : 0}} />)
+      }
     })
+  }
+
+  componentDidMount() {
+    // Workaround for a navbar color bug:
+    // -------------------------------------------------------------------------------------------
+    // The navbar color is set in the Navigator function, but from there we can't set header's
+    // buttons with callbacks to component's methods. But if we do set them in componentDidMount()
+    // or componentDidUpdate(), there's a 50% chance that navbar color won't get applied.
+    // Maybe this will go away completely if I rework every component into a pure function with
+    // useLayoutEffect() hook, but for now I have to fix it by artificially delaying the code 
+    // that adds the navbar buttons...
+    _.delay(() => {this.updateNavigationBar()}, 500)
   }
 
   onVolumeToggle = () => {

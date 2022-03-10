@@ -5,7 +5,7 @@ import {
   FlatList,
   Text,
 } from 'react-native'
-import { NavigationActions } from 'react-navigation'
+import { StackActions } from '@react-navigation/native'
 
 // Redux.
 import { connect } from 'react-redux'
@@ -32,7 +32,7 @@ class Library extends React.Component {
   }
 
   render() {
-    const { content, navigation, loading, queueSize, position, mode, theme } = this.props
+    const { content, navigation, loading, queueSize, position, mode, theme, route: { title } } = this.props
     const artists = ((content !== null) ? Object.keys(content) : []).map((name, index) => ({
       icon: index + 1,
       title: name,
@@ -53,9 +53,12 @@ class Library extends React.Component {
           refreshing={loading}
           queueSize={queueSize}
           mode={mode}
-          onIconTapped={this.onModeSelected}
           position={position}
           theme={theme}
+          canFilter={true}
+          canSelectMode={true}
+          onIconTapped={this.onModeSelected}
+          title={title}
       />
       </View>
     )
@@ -64,11 +67,8 @@ class Library extends React.Component {
   onNavigate = (item) => {
     const { navigation } = this.props
 
-    const action = NavigationActions.navigate({
-      params: {
-        name: item.name,
-      },
-      routeName: 'Artist',
+    const action = StackActions.push('Artist', {
+      name: item.name,
     })
     navigation.dispatch(action)
   }
@@ -76,9 +76,6 @@ class Library extends React.Component {
   onModeSelected = (icon) => {
     let switchMode = (mode) => {
       this.props.saveLibraryMode(mode)
-      this.props.navigation.setParams({
-        mode: mode
-      })
     }
 
     if (icon === 'view-list') {

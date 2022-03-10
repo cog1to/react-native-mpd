@@ -44,7 +44,7 @@ export default class MenuDialog extends React.Component {
                         <Text style={{...styles.header, color: textColor}}>{title}</Text>
                         {options.map(opt => {
                             return (
-                                <TouchableHighlight key={opt.value} onPress={() => this.handleOnPress(opt)}>
+                                <TouchableHighlight key={opt.value} onPress={() => this.handleOnPress(opt)} underlayColor={themeValue.accentColor+'50'}>
                                     <Text style={{...(selected == opt.value ? styles.selected : styles.option), color: textColor}}>
                                         {opt.title}
                                     </Text>

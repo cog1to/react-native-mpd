@@ -12,8 +12,8 @@ import Browsable from '../components/common/Browsable'
 
 class SearchResults extends React.Component {
   render() {
-    const { navigation, queueSize, position, theme } = this.props
-    const { state: { params: { content } } } = navigation
+    const { navigation, route, queueSize, position, theme } = this.props
+    const { params: { content }, title } = route
 
     return (
       <View style={styles.container}>
@@ -26,6 +26,8 @@ class SearchResults extends React.Component {
           queueSize={queueSize}
           position={position}
           theme={theme}
+          title="Search Results"
+          mode='list'
         />
       </View>
     )

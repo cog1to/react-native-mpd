@@ -5,7 +5,7 @@ import {
   FlatList,
   Text,
 } from 'react-native'
-import { NavigationActions } from 'react-navigation'
+import { StackActions } from '@react-navigation/native'
 
 // Redux.
 import { connect } from 'react-redux'
@@ -27,23 +27,23 @@ class Artist extends React.Component {
   }
 
   reload = () => {
-    const { content, loadAlbums, navigation } = this.props
-    const artistName = navigation.state.params.name
+    const { content, loadAlbums, navigation, route } = this.props
+    const artistName = route.params.name
     loadAlbums(artistName)
   }
 
   render() {
-    const { content, navigation, loading, queueSize, position, mode, theme } = this.props
+    const { content, navigation, route, loading, queueSize, position, mode, theme } = this.props
 
     let albums = ((content !== null) ? Object.keys(content) : []).map((name, index) => ({
       icon: index + 1,
       name: name,
       type: 'ALBUM',
       path: name,
-      subtitle: navigation.state.params.name,
+      subtitle: route.params.name,
       status: 'none',
-      artist: navigation.state.params.name,
-      data: { album: name, artist: navigation.state.params.name },
+      artist: route.params.name,
+      data: { album: name, artist: route.params.name },
     }))
 
     return (
@@ -56,24 +56,24 @@ class Artist extends React.Component {
           onRefresh={this.reload}
           queueSize={queueSize}
           position={position}
-          onIconTapped={this.onModeSelected}
           mode={mode}
           theme={theme}
+          canFilter={true}
+          canSelectMode={true}
+          onIconTapped={this.onModeSelected}
+          title={route.params.name}
         />
       </View>
    )
   }
 
   onNavigate = (item) => {
-    const { navigation } = this.props
-    const artistName = navigation.state.params.name
+    const { navigation, route } = this.props
+    const artistName = route.params.name
 
-    const action = NavigationActions.navigate({
-      params: {
-        album: item.name,
-        artist: artistName,
-      },
-      routeName: 'Album',
+    const action = StackActions.push('Album', {
+      album: item.name,
+      artist: artistName,
     })
     navigation.dispatch(action)
   }
@@ -81,9 +81,6 @@ class Artist extends React.Component {
   onModeSelected = (icon) => {
     let switchMode = (mode) => {
       this.props.saveLibraryMode(mode)
-      this.props.navigation.setParams({
-        mode: mode
-      })
     }
 
     if (icon === 'view-list') {
@@ -99,7 +96,7 @@ class Artist extends React.Component {
 const mapStateToProps = (state, ownProps) => {
   const { position = null, file = null } = state.currentSong
   const { mode } = state.storage
-  const { navigation: { state: { params: { name } } } } = ownProps
+  const { route: { params: { name } } } = ownProps
   const theme = state.storage.theme
 
   return {

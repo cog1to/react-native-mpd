@@ -1,9 +1,10 @@
 // Basic react stuff.
 import React, { Component } from 'react'
 import { connect as reduxConnect } from 'react-redux'
-import { NavigationActions, StackActions } from 'react-navigation'
 import { View, StatusBar, AppState } from 'react-native'
-import { Appearance, AppearanceProvider, useColorScheme } from 'react-native-appearance'
+import { Appearance, useColorScheme } from 'react-native'
+import { CommonActions } from '@react-navigation/native'
+import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native'
 
 // Actions.
 import { connect, error, disconnect, setIntentional } from './redux/reducers/status/actions'
@@ -23,7 +24,10 @@ import ErrorBanner from './components/ErrorBanner'
 import AppDialog from './components/common/AppDialog'
 
 // Safe area view.
-import SafeAreaView from 'react-native-safe-area-view'
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context'
+
+// Lodash for async operations.
+import _ from 'lodash';
 
 // Possible reconnect states.
 RECONNECT_STATE = {
@@ -116,30 +120,36 @@ class Root extends Component {
     }
   }
 
+  handleColorModeChange = ({colorScheme}) => {
+    const { saveTheme } = this.props
+    saveTheme(Appearance.getColorScheme() == 'dark' ?  'Dark': 'Light')
+  }
+
   componentDidMount() {
     const { loadArtistArt, saveTheme } = this.props
 
     AppState.addEventListener('change', this.handleAppStateChange)
 
-    // Update on dark/light mode switch.
-    this.subscription = Appearance.addChangeListener(({ colorScheme }) => {
-      saveTheme(colorScheme == 'light' ? 'Light' : 'Dark')
-    })
+    this.subscription = Appearance.addChangeListener(_.throttle(this.handleColorModeChange, 1000, {
+      leading: false,
+      trailing: true
+    }));
 
     // Save initial theme value.
-    saveTheme((Appearance.getColorScheme() == 'light') ? 'Light' : 'Dark')
+    saveTheme((Appearance.getColorScheme() == 'dark') ? 'Dark' : 'Light')
 
     loadArtistArt()
   }
 
   componentWillUnmount() {
+    Appearance.removeChangeListener(this.subscription)
     AppState.removeEventListener('change', this.handleAppStateChange)
   }
 
   UNSAFE_componentWillUpdate(nextProps, nextState) {
     if (nextProps && nextProps.connected && nextProps.commands != null) {
       this.navigator && this.navigator.dispatch(
-        NavigationActions.navigate({ routeName: 'Home' })
+        CommonActions.navigate('Home')
       )
 
       if (this.state.reconnectState == RECONNECT_STATE.RECONNECTING
@@ -150,10 +160,7 @@ class Root extends Component {
       }
     } else if (!nextProps.connected) {
       if (nextProps.intentional === true) {
-        const navigateAction = NavigationActions.navigate({
-          routeName: 'Login',
-          params: {},
-        })
+        const navigateAction = CommonActions.navigate('Login')
 
         this.navigator && this.navigator.dispatch(navigateAction)
       } else if (this.props.intentional === false) {
@@ -215,27 +222,52 @@ class Root extends Component {
       ? 'Connection to server lost.'
       : 'Connection to server lost. Trying to reconnect ' + reconnectText + '...'
 
-    let themeName = theme == 'Light' ? 'light' : 'dark'
+    let darkTheme = {
+      ...DarkTheme,
+      dark: true,
+      colors: {
+        ...DefaultTheme.colors,
+        primary: '#d9e3f0',
+        background: '#171717',
+        navbar: '#2B2E36',
+        text: '#EFEFEF',
+        card: '#2B2E36'
+      }
+    }
+
+    let lightTheme = {
+      ...DefaultTheme,
+      dark: false,
+      colors: {
+        ...DefaultTheme.colors,
+        primary: '#404550',
+        background: '#F5F5F5',
+        navbar: '#404550',
+        text: '#EFEFEF',
+        card: '#404550'
+      }
+    }
+
+    let themeValue = theme === 'Dark' ? darkTheme : lightTheme
 
     return (
-      <View style={{flex: 1}}>
-        <StatusBar translucent={true} barStyle="light-content" />
-        <AppearanceProvider>
-          <AppContainer
-            theme={themeName}
-            ref={ nav => { this.navigator = nav } }
-          />
-        </AppearanceProvider>
-        {reconnectState != RECONNECT_STATE.NOTHING && (
-          <AppDialog
-            prompt={reconnectPrompt}
-            cancelButton={{ title: 'Disconnect', onPress: this.handleReconnectCancel }}
-            confirmButton={{ title: 'Retry Now', onPress: this.handleRetryNow }}
-            theme={theme}
-          />
-        )}
-        <ErrorBanner error={error} />
-      </View>
+      <SafeAreaProvider>
+        <View style={{flex: 1}}>
+          <StatusBar translucent={true} barStyle="light-content" />
+            <NavigationContainer ref={ nav => { this.navigator = nav } } theme={themeValue}>
+              {AppContainer}
+            </NavigationContainer>
+          {reconnectState != RECONNECT_STATE.NOTHING && (
+            <AppDialog
+              prompt={reconnectPrompt}
+              cancelButton={{ title: 'Disconnect', onPress: this.handleReconnectCancel }}
+              confirmButton={{ title: 'Retry Now', onPress: this.handleRetryNow }}
+              theme={theme}
+            />
+          )}
+          <ErrorBanner error={error} />
+        </View>
+      </SafeAreaProvider>
     )
   }
 

@@ -9,7 +9,7 @@ import {
 } from 'react-native'
 
 // Navigation.
-import { NavigationActions } from 'react-navigation'
+import { CommonActions } from '@react-navigation/native'
 
 // Redux.
 import { connect } from 'react-redux'
@@ -55,7 +55,6 @@ class Playlists extends React.Component {
   }
 
   componentDidMount() {
-    this.props.navigation.setParams({ onMenu: this.handleMenuPress })
     Moment.locale('en')
     this.reload()
   }
@@ -68,11 +67,11 @@ class Playlists extends React.Component {
   onNavigate = (item) => {
     const { navigation } = this.props
 
-    const action = NavigationActions.navigate({
+    const action = CommonActions.navigate({
       params: {
          name: item.name,
       },
-      routeName: 'Playlist',
+      name: 'Playlist',
       key: 'Playlist-' + item.name,
     })
     navigation.dispatch(action)
@@ -83,10 +82,10 @@ class Playlists extends React.Component {
   }
 
   render() {
-    const { content, navigation, refreshing, queueSize, theme } = this.props
-    const { state: { params: { callback } } } = navigation
-    const { showingNewDialog, showingDeleteDialog } = this.state
+    const { content, navigation, refreshing, queueSize, theme, route } = this.props
+    const { showingNewDialog } = this.state
 
+    const callback = route.params?.callback ?? null
     const canAddItems = callback == null
     const onSelection = callback != null ? (item) => { callback(item.name) } : null
 
@@ -103,11 +102,16 @@ class Playlists extends React.Component {
           queueSize={queueSize}
           canAdd={canAddItems}
           canEdit={canAddItems}
-          canDelete={false}
+          canDelete={true}
+          canSwipeDelete={false}
           navigation={navigation}
           onDeleteItems={this.handleDelete}
           deletePrompt={{single: 'Delete selected playlist?', multiple: 'Delete %% selected playlists?'}}
+          defaultIcon={callback != null ? 'add' : null}
+          onIconTapped={this.handleMenuPress}
           theme={theme}
+          mode='list'
+          title={route.title}
         />
         {showingNewDialog && (
           <AppPromptDialog
@@ -153,8 +157,8 @@ class Playlists extends React.Component {
   }
 
   handleDialogConfirm = (name) => {
-    const { navigation } = this.props
-    const { state: { params: { callback = null } } } = navigation
+    const { navigation, route } = this.props
+    const { params: { callback = null } } = route
     if (callback) {
       callback(name)
     }

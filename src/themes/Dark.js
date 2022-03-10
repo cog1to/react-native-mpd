@@ -21,7 +21,8 @@ const DarkTheme = {
   searchButtonColor: '#EFEFEF',
   navBarColor: '#2B2E36',
   placeholderColor: '#9F9F9F',
-  darkPlaceholderColor: '#9F9F9F'
+  darkPlaceholderColor: '#9F9F9F',
+  disabledColor: '#353535',
 }
 
 export default DarkTheme

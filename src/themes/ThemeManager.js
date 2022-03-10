@@ -1,7 +1,7 @@
 import LocalStorage from '../storage/LocalStorage'
 import LightTheme from './Light'
 import DarkTheme from './Dark'
-import { Appearance } from 'react-native-appearance'
+import { Appearance } from 'react-native'
 // Redux.
 import { store } from 'react-redux'
 import { saveTheme, themeChanged } from '../redux/reducers/storage/actions'
@@ -37,7 +37,7 @@ export default class ThemeManager {
 
   getCurrentTheme() {
     let scheme = Appearance.getColorScheme()
-    return scheme == 'light' ? this.themes['Light'] : this.themes['Dark']
+    return scheme === 'dark' ? this.themes['Dark'] : this.themes['Light']
   }
 
   createTheme(name, definition) {

@@ -8,13 +8,14 @@ import {
   BackHandler,
   LayoutAnimation,
   UIManager,
+  TextInput
 } from 'react-native'
 
 // Device info.
 import DeviceInfo from 'react-native-device-info'
 
 // Navigation.
-import { NavigationActions, StackActions } from 'react-navigation'
+import { CommonActions, StackActions } from '@react-navigation/native'
 
 // Prop Types.
 import PropTypes from 'prop-types'
@@ -28,6 +29,10 @@ import MenuDialog from './MenuDialog'
 // Delete dialog.
 import AppDialog from './AppDialog'
 
+// Bar button
+import BarButton from './BarButton'
+import MaterialBarButton from './MaterialBarButton'
+
 // Redux.
 import { connect } from 'react-redux'
 
@@ -40,6 +45,9 @@ import KeyboardState from './KeyboardState'
 
 // Themes.
 import ThemeManager from '../../themes/ThemeManager'
+
+// Safe area view.
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 // Lodash for debounce method.
 import _ from 'lodash'
@@ -130,8 +138,8 @@ class KeyboardAwareBrowsable extends React.Component {
 
     const containerStyle = (layout != null)
       ? (Platform.OS === 'ios'
-        ? { height: keyboardVisible ? (screenY - layout.y - (hasSafeArea ? 88 : 64)) : layout.height, width: '100%' }
-        : { height: keyboardVisible ? (screenY - layout.y - 80) : layout.height, width: '100%' })
+        ? { height: keyboardVisible ? (screenY - layout.y - (hasSafeArea ? 88 : 64)) : '100%', width: '100%' }
+        : { height: keyboardVisible ? (screenY - layout.y - 80) : '100%', width: '100%' })
       : { height: '100%', width: '100%' }
 
     return (
@@ -159,7 +167,10 @@ class Browsable extends React.Component {
     canAdd: PropTypes.bool.isRequired,
     canEdit: PropTypes.bool.isRequired,
     canDelete: PropTypes.bool.isRequired,
+    canSwipeDelete: PropTypes.bool.isRequired,
     canRearrange: PropTypes.bool.isRequired,
+    canFilter: PropTypes.bool.isRequired,
+    canSelectMode: PropTypes.bool.isRequired,
     addOptions: PropTypes.arrayOf(PropTypes.shape({
       value: PropTypes.string.isRequired,
       title: PropTypes.string.isRequired,
@@ -194,13 +205,15 @@ class Browsable extends React.Component {
     canAdd: true,
     canEdit: true,
     canDelete: false,
+    canSwipeDelete: false,
     canRearrange: false,
+    canFilter: false,
+    canSelectMode: false,
     deletePrompt: null,
     onItemMoved: null,
     confirmDelete: true,
     onRefresh: null,
-    refreshing: null,
-    mode: 'list'
+    refreshing: null
   }
 
   // Global handlers.
@@ -210,15 +223,25 @@ class Browsable extends React.Component {
       BackHandler.addEventListener('hardwareBackPress', this.handleBackPress)
     }
 
-    this.props.navigation.setParams({
-      onCancelEditing: this.onCancelEditing,
-      onNavigationButtonPressed: this.onNavigationButtonPressed,
-      onGlobalSelectionToggled: this.onGlobalSelectionToggled,
-      onMenu: this.onSearch,
-      onCancelSearch: this.onCancelSearch,
-      onSearchChange: _.debounce(this.onSearchChange, 300),
-      mode: this.props.mode,
-    })
+    // Workaround for a navbar color bug:
+    // -------------------------------------------------------------------------------------------
+    // The navbar color is set in the Navigator function, but from there we can't set header's
+    // buttons with callbacks to component's methods. But if we do set them in componentDidMount()
+    // or componentDidUpdate(), there's a 50% chance that navbar color won't get applied.
+    // Maybe this will go away completely if I rework every component into a pure function with
+    // useLayoutEffect() hook, but for now I have to fix it by artificially delaying the code 
+    // that adds the navbar buttons...
+    _.delay(() => {this.updateNavigationBar(this.state.searching ?? false)}, 500)
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.searching != prevState.searching 
+      || this.state.editing != prevState.editing 
+      || this.state.allSelected != prevState.allSelected
+      || this.props.mode != prevProps.mode
+    ) {
+      this.updateNavigationBar(this.state.searching ?? false)
+    }
   }
 
   componentWillUnmount() {
@@ -240,6 +263,7 @@ class Browsable extends React.Component {
       position,
       canEdit,
       canDelete,
+      canSwipeDelete,
       canRearrange,
       deletePrompt,
       mode,
@@ -307,53 +331,68 @@ class Browsable extends React.Component {
       }
     }
 
+    let hasSafeArea = function() {
+      let device = DeviceInfo.getDeviceId()
+      if (device.startsWith("iPhone")) {
+        let model = parseInt(device.split(',')[0].substring("iPhone".length))
+        if (model >= 11) {
+          return true
+        }
+      }
+      return false
+    }()
+
+    const safeAreaEdges = (Platform.OS === 'android' ? ['right', 'left', 'bottom'] : ['right', 'left'])
+
     return (
-      <KeyboardState>
-        {keyboardInfo => (
-          <KeyboardAwareBrowsable {...keyboardInfo}>
-            <View style={{flex: 1, backgroundColor: themeValue.backgroundColor}}>
-              <UniversalList
-                content={items}
-                editing={editing}
-                refreshing={refreshing}
-                onRefresh={onRefresh}
+      <SafeAreaView edges={safeAreaEdges}>
+        <KeyboardState>
+          {keyboardInfo => (
+            <KeyboardAwareBrowsable {...keyboardInfo}>
+              <View style={{flex: 1, backgroundColor: themeValue.backgroundColor}}>
+                <UniversalList
+                  content={items}
+                  editing={editing}
+                  refreshing={refreshing}
+                  onRefresh={onRefresh}
 
-                canAdd={canAdd}
-                canDelete={canDelete}
-                canRearrange={canRearrange}
-                canEdit={canEdit}
+                  canAdd={canAdd}
+                  canDelete={canSwipeDelete}
+                  canRearrange={canRearrange}
+                  canEdit={canEdit}
 
-                onItemTapped={this.handleItemTapped}
-                onItemMenu={this.handleMenuTapped}
-                onItemLongTapped={this.handleItemLongTapped}
-                onItemMoved={this.handleItemMoved}
-                onItemDelete={this.handleItemDelete}
+                  onItemTapped={this.handleItemTapped}
+                  onItemMenu={this.handleMenuTapped}
+                  onItemLongTapped={this.handleItemLongTapped}
+                  onItemMoved={this.handleItemMoved}
+                  onItemDelete={this.handleItemDelete}
 
-                extraData={{editing, selected}}
-                mode={mode}
-                theme={theme}
-              />
-              {showingMenu && (
-                <MenuDialog
-                  title='Add items...'
-                  options={options}
-                  onHide={this.handleBackPress}
-                  onOptionSelected={this.onOptionSelected}
+                  extraData={{editing, selected}}
+                  mode={mode}
                   theme={theme}
                 />
-              )}
-              {showingDeleteDialog && (
-                <AppDialog
-                  prompt={deleteText}
-                  cancelButton={{ title: 'Cancel', onPress: this.handleDeleteCancel }}
-                  confirmButton={{ title: 'Delete', onPress: this.handleDeleteConfirm }}
-                  theme={theme}
-                />
-              )}
-            </View>
-          </KeyboardAwareBrowsable>
-        )}
-      </KeyboardState>
+                {showingMenu && (
+                  <MenuDialog
+                    title='Add items...'
+                    options={options}
+                    onHide={this.handleBackPress}
+                    onOptionSelected={this.onOptionSelected}
+                    theme={theme}
+                  />
+                )}
+                {showingDeleteDialog && (
+                  <AppDialog
+                    prompt={deleteText}
+                    cancelButton={{ title: 'Cancel', onPress: this.handleDeleteCancel }}
+                    confirmButton={{ title: 'Delete', onPress: this.handleDeleteConfirm }}
+                    theme={theme}
+                  />
+                )}
+              </View>
+            </KeyboardAwareBrowsable>
+          )}
+        </KeyboardState>
+      </SafeAreaView>
     )
   }
 
@@ -374,10 +413,6 @@ class Browsable extends React.Component {
           // First update own state.
           this.setState({
             selected: newSelected,
-          })
-
-          // Update navigation bar state.
-          navigation.setParams({
             allSelected: newSelected.length === content.length
           })
         }
@@ -387,10 +422,6 @@ class Browsable extends React.Component {
         // First update own state.
         this.setState({
           selected: newSelected,
-        })
-
-        // Update navigation bar state.
-        navigation.setParams({
           allSelected: newSelected.length === content.length
         })
       }
@@ -409,7 +440,7 @@ class Browsable extends React.Component {
     const { navigation, content } = this.props
 
     // Setup transition to editing state.
-    LayoutAnimation.configureNext(MainLayoutAnimation)
+    if (Platform.OS != 'android') { LayoutAnimation.configureNext(MainLayoutAnimation) }
 
     // Add item to selected list.
     let newSelected = this.state.selected.slice()
@@ -421,11 +452,7 @@ class Browsable extends React.Component {
       selected: newSelected,
     })
 
-    // Update navigation bar state.
-    navigation.setParams({
-      editing: true,
-      allSelected: newSelected.length === content.length
-    })
+    
   }
 
   handleMenuTapped = (item) => {
@@ -439,7 +466,7 @@ class Browsable extends React.Component {
     let newSelected = selected.slice()
     newSelected.push(item)
 
-    LayoutAnimation.configureNext(MainLayoutAnimation)
+    if (Platform.OS != 'android') { LayoutAnimation.configureNext(MainLayoutAnimation) }
     this.setState({
       showingMenu: true,
       selected: newSelected,
@@ -481,13 +508,12 @@ class Browsable extends React.Component {
       return
     }
 
-    LayoutAnimation.configureNext(MainLayoutAnimation, this.onCancelEditing)
+    if (Platform.OS != 'android') { LayoutAnimation.configureNext(MainLayoutAnimation, this.onCancelEditing) }
     this.setState({
       editing: false,
       showingMenu: false,
       selected: [],
     })
-    this.props.navigation.setParams({ editing: false })
   }
 
   handleBackPress = () => {
@@ -500,7 +526,7 @@ class Browsable extends React.Component {
         newSelected = []
       }
 
-      LayoutAnimation.configureNext(MainLayoutAnimation)
+      if (Platform.OS != 'android') { LayoutAnimation.configureNext(MainLayoutAnimation) }
       this.setState({
         showingMenu: false,
         selected: newSelected,
@@ -523,9 +549,7 @@ class Browsable extends React.Component {
     const { navigation } = this.props
     const { selected, search } = this.state
 
-    navigation.setParams({ editing: false, searchText: search })
-
-    LayoutAnimation.configureNext(MainLayoutAnimation)
+    if (Platform.OS != 'android') { LayoutAnimation.configureNext(MainLayoutAnimation) }
     this.setState({
       selected: [],
       editing: false,
@@ -586,19 +610,11 @@ class Browsable extends React.Component {
 
       this.setState({
         selected: items,
-      })
-
-      // Update navigation bar state.
-      navigation.setParams({
         allSelected: true,
       })
     } else {
       this.setState({
         selected: [],
-      })
-
-      // Update navigation bar state.
-      navigation.setParams({
         allSelected: false,
       })
     }
@@ -637,15 +653,11 @@ class Browsable extends React.Component {
     const { navigation, onDeleteItems } = this.props
 
     // Reset editing state.
-    LayoutAnimation.configureNext(MainLayoutAnimation)
+    if (Platform.OS != 'android') { LayoutAnimation.configureNext(MainLayoutAnimation) }
     this.setState({
       editing: false,
       selected: [],
       showingDeleteDialog: false,
-    })
-
-    navigation.setParams({
-      editing: false
     })
 
     // Call the delete callback.
@@ -663,12 +675,8 @@ class Browsable extends React.Component {
   navigateToPlaylists = (paths) => {
     const { addToPlaylist, navigation } = this.props
 
-    const action = NavigationActions.navigate({
-      params: {
-        callback: (name) => this.addToPlaylist(name, paths)
-      },
-      routeName: 'Playlists',
-      key: 'selectPlaylist',
+    const action = StackActions.push('Playlists', {
+      callback: (name) => this.addToPlaylist(name, paths)
     })
     navigation.dispatch(action)
   }
@@ -677,17 +685,16 @@ class Browsable extends React.Component {
     const { navigation, addToPlaylist } = this.props
 
     // Pop the stack.
-    const popAction = StackActions.pop({ n: 1 })
+    const popAction = StackActions.pop(1)
     navigation.dispatch(popAction)
 
     // Close the menu.
-    LayoutAnimation.configureNext(MainLayoutAnimation, this.onCancelEditing)
+    if (Platform.OS != 'android') { LayoutAnimation.configureNext(MainLayoutAnimation, this.onCancelEditing) }
     this.setState({
       editing: false,
       showingMenu: false,
       selected: [],
     })
-    this.props.navigation.setParams({ editing: false })
 
     // Perform an action.
     addToPlaylist(name, paths)
@@ -702,23 +709,93 @@ class Browsable extends React.Component {
   // Filter.
 
   onSearch = () => {
-    const { navigation } = this.props
-
-    LayoutAnimation.configureNext(MainLayoutAnimation)
-    navigation.setParams({ searching: true, searchText: null })
+    const { navigation, theme } = this.props
+    const themeValue = ThemeManager.instance().getTheme(theme)
+ 
+    if (Platform.OS != 'android') { LayoutAnimation.configureNext(MainLayoutAnimation) }
+    this.setState({searching: true})
   }
 
   onCancelSearch = () => {
-    const { navigation } = this.props
+    const { navigation, canFilter, theme } = this.props
+    const themeValue = ThemeManager.instance().getTheme(theme)                                                                               
 
-    this.setState({
-      search: null,
-    })
-
-    LayoutAnimation.configureNext(MainLayoutAnimation)
-    navigation.setParams({ searching: false })
+    if (Platform.OS != 'android') { LayoutAnimation.configureNext(MainLayoutAnimation) }
+    this.setState({search: null, searching: false})
   }
 
+  updateNavigationBar = (searchEnabled) => {
+    const { theme, canFilter, navigation, canSelectMode, mode, onIconTapped, defaultIcon, canDelete, addOptions, title } = this.props
+    const { editing, allSelected } = this.state
+    const themeValue = ThemeManager.instance().getTheme(theme)
+    const icon = (mode == 'list') ? 'view-module' : 'view-list'
+    
+    if (editing == true) {
+      let selectionIcon = (allSelected == true) ? 'checkbox-multiple-blank-outline' : 'checkbox-multiple-marked-outline'
+
+      navigation.setOptions({
+        title: null,
+        headerTitle: null,
+        headerRight: () => { 
+          return (
+            <View style={styles.rightEditingHeader}>
+              <MaterialBarButton onPress={() => this.onGlobalSelectionToggled(!allSelected)} icon={selectionIcon} theme={themeValue} style={{paddingLeft: 12}} />
+              {addOptions.length != 0 ? <BarButton onPress={() => this.onNavigationButtonPressed('playlist-add')} icon='playlist-add' theme={themeValue} style={{paddingLeft: 12}} /> : null}
+              {canDelete ? <BarButton onPress={this.onHandleDelete} icon='delete' theme={themeValue} style={{paddingLeft: 12}} /> : null}
+              
+            </View>
+          )
+        },
+        headerLeft: () => { 
+          return (
+            <BarButton onPress={this.onCancelEditing} icon='clear' theme={themeValue} style={{...styles.cancelEditingButtonStyle}} />
+          )
+        },
+        headerBackVisible: false,
+      })
+    } else if (searchEnabled == true) {
+      let textInputStyle = Platform.OS === 'android' ? styles.searchBarTextInputAndroid : styles.searchBarTextInputIOS
+      
+      navigation.setOptions({
+        title: null,
+        headerTitle: () => {
+          return (
+            <View style={styles.searchBarHeader}>
+              <View style={{...styles.searchBarBackground, backgroundColor: themeValue.backgroundColor}}>
+                <TextInput
+                  value={navigation.params?.searchText}
+                  style={{...textInputStyle, color: themeValue.mainTextColor}} placeholder='Filter list...'
+                  placeholderTextColor={themeValue.placeholderColor}
+                  onChangeText={this.onSearchChange}
+                />
+              </View>
+            </View>
+          )
+        },
+        headerRight: () => {
+          return (<BarButton onPress={this.onCancelSearch} icon='clear' theme={themeValue} style={{...styles.cancelSearchButtonStyle}} />)
+        },
+        headerLeft: null,
+        headerBackVisible: false,
+      })
+    } else {
+      navigation.setOptions({
+        title: title,
+        headerRight: () => { 
+          return (
+            <View style={styles.rightEditingHeader}>
+              {defaultIcon != null ? <BarButton onPress={() => onIconTapped(icon)} icon={defaultIcon} theme={themeValue} style={{...styles.navigationButtonStyle}} /> : null}
+              {canSelectMode ? <BarButton onPress={() => onIconTapped(icon)} icon={icon} theme={themeValue} style={{...styles.navigationButtonStyle}} /> : null}
+              {canFilter ? <BarButton onPress={this.onSearch} icon='filter-list' theme={themeValue} style={{...styles.navigationButtonStyle}} /> : null}
+            </View>
+          )
+        },
+        headerTitle: null,
+        headerLeft: undefined,
+        headerBackVisible: true
+      })
+    }
+  }
 }
 
 // Redux setup.
@@ -738,3 +815,79 @@ const mapDispatchToProps = dispatch => {
 }
 
 export default connect(null, mapDispatchToProps)(Browsable)
+
+const styles = StyleSheet.create(
+  Platform.OS === 'ios' ? {
+    searchBarBackground: {
+      backgroundColor: 'white',
+      left: Platform.OS === 'android' ? 0 : 4,
+      right: Platform.OS === 'android' ? 0 : 4,
+      borderRadius: 8,
+      height: 30,
+      width: '82%'
+    },
+    searchBarTextInputIOS: {
+      marginHorizontal: 12,
+      flex: 1
+    },
+    searchBarTextInputAndroid: {
+      marginTop: -2,
+      marginHorizontal: 4,
+      height: 36
+    },
+    searchBarHeader: {
+      marginHorizontal: 8,
+      flex: 1,
+    },
+    rightEditingHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    cancelEditingButtonStyle: {
+      paddingRight: 8
+    },
+    navigationButtonStyle: {
+      paddingLeft: 12
+    }
+  } : {
+    searchBarBackground: {
+      backgroundColor: 'white',
+      left: Platform.OS === 'android' ? 0 : 4,
+      right: Platform.OS === 'android' ? 0 : 4,
+      borderRadius: 8,
+      height: 30,
+      flexGrow: 1,
+      width: '100%'
+    },
+    searchBarTextInputIOS: {
+      marginHorizontal: 12,
+      flex: 1
+    },
+    searchBarTextInputAndroid: {
+      marginHorizontal: 4,
+      height: 36,
+    },
+    searchBarHeader: {
+      alignItems: 'center',
+      marginHorizontal: 8,
+      flex: 1,
+      height: 64,
+      flexDirection: 'row'
+    },
+    rightEditingHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingRight: 16,
+    },
+    cancelSearchButtonStyle: {
+      paddingLeft: 0,
+      paddingRight: 16
+    },
+    navigationButtonStyle: {
+      paddingLeft: 12
+    },
+    cancelEditingButtonStyle: {
+      paddingHorizontal: 16
+    }
+  }
+)

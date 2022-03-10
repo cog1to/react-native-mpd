@@ -68,7 +68,7 @@ export default class UniversalList extends React.Component {
     return '' + item.index
   }
 
-  renderItem = ({ item, index, move, moveEnd, isActive }) => {
+  renderItem = ({ item, index, drag, onDragEnd, isActive }) => {
     const { editing, canDelete, canAdd, canRearrange, canEdit, mode, theme } = this.props
     const { id, name, type, artist = null, path, title, selected, status, subtitle, albumArtist = null } = item
     
@@ -120,8 +120,8 @@ export default class UniversalList extends React.Component {
         onLongTap={canEdit ? () => this.handleLongTap(item) : null}
         onMenu={() => this.handleMenu(item)}
 
-        move={move}
-        moveEnd={moveEnd}
+        move={drag}
+        moveEnd={onDragEnd}
 
         theme={theme}
       />
@@ -205,7 +205,7 @@ export default class UniversalList extends React.Component {
           data={content}
           renderItem={this.renderItem}
           keyExtractor={this.keyExtractor}
-          onMoveEnd={(data) => this.handleMoveEnd(data)}
+          onDragEnd={(data) => this.handleMoveEnd(data)}
           getItemLayout={this.getItemLayout}
           refreshing={refreshing}
           onRefresh={onRefresh}

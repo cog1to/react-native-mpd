@@ -21,7 +21,8 @@ const LightTheme = {
   searchButtonColor: '#404550',
   navBarColor: '#404550',
   placeholderColor: '#666666',
-  darkPlaceholderColor: '#E0E0E0'
+  darkPlaceholderColor: '#E0E0E0',
+  disabledColor: '#A5A5A5',
 }
 
 export default LightTheme

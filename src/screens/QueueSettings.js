@@ -88,16 +88,23 @@ class ToggleRow extends React.Component {
                         <View style={styles.rowText}>
                             <Text style={{...styles.title, color: theme.mainTextColor}}>{title}</Text>
                             <View style={{ flex: 1, flexDirection: 'row' }}>
-                                <Text style={{...styles.title, color: theme.lightTextColor}}>{subtitle}</Text>
+                                <Text style={{...styles.subtitle, color: theme.lightTextColor}}>{subtitle}</Text>
                             </View>
                         </View>
                         <View pointerEvents='none' style={styles.switchContainer}>
-                            <Switch 
+                            {Platform.OS === 'ios' && (
+                                <Switch 
                                 value={value == 0 ? false : true}
                                 disabled={false}
                                 trackColor={{true:theme.activeColor+'70'}}
                                 thumbColor={value == 0 ? null : theme.activeColor}
-                            />
+                            />)}
+                            {Platform.OS === 'android' && (
+                                <Switch 
+                                value={value == 0 ? false : true}
+                                disabled={false}
+                                trackColor={{true:theme.activeColor+'70'}}
+                            />)}
                         </View>
                     </View>
                 </View>
