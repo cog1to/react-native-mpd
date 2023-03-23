@@ -253,7 +253,7 @@ class Root extends Component {
     return (
       <SafeAreaProvider>
         <View style={{flex: 1}}>
-          <StatusBar translucent={true} barStyle="light-content" />
+          <StatusBar translucent={true} barStyle="light-content" backgroundColor={themeValue.colors.navbar} />
             <NavigationContainer ref={ nav => { this.navigator = nav } } theme={themeValue}>
               {AppContainer}
             </NavigationContainer>
