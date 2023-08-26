@@ -9,11 +9,13 @@ import { albumArtMiddleware } from './middlewares/albumArt'
 import { artistArtMiddleware } from './middlewares/artistArt'
 import { loggerMiddleware } from './middlewares/logger'
 import { localStorageMiddleware } from './middlewares/localStorage'
+import { stubMiddleware } from './middlewares/stub'
 
 export const configureStore = () => {
   const store = createStore(
     reducer,
     applyMiddleware(
+      stubMiddleware,
       mpdMiddleware,
       albumArtMiddleware,
       localStorageMiddleware,

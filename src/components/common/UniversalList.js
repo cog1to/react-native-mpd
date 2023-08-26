@@ -12,6 +12,7 @@ import {
 import PropTypes from 'prop-types'
 
 import DraggableFlatList from 'react-native-draggable-flatlist'
+import { gestureHandlerRootHOC } from 'react-native-gesture-handler'
 
 import ListItem from './ListItem'
 import ListTileItem from './ListTileItem'
@@ -21,7 +22,7 @@ import TitleItem from './TitleItem'
 
 import ThemeManager from '../../themes/ThemeManager'
 
-export default class UniversalList extends React.Component {
+class UniversalList extends React.Component {
   static propTypes = {
     // Content list.
     content: PropTypes.arrayOf(
@@ -202,6 +203,7 @@ export default class UniversalList extends React.Component {
     if (mode === 'list') {
       return (
         <DraggableFlatList
+          activationDistance={20}
           data={content}
           renderItem={this.renderItem}
           keyExtractor={this.keyExtractor}
@@ -274,3 +276,5 @@ const styles = StyleSheet.create({
     marginTop: 4
   }
 })
+
+export default gestureHandlerRootHOC(UniversalList)

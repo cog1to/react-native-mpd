@@ -283,6 +283,7 @@ class QueueSettings extends React.Component {
                 </ScrollView>
                 {showingReplayGainModes && (
                     <MenuDialog
+                         theme={theme}
                          title='Replay gain mode'
                          options={REPLAY_GAIN_TITLES}
                          selected={replayValue.value}
@@ -292,6 +293,7 @@ class QueueSettings extends React.Component {
                 )}
                 {showingSingleModes && (
                     <MenuDialog
+                         theme={theme}
                          title='Single mode'
                          options={SINGLE_TITLES}
                          selected={singleValue.value}

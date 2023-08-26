@@ -63,6 +63,7 @@ export const statusReducer = (state = initialState, action) => {
                 ...state, error: action.error
             }
         case types.REPLAY_GAIN_STATUS_UPDATED:
+            console.log(action)
             return {
                 ...state, replayGain: action.status.replay_gain_mode
             }

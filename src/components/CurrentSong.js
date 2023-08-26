@@ -12,6 +12,7 @@ import { connect } from 'react-redux';
 class CurrentSong extends React.Component {
     render() {
         const { currentSong, state, color } = this.props
+        console.log(this.props)
         if (!currentSong) return null
 
         const { title, album, artist, file } = currentSong              
