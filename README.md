@@ -18,6 +18,12 @@ For example, you can do something like this before building or launching the app
 export JAVA_HOME=/usr/lib/jvm/java-13-openjdk
 ```
 
+#### Android toolchain
+Android toolchain requires Java 8. To run sdk tools, like avdmanager, you'll need to set environment variables pointing to Java 8 and its libraries. Something like:
+```
+LD_LIBRARY_PATH=/usr/lib/jvm/java-8-openjdk/jre/lib/amd64/:$LD_LIBRARY_PATH JAVA_HOME=/usr/lib/jvm/java-8-openjdk/ avdmanager list
+```
+
 #### Node version
 I use the following versions:
 - Node: 17.3.0
