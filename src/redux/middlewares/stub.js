@@ -62,26 +62,6 @@ import { TreeNodeType } from '../reducers/browser/reducer'
 
 import { sanitize } from '../../utils/StringUtils'
 
-/* Utils */
-
-const nodeFromPath = (path, tree) => {
-    let node = tree
-
-    if (node === null) {
-        return null
-    }
-
-    if (path.length < 2 && path[0] == node.name) {
-        return node
-    }
-
-    path.slice(1).forEach((element) => {
-        node = node.children.filter((child) => child.name === element)[0]
-    })
-
-    return node
-}
-
 /* Client */
 
 const client = {
@@ -244,7 +224,7 @@ const client = {
   tree: {
     name: "",
     type: "DIRECTORY",
-    fullPath: "/",
+    fullPath: "",
     children: [
       {
         name: "Taylor Swift",
@@ -253,7 +233,7 @@ const client = {
         children: [
           {
             name: "2022 - Midnights",
-            fullPath: "Taylor Swift/2022 - Midnight",
+            fullPath: "Taylor Swift/2022 - Midnights",
             type: "DIRECTORY",
             children: [
               {
@@ -506,6 +486,34 @@ const client = {
           ]
         }
       ]
+    }
+  ],
+  playlists: [
+    {
+      fullPath: "My Favorite Songs",
+      name: "My Favorite Songs",
+      type: "PLAYLIST",
+      lastModified: Date.now(),
+      songs: [
+        {
+          type: "FILE",
+          fullPath: "Taylor Swift/2022 - Midnights/02 - Maroon.mp3",
+          name: "02 - Maroon.mp3",
+          title: "Maroon",
+          artist: "Taylor Swift",
+          albumArtist: "Taylor Swift",
+          children: [],
+        },
+        {
+          type: "FILE",
+          fullPath: "Taylor Swift/2022 - Midnights/13 - Mastermind.mp3",
+          name: "13 - Mastermind.mp3",
+          title: "Mastermind",
+          artist: "Taylor Swift",
+          albumArtist: "Taylor Swift",
+          children: [],
+        }
+      ],
     }
   ],
 }
@@ -851,6 +859,68 @@ export const stubMiddleware = store => {
                 store.dispatch(getOutputs())
                 break
             }
+            case types.GET_PLAYLISTS: {
+                store.dispatch(loadingPlaylists(true))
+                store.dispatch(playlistsLoaded(client.playlists))
+                break
+            }
+            case types.GET_PLAYLIST: {
+                const { name } = action
+
+                store.dispatch(loadingPlaylist(true))
+
+                let playlists = client.playlists.filter(el => el.name === name)
+                if (playlists.length > 0) {
+                    store.dispatch(playlistLoaded(name, playlists[0].songs))
+                }
+                break
+            }
+            case types.ADD_TO_PLAYLIST: {
+                console.log("ADD TO PLAYLIST", action)
+                const { name, paths } = action
+                
+                let playlist = client.playlists.filter(el => el.name === name)[0]
+                let files = allFiles(paths, client.tree)
+ 
+                console.log("FILES", files)
+
+                let items = files.map(el => {
+                    return {
+                        type: "FILE",
+                        fullPath: el.fullPath,
+                        name: el.name,
+                        title: el.title,
+                        artist: el.artist,
+                        albumArtist: el.albumArtist,
+                        children: [],
+                    }
+                })
+
+                client.playlists = client.playlists.map(playlist => {
+                    if (playlist.name === name) {
+                        return {
+                            ...playlist,
+                            lastModified: Date.now(),
+                            songs: playlist.songs.concat(items)
+                        }
+                    } else {
+                        return playlist
+                    }
+                })
+                
+                break
+            }
+            case types.DELETE_PLAYLISTS: {
+                const { names } = action
+
+                client.playlists = client.playlists.filter(el => {
+                  return names.filter(name => name === el.name).length === 0
+                })
+
+                store.dispatch(playlistsLoaded(client.playlists))
+
+                break
+            }
             default: {
                 return next(action)
                 break
@@ -860,3 +930,95 @@ export const stubMiddleware = store => {
 }
 
 export default stubMiddleware
+
+/* Helpers */
+
+const getContentRecursively = (node) => {
+    let results = []
+
+    switch (node.type) {
+        case TreeNodeType.FILE: {
+            let normalized = Object.assign({}, node)
+            if (!('fullPath' in node) && ('path' in node)) {
+                normalized.fullPath = node.path
+            }
+
+            results.push(normalized)
+            break
+        }
+        case TreeNodeType.DIRECTORY: {
+            let path = ('fullPath' in node) ? node.fullPath : node.path
+            let sliced = [""].concat(path.split("/"))
+            let parentNode = nodeFromPath(sliced, client.tree)
+            
+            if (parentNode !== null) {
+                let children = parentNode.children
+                for (let index = 0; index < children.length; index++) {
+                    let subResults = getContentRecursively(children[index])
+                    results = results.concat(subResults)
+                }
+            }
+
+            break
+        }
+        case TreeNodeType.PLAYLIST: {
+            let path = ('fullPath' in node) ? node.fullPath : node.path
+            let playlist = client.playlists.filter(p => p.name === path)[0]
+            let files = playlist.songs
+            results = results.concat(files)
+            break
+        }
+        case TreeNodeType.ARTIST: {
+            const { path } = node
+            let artist = client.library.filter(ar => ar.artist === path)[0]
+            for (let i = 0; i < artist.albums.length; i = i + 1) {
+                let album = artist.albums[i]
+                let files = album.songs
+                results = results.concat(files)
+            }
+            break
+        }
+        case TreeNodeType.ALBUM: {
+            const { data: { name, album } } = node
+
+            let artistNode = client.artists.filter(ar => ar.artist === name)[0]
+            let albumNode = artistNode.albums.filter(al => al.album === album)[0]
+            let files = albumNode.songs
+            results = results.concat(files)
+
+            break
+        }
+    }
+
+    return results
+}
+
+
+const allFiles = (paths, tree) => {
+  let results = []
+
+  for (let i = 0; i < paths.length; i = i + 1) {
+    results = results.concat(getContentRecursively(paths[i]))
+  }
+
+  return results
+}
+
+const nodeFromPath = (path, tree) => {
+    let node = tree
+
+    if (node === null) {
+        return null
+    }
+
+    if (path.length < 2 && path[0] == node.name) {
+        return node
+    }
+
+    path.slice(1).forEach((element) => {
+        node = node.children.filter((child) => child.name === element)[0]
+    })
+
+    return node
+}
+

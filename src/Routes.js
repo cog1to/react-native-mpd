@@ -258,6 +258,11 @@ function createMainStack() {
     <Stack.Navigator>
       <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
       <Stack.Screen name="Home" component={TabsNavigator} options={{ headerShown: false, gestureEnabled: false }}/>
+      <Stack.Screen 
+        name="Playlists" 
+        component={Playlists} 
+        options={{ headerShown: true, title: "", headerTintColor: '#fff'}}
+      />
     </Stack.Navigator>
   );
 }

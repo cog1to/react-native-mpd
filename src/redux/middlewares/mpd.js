@@ -687,24 +687,31 @@ export const mpdMiddleware = store => {
                 break
             }
             case types.GET_PLAYLISTS: {
+                console.log("GET PLAYLISTS", action)
                 store.dispatch(loadingPlaylists(true))
 
                 client.mpd.getPlaylists().then((list) => {
-                    store.dispatch(playlistsLoaded(listToChildren(list)))
+                    let result = listToChildren(list)
+                    console.log(result)
+                    store.dispatch(playlistsLoaded(result))
                 })
                 break
             }
             case types.GET_PLAYLIST: {
+                console.log("GET PLAYLIST", action)
                 const { name } = action
 
                 store.dispatch(loadingPlaylist(true))
 
                 client.mpd.getPlaylist(name).then(data => {
-                    store.dispatch(playlistLoaded(name, listToChildren(data)))
+                    let result = listToChildren(data)
+                    console.log(result)
+                    store.dispatch(playlistLoaded(name, result))
                 })
                 break
             }
             case types.ADD_TO_PLAYLIST: {
+                console.log("ADD TO PLAYLIST", action)
                 const { name, paths } = action
 
                 nodesToPaths(paths).then((allFiles) => {
@@ -717,6 +724,7 @@ export const mpdMiddleware = store => {
                 break
             }
             case types.DELETE_PLAYLISTS: {
+                console.log("DEL PLAYLISTS", action)
                 const { names } = action
 
                 const handleFile = (name) => {
@@ -744,6 +752,7 @@ export const mpdMiddleware = store => {
                 break
             }
             case types.PLAYLIST_MOVE: {
+                console.log("PLAY MOVE", action)
                 const { name, from, to } = action
                 
                 client.mpd.playlistMove(name, from, to).then((result) => {
@@ -755,6 +764,7 @@ export const mpdMiddleware = store => {
                 break
             }
             case types.PLAYLIST_DELETE: {
+                console.log("PLAY DELETE", action)
                 const { name, indices } = action
                 
                 client.mpd.playlistDelete(name, indices).then((result) => {
