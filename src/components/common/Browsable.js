@@ -725,7 +725,7 @@ class Browsable extends React.Component {
   }
 
   updateNavigationBar = (searchEnabled) => {
-    const { theme, canFilter, navigation, canSelectMode, mode, onIconTapped, defaultIcon, canDelete, addOptions, title } = this.props
+    const { theme, canFilter, navigation, canSelectMode, mode, onIconTapped, defaultIcon, canDelete, addOptions, title, adjustButtons = 0 } = this.props
     const { editing, allSelected } = this.state
     const themeValue = ThemeManager.instance().getTheme(theme)
     const icon = (mode == 'list') ? 'view-module' : 'view-list'
@@ -733,16 +733,45 @@ class Browsable extends React.Component {
     if (editing == true) {
       let selectionIcon = (allSelected == true) ? 'checkbox-multiple-blank-outline' : 'checkbox-multiple-marked-outline'
 
+      var marginLeft = 0
+      var marginTop = 0
+      if (Platform.OS != 'android' && DeviceInfo.getSystemVersion() >= "16.0") {
+        console.log(adjustButtons)
+        if (adjustButtons == 1) {
+          marginLeft = (-20) - (addOptions.length != 0 ? 36 : 0) - (canDelete ? 36 : 0)
+          marginTop = -12
+        } else if (adjustButtons == 2) {
+          marginLeft = 16 
+        } else {
+          marginLeft = -20
+        }
+      }
+
       navigation.setOptions({
         title: null,
         headerTitle: null,
         headerRight: () => { 
           return (
-            <View style={styles.rightEditingHeader}>
-              <MaterialBarButton onPress={() => this.onGlobalSelectionToggled(!allSelected)} icon={selectionIcon} theme={themeValue} style={{paddingLeft: 12}} />
-              {addOptions.length != 0 ? <BarButton onPress={() => this.onNavigationButtonPressed('playlist-add')} icon='playlist-add' theme={themeValue} style={{paddingLeft: 12}} /> : null}
-              {canDelete ? <BarButton onPress={this.onHandleDelete} icon='delete' theme={themeValue} style={{paddingLeft: 12}} /> : null}
-              
+            <View style={{...styles.rightEditingHeader, marginTop: marginTop, marginLeft: marginLeft}}>
+              <MaterialBarButton
+                onPress={() => this.onGlobalSelectionToggled(!allSelected)}
+                icon={selectionIcon}
+                theme={themeValue}
+              />
+              {addOptions.length != 0
+                ? <BarButton 
+                  onPress={() => this.onNavigationButtonPressed('playlist-add')}
+                  icon='playlist-add'
+                  theme={themeValue}
+                  style={{paddingLeft: 12}} /> 
+                : null}
+              {canDelete 
+                  ? <BarButton
+                    onPress={this.onHandleDelete}
+                    icon='delete'
+                    theme={themeValue}
+                    style={{paddingLeft: 12}} />
+                  : null}
             </View>
           )
         },

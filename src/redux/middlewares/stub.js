@@ -687,36 +687,8 @@ export const stubMiddleware = store => {
                 var song = client.queue.filter(el => el.songId === id)[0]
                 const currentPosition = song.position
 
-                var newQueue = []
-                if (to > currentPosition) {
-                    // All songs before current.
-                    if (currentPosition > 0) {
-                        newQueue = newQueue.concat(client.queue.slice(0, currentPosition))
-                    }
-                    // All songs until target.
-                    newQueue = newQueue.concat(client.queue.slice(currentPosition + 1, to))
-                    // Current song.
-                    newQueue = newQueue.concat([song])
-                    // All songs after.
-                    if (to < (client.queue.length - 1)) {
-                        newQueue = newQueue.concat(client.queue.slice(to, client.queue.length))
-                    }
-                } else if (to < currentPosition) {
-                    // All songs before target.
-                    if (to > 0) {
-                        newQueue = newQueue.concat(client.queue.slice(0, to))
-                    }
-                    // Current song.
-                    newQueue = newQueue.concat([song])
-                    // All songs until current.
-                    newQueue = newQueue.concat(client.queue.slice(to, currentPosition))
-                    // All songs after current.
-                    if (currentPosition < (client.queue.length - 1)) {
-                        newQueue = newQueue.concat(client.queue.slice(currentPosition + 1, client.queue.length))
-                    }
-                } else {
-                    break
-                }
+                var newQueue = client.queue.filter(el => el.songId !== id)
+                newQueue.splice(to, 0, song)
 
                 // Update indexes.
                 newQueue = newQueue.map((el, idx) => {
@@ -914,10 +886,58 @@ export const stubMiddleware = store => {
                 const { names } = action
 
                 client.playlists = client.playlists.filter(el => {
-                  return names.filter(name => name === el.name).length === 0
+                    return names.filter(name => name === el.name).length === 0
                 })
 
                 store.dispatch(playlistsLoaded(client.playlists))
+
+                break
+            }
+            case types.PLAYLIST_DELETE: {
+                const { name, indices } = action
+                
+                client.playlists = client.playlists.map(playlist => {
+                    if (playlist.name === name) {
+                        return {
+                            ...playlist,
+                            lastModified: Date.now(),
+                            songs: playlist.songs.filter((el, idx) => {
+                                indices.find(ind => ind === idx) === null
+                            })
+                        }
+                    } else {
+                        return playlist
+                    }
+                })
+
+                let playlist = client.playlists.find(el => el.name === name)
+                store.dispatch(playlistLoaded(name, playlist.songs))
+
+                break
+            }
+            case types.PLAYLIST_MOVE: {
+                const { name, from, to } = action
+
+                client.playlists = client.playlists.map(playlist => {
+                    if (playlist.name === name) {
+                        var songs = playlist.songs.filter((s, i) => i !== from)
+                        let target = playlist.songs[from]
+
+                        songs.splice(to, 0, target)
+
+                        let newPlaylist = {
+                            ...playlist,
+                            lastModified: Date.now(),
+                            songs
+                        }
+
+                        store.dispatch(playlistLoaded(name, newPlaylist.songs))
+
+                        return newPlaylist
+                    } else {
+                        return playlist
+                    }
+                })
 
                 break
             }
@@ -979,9 +999,10 @@ const getContentRecursively = (node) => {
             break
         }
         case TreeNodeType.ALBUM: {
-            const { data: { name, album } } = node
+            console.log("Adding album node:", node)
+            const { data: { album, artist } } = node
 
-            let artistNode = client.artists.filter(ar => ar.artist === name)[0]
+            let artistNode = client.library.filter(ar => ar.artist === artist)[0]
             let albumNode = artistNode.albums.filter(al => al.album === album)[0]
             let files = albumNode.songs
             results = results.concat(files)

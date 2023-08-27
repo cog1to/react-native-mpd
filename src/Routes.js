@@ -59,7 +59,7 @@ function BrowseNavigator({ navigation, route }) {
       <BrowseStack.Screen 
         name="Playlists" 
         component={Playlists} 
-        options={{ headerShown: true, title: "", headerStyle: { backgroundColor: colors.navbar }, headerTintColor: '#fff'}}
+        options={{ headerShown: true, title: "", headerTintColor: '#fff', headerStyle: { backgroundColor: colors.navbar }}}
       />
     </BrowseStack.Navigator>
   )
@@ -83,15 +83,20 @@ function LibraryNavigator() {
         name="Artist"
         key="Artist"
         component={Artist}
-        initialParams={{ mode: store.getState().storage.mode }}
+        initialParams={{ mode: store.getState().storage.mode, adjustButtons: 2 }}
         options={({route}) => ({ headerShown: true, headerStyle: { backgroundColor: colors.navbar }, title: route.params.name, headerBackTitleVisible: true, headerTintColor: '#fff' })} 
       />
       <LibraryStack.Screen
         name="Album"
         key="Album"
         component={Album}
-        initialParams={{ mode: store.getState().storage.mode }}
+        initialParams={{ mode: store.getState().storage.mode, adjustButtons: 2 }}
         options={({route}) => ({ headerShown: true, headerStyle: { backgroundColor: colors.navbar }, title: route.params.album, headerTintColor: '#fff' })} 
+      />
+      <LibraryStack.Screen 
+        name="Playlists" 
+        component={Playlists} 
+        options={{ headerShown: true, title: "", headerTintColor: '#fff', headerStyle: { backgroundColor: colors.navbar }}}
       />
     </LibraryStack.Navigator>
   )
@@ -155,12 +160,14 @@ function MoreNavigator() {
         name="Playlists"
         key="Playlists"
         component={Playlists}
+        initialParams={{ adjustButtons: 1 }}
         options={{ headerShown: true, headerStyle: { backgroundColor: colors.navbar }, title: "Playlists", headerTintColor: '#fff'}}
       />
       <MoreStack.Screen
         name="Playlist"
         key="Playlist"
         component={Playlist}
+        initialParams={{ adjustButtons: 1 }}
         options={({route}) => ({ headerShown: true, headerStyle: { backgroundColor: colors.navbar }, title: route.params.name, headerTintColor: '#fff'})}
       />
       <MoreStack.Screen
@@ -258,11 +265,6 @@ function createMainStack() {
     <Stack.Navigator>
       <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
       <Stack.Screen name="Home" component={TabsNavigator} options={{ headerShown: false, gestureEnabled: false }}/>
-      <Stack.Screen 
-        name="Playlists" 
-        component={Playlists} 
-        options={{ headerShown: true, title: "", headerTintColor: '#fff'}}
-      />
     </Stack.Navigator>
   );
 }

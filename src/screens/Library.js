@@ -46,6 +46,7 @@ class Library extends React.Component {
     return (
       <View style={styles.container}>
         <Browsable
+          adjustButtons={2}
           content={artists}
           onNavigate={this.onNavigate}
           navigation={navigation}

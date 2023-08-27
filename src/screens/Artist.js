@@ -34,6 +34,7 @@ class Artist extends React.Component {
 
   render() {
     const { content, navigation, route, loading, queueSize, position, mode, theme } = this.props
+    const { params: { adjustButtons } } = route
 
     let albums = ((content !== null) ? Object.keys(content) : []).map((name, index) => ({
       icon: index + 1,
@@ -49,6 +50,7 @@ class Artist extends React.Component {
     return (
       <View style={styles.container}>
         <Browsable
+          adjustButtons={2}
           content={albums}
           onNavigate={this.onNavigate}
           navigation={navigation}
