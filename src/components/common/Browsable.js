@@ -440,7 +440,9 @@ class Browsable extends React.Component {
     const { navigation, content } = this.props
 
     // Setup transition to editing state.
-    if (Platform.OS != 'android') { LayoutAnimation.configureNext(MainLayoutAnimation) }
+    if (Platform.OS != 'android') {
+      LayoutAnimation.configureNext(MainLayoutAnimation)
+    }
 
     // Add item to selected list.
     let newSelected = this.state.selected.slice()
@@ -451,8 +453,6 @@ class Browsable extends React.Component {
       editing: true,
       selected: newSelected,
     })
-
-    
   }
 
   handleMenuTapped = (item) => {
@@ -733,26 +733,10 @@ class Browsable extends React.Component {
     if (editing == true) {
       let selectionIcon = (allSelected == true) ? 'checkbox-multiple-blank-outline' : 'checkbox-multiple-marked-outline'
 
-      var marginLeft = 0
-      var marginTop = 0
-      if (Platform.OS != 'android' && DeviceInfo.getSystemVersion() >= "16.0") {
-        console.log(adjustButtons)
-        if (adjustButtons == 1) {
-          marginLeft = (-20) - (addOptions.length != 0 ? 36 : 0) - (canDelete ? 36 : 0)
-          marginTop = -12
-        } else if (adjustButtons == 2) {
-          marginLeft = 16 
-        } else {
-          marginLeft = -20
-        }
-      }
-
       navigation.setOptions({
-        title: null,
-        headerTitle: null,
         headerRight: () => { 
           return (
-            <View style={{...styles.rightEditingHeader, marginTop: marginTop, marginLeft: marginLeft}}>
+            <View style={styles.rightEditingHeader}>
               <MaterialBarButton
                 onPress={() => this.onGlobalSelectionToggled(!allSelected)}
                 icon={selectionIcon}
@@ -775,25 +759,50 @@ class Browsable extends React.Component {
             </View>
           )
         },
-        headerLeft: () => { 
-          return (
-            <BarButton onPress={this.onCancelEditing} icon='clear' theme={themeValue} style={{...styles.cancelEditingButtonStyle}} />
-          )
-        },
-        headerBackVisible: false,
       })
+
+      setTimeout(() => {
+        navigation.setOptions({
+          title: null,
+          headerTitle: null,
+        })
+      }, 50)
+
+      setTimeout(() => {
+        navigation.setOptions({
+          headerLeft: () => { 
+            return (
+              <BarButton
+                onPress={this.onCancelEditing}
+                icon='clear'
+                theme={themeValue}
+                style={{...styles.cancelEditingButtonStyle}}
+              />
+            )
+          },
+          headerBackVisible: false,
+        })
+      }, 50)
     } else if (searchEnabled == true) {
-      let textInputStyle = Platform.OS === 'android' ? styles.searchBarTextInputAndroid : styles.searchBarTextInputIOS
+      let textInputStyle = Platform.OS === 'android'
+        ? styles.searchBarTextInputAndroid
+        : styles.searchBarTextInputIOS
       
       navigation.setOptions({
         title: null,
         headerTitle: () => {
           return (
             <View style={styles.searchBarHeader}>
-              <View style={{...styles.searchBarBackground, backgroundColor: themeValue.backgroundColor}}>
+              <View
+                style={{
+                  ...styles.searchBarBackground,
+                  backgroundColor: themeValue.backgroundColor
+                }}
+              >
                 <TextInput
                   value={navigation.params?.searchText}
-                  style={{...textInputStyle, color: themeValue.mainTextColor}} placeholder='Filter list...'
+                  style={{...textInputStyle, color: themeValue.mainTextColor}}
+                  placeholder='Filter list...'
                   placeholderTextColor={themeValue.placeholderColor}
                   onChangeText={this.onSearchChange}
                 />
@@ -801,28 +810,79 @@ class Browsable extends React.Component {
             </View>
           )
         },
-        headerRight: () => {
-          return (<BarButton onPress={this.onCancelSearch} icon='clear' theme={themeValue} style={{...styles.cancelSearchButtonStyle}} />)
-        },
-        headerLeft: null,
-        headerBackVisible: false,
       })
+
+      setTimeout(() => {
+        navigation.setOptions({
+          headerRight: () => {
+            return (
+              <BarButton
+                onPress={this.onCancelSearch}
+                icon='clear'
+                theme={themeValue}
+                style={{...styles.cancelSearchButtonStyle}}
+              />
+            )
+          },
+        })
+      }, 50)
+
+      setTimeout(() => {
+        navigation.setOptions({
+          headerLeft: null,
+          headerBackVisible: false,
+        })
+      }, 50)
     } else {
       navigation.setOptions({
-        title: title,
         headerRight: () => { 
           return (
             <View style={styles.rightEditingHeader}>
-              {defaultIcon != null ? <BarButton onPress={() => onIconTapped(icon)} icon={defaultIcon} theme={themeValue} style={{...styles.navigationButtonStyle}} /> : null}
-              {canSelectMode ? <BarButton onPress={() => onIconTapped(icon)} icon={icon} theme={themeValue} style={{...styles.navigationButtonStyle}} /> : null}
-              {canFilter ? <BarButton onPress={this.onSearch} icon='filter-list' theme={themeValue} style={{...styles.navigationButtonStyle}} /> : null}
+              {defaultIcon != null
+                ? <BarButton
+                    onPress={() => onIconTapped(icon)}
+                    icon={defaultIcon}
+                    theme={themeValue}
+                    style={{...styles.navigationButtonStyle}}
+                  />
+                : null
+              }
+              {canSelectMode
+                ? <BarButton
+                    onPress={() => onIconTapped(icon)}
+                    icon={icon}
+                    theme={themeValue}
+                    style={{...styles.navigationButtonStyle}}
+                  />
+                : null
+              }
+              {canFilter
+                ? <BarButton
+                    onPress={this.onSearch}
+                    icon='filter-list'
+                    theme={themeValue}
+                    style={{...styles.navigationButtonStyle}}
+                  />
+                : null
+              }
             </View>
           )
         },
-        headerTitle: null,
-        headerLeft: undefined,
-        headerBackVisible: true
       })
+
+      setTimeout(() => {
+        navigation.setOptions({
+          title: title,
+          headerTitle: null,
+        })
+      }, 50)
+
+      setTimeout(() => {
+        navigation.setOptions({
+          headerLeft: undefined,
+          headerBackVisible: true
+        })
+      }, 50)
     }
   }
 }
