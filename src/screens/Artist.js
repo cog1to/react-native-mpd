@@ -36,21 +36,21 @@ class Artist extends React.Component {
     const { content, navigation, route, loading, queueSize, position, mode, theme } = this.props
     const { params: { adjustButtons } } = route
 
-    let albums = ((content !== null) ? Object.keys(content) : []).map((name, index) => ({
-      icon: index + 1,
-      name: name,
-      type: 'ALBUM',
-      path: name,
-      subtitle: route.params.name,
-      status: 'none',
-      artist: route.params.name,
-      data: { album: name, artist: route.params.name },
-    }))
+    let albums = ((content !== null) ? Object.keys(content) : [])
+      .map((name, index) => ({
+        icon: index + 1,
+        name: name,
+        type: 'ALBUM',
+        path: name,
+        subtitle: route.params.name,
+        status: 'none',
+        artist: route.params.name,
+        data: { album: name, artist: route.params.name },
+      }))
 
     return (
       <View style={styles.container}>
         <Browsable
-          adjustButtons={2}
           content={albums}
           onNavigate={this.onNavigate}
           navigation={navigation}

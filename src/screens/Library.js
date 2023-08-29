@@ -32,8 +32,21 @@ class Library extends React.Component {
   }
 
   render() {
-    const { content, navigation, loading, queueSize, position, mode, theme, route: { title } } = this.props
-    const artists = ((content !== null) ? Object.keys(content) : []).map((name, index) => ({
+    const {
+      content,
+      navigation,
+      loading,
+      queueSize,
+      position,
+      mode,
+      theme,
+      route: { title }
+    } = this.props
+
+    const artists = ((content !== null) 
+      ? Object.keys(content) 
+      : []
+    ).map((name, index) => ({
       icon: index + 1,
       title: name,
       subtitle: 'ARTIST',
@@ -46,7 +59,6 @@ class Library extends React.Component {
     return (
       <View style={styles.container}>
         <Browsable
-          adjustButtons={2}
           content={artists}
           onNavigate={this.onNavigate}
           navigation={navigation}

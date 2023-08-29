@@ -39,7 +39,6 @@ class Playlist extends React.Component {
     return (
       <View style={styles.container}>
         <Browsable
-          adjustButtons={1}
           content={content} 
           navigation={navigation}
           refreshing={refreshing}
