@@ -746,6 +746,86 @@ export const stubMiddleware = store => {
                 store.dispatch(statusUpdated(client.state, 'status'))
                 break
             }
+            case types.ADD_TO_QUEUE: {
+                const { items, position } = action
+
+                var queue = client.queue
+                var maxId = queue.reduce((prev, song) => {
+                  if (parseInt(song.songId) > prev) {
+                    return parseInt(song.songId)
+                  } else {
+                    return prev
+                  }
+                }, 0)
+
+                // Retrieve all files.
+                let files = allFiles(items, client.tree).map((item, idx) => {
+                    return {
+                        ...item,
+                        songId: "" + (maxId + idx)
+                    }
+                })
+                for (let i = 0; i < files.length; i = i + 1) {
+                    queue.splice(position + i, 0, files[i])
+                }
+
+                // Update positions.
+                queue = queue.map((item, idx) => {
+                    return {
+                        ...item,
+                        position: idx,
+                    }
+                })
+
+                // Send update signal.
+                client.queue = queue
+                store.dispatch(queueUpdated(client.queue))
+
+                break
+            }
+            case types.ADD_TO_QUEUE_PLAY: {
+                const { uri: song, position: pos } = action
+
+                var queue = client.queue
+                var maxId = queue.reduce((prev, song) => {
+                  if (parseInt(song.songId) > prev) {
+                    return parseInt(song.songId)
+                  } else {
+                    return prev
+                  }
+                }, 0)
+                
+                let sliced = [""].concat(song.split("/"))
+                let orig = nodeFromPath(sliced, client.tree)
+                let node = {
+                    ...orig,
+                    songId: "" + (maxId + 1),
+                    position: pos,
+                }
+
+                // Add and update queue.
+                queue.splice(pos, 0, node)  
+                queue = queue.map((item, idx) => {
+                    return {
+                        ...item,
+                        position: idx,
+                    }
+                })
+                client.queue = queue
+
+                // Update current song 
+                client.song = node
+                client.state = {
+                    ...client.state,
+                    songid: client.song.songId,
+                }
+              
+                // Send updates
+                store.dispatch(queueUpdated(client.queue))
+                store.dispatch(currentSongUpdated(client.song))
+              
+                break
+            }
             case types.SET_VOLUME: {
                 const { volume } = action
                 client.state = {
@@ -1038,6 +1118,7 @@ const nodeFromPath = (path, tree) => {
 
     path.slice(1).forEach((element) => {
         node = node.children.filter((child) => child.name === element)[0]
+        console.log("node =", node.name)
     })
 
     return node
