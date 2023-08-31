@@ -243,6 +243,8 @@ const client = {
                 title: "Lavender Haze",
                 artist: "Taylor Swift",
                 albumArtist: "Taylor Swift",
+                genre: "Pop",
+                year: "2022",
                 children: [],
               },
               {
@@ -252,6 +254,8 @@ const client = {
                 title: "Maroon",
                 artist: "Taylor Swift",
                 albumArtist: "Taylor Swift",
+                genre: "Pop",
+                year: "2022",
                 children: [],
               },
               {
@@ -261,6 +265,8 @@ const client = {
                 title: "Anti-Hero",
                 artist: "Taylor Swift",
                 albumArtist: "Taylor Swift",
+                genre: "Pop",
+                year: "2022",
                 children: [],
               },
               {
@@ -270,6 +276,8 @@ const client = {
                 title: "You're On Your Own, Kid",
                 artist: "Taylor Swift",
                 albumArtist: "Taylor Swift",
+                genre: "Pop",
+                year: "2022",
                 children: [],
               },
               {
@@ -279,6 +287,8 @@ const client = {
                 title: "Snow On The Beach",
                 artist: "Taylor Swift",
                 albumArtist: "Taylor Swift",
+                genre: "Pop",
+                year: "2022",
                 children: [],
               },
               {
@@ -288,6 +298,8 @@ const client = {
                 title: "Midnight Rain",
                 artist: "Taylor Swift",
                 albumArtist: "Taylor Swift",
+                genre: "Pop",
+                year: "2022",
                 children: [],
               },
               {
@@ -297,6 +309,8 @@ const client = {
                 title: "Question...?",
                 artist: "Taylor Swift",
                 albumArtist: "Taylor Swift",
+                genre: "Pop",
+                year: "2022",
                 children: [],
               },
               {
@@ -306,6 +320,8 @@ const client = {
                 title: "Vigilante Shit",
                 artist: "Taylor Swift",
                 albumArtist: "Taylor Swift",
+                genre: "Pop",
+                year: "2022",
                 children: [],
               },
               {
@@ -315,6 +331,8 @@ const client = {
                 title: "Bejeweled",
                 artist: "Taylor Swift",
                 albumArtist: "Taylor Swift",
+                genre: "Pop",
+                year: "2022",
                 children: [],
               },
               {
@@ -324,6 +342,8 @@ const client = {
                 title: "Labyrinth",
                 artist: "Taylor Swift",
                 albumArtist: "Taylor Swift",
+                genre: "Pop",
+                year: "2022",
                 children: [],
               },
               {
@@ -333,6 +353,8 @@ const client = {
                 title: "Karma",
                 artist: "Taylor Swift",
                 albumArtist: "Taylor Swift",
+                genre: "Pop",
+                year: "2022",
                 children: [],
               },
               {
@@ -342,6 +364,8 @@ const client = {
                 title: "Sweet Nothing",
                 artist: "Taylor Swift",
                 albumArtist: "Taylor Swift",
+                genre: "Pop",
+                year: "2022",
                 children: [],
               },
               {
@@ -351,6 +375,8 @@ const client = {
                 title: "Mastermind",
                 artist: "Taylor Swift",
                 albumArtist: "Taylor Swift",
+                genre: "Pop",
+                year: "2022",
                 children: [],
               },
             ]
@@ -1021,6 +1047,52 @@ export const stubMiddleware = store => {
 
                 break
             }
+            case types.SEARCH: {
+                const { expression } = action
+                let files = getContentRecursively(client.tree)
+
+                var result = files
+                for (let idx = 0; idx < expression.length; idx = idx + 1) {
+                    let expr = expression[idx]
+                    if (expr.tag === "title") {
+                        result = result.filter(
+                            r => r.title.indexOf(expr.value) !== -1
+                        )
+                    } else if (expr.tag === "artist") {
+                        result = result.filter(
+                            r => r.artist.indexOf(expr.value) !== -1
+                        )
+                    } else if (expr.tag === "album") {
+                        result = result.filter(
+                            r => r.album.indexOf(expr.value) !== -1
+                        )
+                    } else if (expr.tag === "albumartist") {
+                        result = result.filter(
+                            r => r.albumArtist.indexOf(expr.value) !== -1
+                        )
+                    } else if (expr.tag === "date") {
+                        result = result.filter(
+                            r => r.year.indexOf(expr.value) !== -1
+                        )
+                    } else if (expr.tag === "genre") {
+                        result = result.filter(
+                            r => r.genre.indexOf(expr.value) !== -1
+                        )
+                    } else if (expr.tag === "filename") {
+                        result = result.filter(
+                            r => r.name.indexOf(expr.value) !== -1
+                        )
+                    }
+                }
+
+                // Reset previous search results.
+                store.dispatch(searchUpdated(null))
+
+                // Get new search results.
+                store.dispatch(searchUpdated(result))
+
+                break
+            }
             default: {
                 return next(action)
                 break
@@ -1048,7 +1120,7 @@ const getContentRecursively = (node) => {
         }
         case TreeNodeType.DIRECTORY: {
             let path = ('fullPath' in node) ? node.fullPath : node.path
-            let sliced = [""].concat(path.split("/"))
+            let sliced = path === "" ? [""] : [""].concat(path.split("/"))
             let parentNode = nodeFromPath(sliced, client.tree)
             
             if (parentNode !== null) {
@@ -1118,7 +1190,6 @@ const nodeFromPath = (path, tree) => {
 
     path.slice(1).forEach((element) => {
         node = node.children.filter((child) => child.name === element)[0]
-        console.log("node =", node.name)
     })
 
     return node
