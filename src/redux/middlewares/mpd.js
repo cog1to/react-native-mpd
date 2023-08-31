@@ -379,7 +379,6 @@ export const mpdMiddleware = store => {
 
                 client.mpd.getStatus().then((status) => {
                     const newState = statusToState(status)
-                    console.log("GET STATUS", newState)
                     store.dispatch(statusUpdated(newState, action.source))
                 }).catch((e) => {
                     store.dispatch(error(e, types.GET_STATUS))
@@ -416,7 +415,6 @@ export const mpdMiddleware = store => {
             case types.GET_CURRENT_SONG: {
                client.mpd.getCurrentSong().then((result) => {
                    let song = songToState(result)
-                   console.log(song)
                    store.dispatch(currentSongUpdated(song))
                }).catch((e) => {
                    store.dispatch(error(e, types.GET_CURRENT_SONG))
@@ -509,7 +507,6 @@ export const mpdMiddleware = store => {
             case types.CHANGE_CURRENT_DIR: {
                 const { tree } = store.getState().browser
 
-                console.log(action)
                 let node = nodeFromPath(action.path, tree)
 
                 // First we need to set 'refreshing' flag.
@@ -523,7 +520,6 @@ export const mpdMiddleware = store => {
 
                     client.mpd.getList(path).then((result) => {
                         let children = listToChildren(result)
-                        console.log(children)
                         store.dispatch(treeUpdated(action.path, children))
                     }).catch((e) => {
                         store.dispatch(error(e, types.CHANGE_CURRENT_DIR))
@@ -584,7 +580,6 @@ export const mpdMiddleware = store => {
             case types.LOAD_ARTISTS: {
                 store.dispatch(setLibraryLoading(true))
                 client.mpd.getArtists().then(result => {
-                    console.log("ARTISTS", result)
                     store.dispatch(artistsLoaded(result))
                 }).catch((e) => {
                     store.dispatch(setLibraryLoading(false))
@@ -593,10 +588,8 @@ export const mpdMiddleware = store => {
                 break
             }
             case types.LOAD_ALBUMS: {
-                console.log("LOAD ALBUMS", action)
                 store.dispatch(setLibraryLoading(true))
                 client.mpd.getAlbums(action.artist).then(result => {
-                    console.log("ALBUMS", result)
                     store.dispatch(albumsLoaded(action.artist, result))
                 }).catch((e) => {
                     store.dispatch(setLibraryLoading(false))
@@ -605,7 +598,6 @@ export const mpdMiddleware = store => {
                 break
             }
             case types.LOAD_SONGS: {
-                console.log("LOAD SONGS", action)
                 const { artist, album } = action
 
                 const expression = [
@@ -631,7 +623,6 @@ export const mpdMiddleware = store => {
                 store.dispatch(setLibraryLoading(true))
                 client.mpd.search(combined).then(results => {
                     var list = listToChildren(results, false)
-                    console.log("SONGS", list)
                     store.dispatch(songsLoaded(artist, album, list))
                 }).catch((e) => {
                     store.dispatch(setLibraryLoading(false))
@@ -674,7 +665,6 @@ export const mpdMiddleware = store => {
                 break
             }
             case types.SET_REPLAY_GAIN_MODE: {
-                console.log("SETREPL", action) 
                 client.mpd.setReplayGain(action.value).then(() => {
                     store.dispatch(getReplayGainStatus())
                 })
@@ -682,37 +672,31 @@ export const mpdMiddleware = store => {
             }
             case types.GET_REPLAY_GAIN_STATUS: {
                 client.mpd.getReplayGain().then((status) => {
-                    console.log("REPL", status) 
                     store.dispatch(replayGainStatusUpdated(status))
                 })
                 break
             }
             case types.GET_PLAYLISTS: {
-                console.log("GET PLAYLISTS", action)
                 store.dispatch(loadingPlaylists(true))
 
                 client.mpd.getPlaylists().then((list) => {
                     let result = listToChildren(list)
-                    console.log(result)
                     store.dispatch(playlistsLoaded(result))
                 })
                 break
             }
             case types.GET_PLAYLIST: {
-                console.log("GET PLAYLIST", action)
                 const { name } = action
 
                 store.dispatch(loadingPlaylist(true))
 
                 client.mpd.getPlaylist(name).then(data => {
                     let result = listToChildren(data)
-                    console.log(result)
                     store.dispatch(playlistLoaded(name, result))
                 })
                 break
             }
             case types.ADD_TO_PLAYLIST: {
-                console.log("ADD TO PLAYLIST", action)
                 const { name, paths } = action
 
                 nodesToPaths(paths).then((allFiles) => {
@@ -725,7 +709,6 @@ export const mpdMiddleware = store => {
                 break
             }
             case types.DELETE_PLAYLISTS: {
-                console.log("DEL PLAYLISTS", action)
                 const { names } = action
 
                 const handleFile = (name) => {
@@ -753,7 +736,6 @@ export const mpdMiddleware = store => {
                 break
             }
             case types.PLAYLIST_MOVE: {
-                console.log("PLAY MOVE", action)
                 const { name, from, to } = action
                 
                 client.mpd.playlistMove(name, from, to).then((result) => {
@@ -765,7 +747,6 @@ export const mpdMiddleware = store => {
                 break
             }
             case types.PLAYLIST_DELETE: {
-                console.log("PLAY DELETE", action)
                 const { name, indices } = action
                 
                 client.mpd.playlistDelete(name, indices).then((result) => {
@@ -784,7 +765,6 @@ export const mpdMiddleware = store => {
                         plugin: item.plugin,
                         enabled: item.outputenabled == 1 ? true : false,
                     }))
-                    console.log("GETOUT", outputs)
                     store.dispatch(outputsUpdated(outputs))
                 })
                 .catch(e => {
@@ -793,7 +773,6 @@ export const mpdMiddleware = store => {
                 break
             }
             case types.ENABLE_OUTPUT: {
-                console.log("ENABLE", action)
                 client.mpd.enableOutput(action.id).then(() => {
                     store.dispatch(getOutputs())
                 })
@@ -803,7 +782,6 @@ export const mpdMiddleware = store => {
                 break
             }
             case types.DISABLE_OUTPUT: {
-                console.log("DISABLE", action)
                 client.mpd.disableOutput(action.id).then(() => {
                     store.dispatch(getOutputs())
                 })
