@@ -17,7 +17,12 @@ export const albumArtMiddleware = store => {
           store.dispatch(albumArtReceived(artist, album, archive[artist][album]))
         } else {
           // Don't trigger update if we have no valid data for search
-          if (artist == null || album == null || artist.length == 0 || album.length == 0) {
+          if (
+            artist == null ||
+            album == null ||
+            artist.length == 0 ||
+            album.length == 0
+          ) {
             break
           }
 
