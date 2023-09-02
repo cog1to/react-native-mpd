@@ -489,7 +489,10 @@ export const mpdMiddleware = store => {
       }
       case types.GET_QUEUE: {
         client.mpd.getQueue().then((result) => {
-          let queue = queueToState(result, true)
+          let queue = queueToState(
+            result.filter(el => { return "Title" in el || "file" in el }),
+            true
+          )
           store.dispatch(queueUpdated(queue))
 
           // Reload current song. Mostly to get proper song's position.
