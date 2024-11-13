@@ -141,7 +141,7 @@ const queueToList = (state) => {
       artist: artist,
       index: index,
       type: 'FILE',
-      status: (song.songId === currentSongId ? player : 'none')
+      status: (song.songId == currentSongId ? player : 'none')
     }
   })
 }
@@ -160,8 +160,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    play: (songId) => {
-      dispatch(setCurrentSong(songId))
+    play: (pos) => {
+      dispatch(setCurrentSong(pos))
     },
     playPause: (state) => {
       dispatch(playPause(state))

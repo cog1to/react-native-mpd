@@ -232,16 +232,20 @@ export default class MpdClientWrapper {
     return this._sendCommand(cmd('search', [expression]), mpd.parseArrayMessage)
   }
 
-  setCurrentSong(songId) {
+  setCurrentSong(pos) {
+    return this._sendCommand(cmd('play', [pos]), mpd.parseKeyValueMessage)
+  }
+
+  setCurrentSongId(songId) {
     return this._sendCommand(cmd('playid', [songId]), mpd.parseKeyValueMessage)
   }
 
-  deleteSongId(songId) {
-    return this._sendCommand(cmd('deleteid', [songId]), mpd.parseKeyValueMessage)
+  deleteSong(pos) {
+    return this._sendCommand(cmd('delete', [pos]), mpd.parseKeyValueMessage)
   }
 
-  deleteSongIds(ids) {
-    let commands = ids.map((id) => { return cmd('deleteid', [id]) })
+  deleteSongs(poss) {
+    let commands = poss.map((pos) => { return cmd('delete', [pos]) })
     return this._sendCommands(commands, mpd.parseKeyValueMessage)
   }
 
@@ -255,7 +259,7 @@ export default class MpdClientWrapper {
   }
 
   moveSong(id, to) {
-    return this._sendCommand(cmd('moveid', [id, to]), mpd.parseKeyValueMessage)
+    return this._sendCommand(cmd('move', [id, to]), mpd.parseKeyValueMessage)
   }
 
   getArtists() {

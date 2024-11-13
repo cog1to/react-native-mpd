@@ -107,13 +107,12 @@ const handleClose = (store) => {
   }
 }
 
-const songToState = (song) => {
+const songToState = (song, id) => {
   const {
     Artist: artist = null,
     Album: album = null,
     AlbumArtist: albumArtist = null,
     Title: title = null,
-    Id: songId = null,
     Pos: position = null,
     file: file = null,
   } = song
@@ -123,7 +122,7 @@ const songToState = (song) => {
     album: album,
     albumArtist: albumArtist,
     title: title,
-    songId: songId,
+    songId: (id != null ? id.toString() : parseFloat(position)),
     file: file,
     position: parseFloat(position)
   }
@@ -157,12 +156,27 @@ const statusToState = (status) => {
   }
 }
 
-const queueToState = (queue, withId) => {
-  return queue.filter(
-    el => { return !withId || el.Id != null }
-  ).map((element) => {
-    return songToState(element)
-  })
+const queueToState = (queue) => {
+  var missingPos = 0
+  var lastPos = null
+  var pos = null
+
+  result = new Array(queue.length)
+  for (var idx = 0; idx < queue.length; idx++) {
+    if (pos == null && queue[idx].Pos != null) {
+      lastPos = parseFloat(queue[idx].Pos)
+      result[idx] = songToState(queue[idx], lastPos)
+    } else if (pos == null && queue[idx].Pos == null) {
+      missingPos = missingPos + 1
+      pos = lastPos + 1
+      result[idx] = songToState(queue[idx], pos)
+    } else {
+      pos = parseFloat(queue[idx].Pos) + missingPos
+      result[idx] = songToState(queue[idx], pos)
+    }
+  }
+
+  return result
 }
 
 const listToChildren = (list) => {
@@ -490,8 +504,7 @@ export const mpdMiddleware = store => {
       case types.GET_QUEUE: {
         client.mpd.getQueue().then((result) => {
           let queue = queueToState(
-            result.filter(el => { return "Title" in el || "file" in el }),
-            true
+            result.filter(el => { return "Title" in el || "file" in el })
           )
           store.dispatch(queueUpdated(queue))
 
@@ -507,7 +520,7 @@ export const mpdMiddleware = store => {
         break
       }
       case types.DELETE_SONGS: {
-        client.mpd.deleteSongIds(action.songIds).catch(e => {
+        client.mpd.deleteSongs(action.songIds).catch(e => {
           store.dispatch(error(e, types.DELETE_SONGS)) 
         })
         break
@@ -589,7 +602,7 @@ export const mpdMiddleware = store => {
         const { uri: song, position: pos } = action
 
         client.mpd.addToQueue([{file: song, position: pos}]).then(({ Id }) => {
-          client.mpd.setCurrentSong(Id)
+          client.mpd.setCurrentSongId(Id)
         }).catch((e) => {
           store.dispatch(error(e, types.ADD_TO_QUEUE_PLAY))
         })
