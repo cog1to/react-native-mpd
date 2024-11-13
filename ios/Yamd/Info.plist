@@ -31,9 +31,9 @@
 		<key>NSExceptionDomains</key>
 		<dict>
 			<key>discogs.com</key>
-			<string></string>
+			<string/>
 			<key>last.fm</key>
-			<string></string>
+			<string/>
 			<key>localhost</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
@@ -42,7 +42,7 @@
 		</dict>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string></string>
+	<string/>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>

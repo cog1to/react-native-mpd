@@ -128,8 +128,7 @@ class Root extends Component {
   componentDidMount() {
     const { loadArtistArt, saveTheme } = this.props
 
-    AppState.addEventListener('change', this.handleAppStateChange)
-
+    this.onChangeSub = AppState.addEventListener('change', this.handleAppStateChange)
     this.subscription = Appearance.addChangeListener(_.throttle(this.handleColorModeChange, 1000, {
       leading: false,
       trailing: true
@@ -142,8 +141,8 @@ class Root extends Component {
   }
 
   componentWillUnmount() {
-    Appearance.removeChangeListener(this.subscription)
-    AppState.removeEventListener('change', this.handleAppStateChange)
+    this.onChangeSub.remove()
+    this.subscription.remove()
   }
 
   UNSAFE_componentWillUpdate(nextProps, nextState) {

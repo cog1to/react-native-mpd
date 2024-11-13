@@ -1,4 +1,6 @@
 apply plugin: "com.android.application"
+apply plugin: "org.jetbrains.kotlin.android"
+apply plugin: "com.facebook.react"
 
 import com.android.build.OutputFile
 
@@ -75,11 +77,11 @@ import com.android.build.OutputFile
  * ]
  */
 
-project.ext.react = [
-    entryFile: "index.js"
-]
-
-apply from: "../../node_modules/react-native/react.gradle"
+react {
+  entryFile = file("../../index.js")
+  nodeExecutableAndArgs = ["node", "--openssl-legacy-provider"]
+  autolinkLibrariesWithApp()
+}
 
 /**
  * Set this to true to create two separate APKs instead of one:
@@ -107,7 +109,11 @@ def useIntlJsc = false
 
 def nativeArchitectures = project.getProperties().get("reactNativeDebugArchitectures")
 
+def Properties localProps = new Properties()
+localProps.load(new FileInputStream(file('../local.properties')))
+
 android {
+    namespace "ru.aint.mpd.mpd_wrapper"
     ndkVersion rootProject.ext.ndkVersion
     compileSdkVersion rootProject.ext.compileSdkVersion
 
@@ -120,9 +126,14 @@ android {
         applicationId "ru.aint.mpd.mpd_wrapper"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 4
+        versionCode 5
         versionName "1.1"
     }
+
+    buildFeatures {
+        buildConfig true
+    }
+
     splits {
         abi {
             reset()
@@ -139,10 +150,10 @@ android {
             keyPassword 'android'
         }
         release {
-            storeFile file(RELEASE_STORE_FILE)
-            storePassword RELEASE_STORE_PASSWORD
-            keyAlias RELEASE_KEY_ALIAS
-            keyPassword RELEASE_KEY_PASSWORD
+            storeFile file(localProps["STORE_FILE"])
+            storePassword localProps["STORE_PASSWORD"]
+            keyAlias localProps["STORE_ALIAS"]
+            keyPassword localProps["STORE_ALIAS_PASSWORD"]
         }
     }
     buildTypes {
@@ -157,11 +168,12 @@ android {
         release {
             // Caution! In production, you need to generate your own keystore file.
             // see https://facebook.github.io/react-native/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
+    buildToolsVersion buildToolsVersion
     // applicationVariants are e.g. debug, release
     applicationVariants.all { variant ->
         variant.outputs.each { output ->
@@ -180,9 +192,10 @@ android {
 
 dependencies {
     implementation project(':react-native-device-info')
+    implementation 'com.facebook.react:react-android'
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
-    implementation "com.facebook.react:react-native:+"  // From node_modules
+    //implementation "com.facebook.react:react-native:+"  // From node_modules
 
     // JSC from node_modules
     if (useIntlJsc) {
@@ -199,4 +212,4 @@ task copyDownloadableDepsToLibs(type: Copy) {
     into 'libs'
 }
 
-apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+//apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

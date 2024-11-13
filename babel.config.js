@@ -1,5 +1,5 @@
 module.exports = {
-  presets: ['module:metro-react-native-babel-preset'],
+	presets: ['module:metro-react-native-babel-preset'],
   plugins: [
     [
       'babel-plugin-rewrite-require',
@@ -9,5 +9,11 @@ module.exports = {
         },
       },
     ],
+		[
+			'@babel/plugin-transform-private-methods', { loose: true }
+		],
+		[
+			'react-native-reanimated/plugin',
+		]
   ],
 };
