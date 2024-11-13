@@ -52,6 +52,7 @@ class ErrorBanner extends React.Component {
             this.lastAnimation = Animated.timing(this.state.opacityAnimated, {
                 toValue: 1,
                 duration: 250,
+                useNativeDriver: true,
             })
 
             this.lastAnimation.start(() => {
@@ -74,6 +75,7 @@ class ErrorBanner extends React.Component {
         this.lastAnimation = Animated.timing(this.state.opacityAnimated, {
             toValue: 0,
             duration: 250,
+            useNativeDriver: true,
         })
 
         this.lastAnimation.start(() => {

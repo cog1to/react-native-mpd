@@ -31,8 +31,6 @@ export default class Swipeable extends React.Component {
     super(props)
     this.animatedValue = {
       left: new Animated.Value(0),
-      leftOpacity: new Animated.Value(0),
-      rightOpacity: new Animated.Value(0),
     }
   }
 
@@ -107,12 +105,12 @@ export default class Swipeable extends React.Component {
           }}
         </Draggable>
         <View style={{...styles.background, backgroundColor: underlayColor}}>
-          <View style={styles.centeredTextContainer}>
-            <Icon ref={(component) => this.leftIcon = component} name={icon} size={24} color={iconColor} />
-          </View>
-          <View style={styles.centeredTextContainer}>
-            <Icon ref={(component) => this.rightIcon = component} name={icon} size={24} color={iconColor} />
-          </View>
+          <Animated.View ref={(component) => this.leftIcon = component} style={styles.centeredTextContainer}>
+            <Icon name={icon} size={24} color={iconColor} />
+          </Animated.View>
+          <Animated.View ref={(component) => this.rightIcon = component} style={styles.centeredTextContainer}>
+            <Icon name={icon} size={24} color={iconColor} />
+          </Animated.View>
         </View>
       </View>
     )

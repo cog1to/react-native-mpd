@@ -87,6 +87,7 @@ class Player extends React.Component {
     this.lastAnimation = Animated.spring(this.state.volumeSliderOffset, {
       toValue: this.slidingIn ? 1 : 0,
       duration: 250,
+      useNativeDriver: true,
     })
 
     this.lastAnimation.start(() => {

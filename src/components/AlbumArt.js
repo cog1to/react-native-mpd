@@ -58,12 +58,12 @@ export default connect(mapStateToProps, null)(AlbumArt)
 const styles = StyleSheet.create({
   container: {
     aspectRatio: 1,
-    maxWidth:'100%',
     padding: 10,
+    height: '62%',
+    alignSelf: 'center',
   },
   image: {
     flex: 1,
-    maxWidth:'100%',
-    maxHeight:'100%',
+    width: '100%'
   }
 })

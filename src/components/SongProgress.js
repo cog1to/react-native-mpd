@@ -80,12 +80,14 @@ class SongProgress extends React.Component {
     getStatus()
 
     // Add app state listener. We don't want to trigger status update when app is background.
-    AppState.addEventListener('change', this.handleAppStateChange)
+    this.onChange = AppState.addEventListener('change', this.handleAppStateChange)
   }
 
   componentWillUnmount() {
-    AppState.removeEventListener('change', this.handleAppStateChange)
-
+    if (this.onChange) {
+      this.onChange.remove()
+    }
+    
     // Stop status listener.
     const { player, removeListener } = this.props
     removeListener()

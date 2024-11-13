@@ -6,7 +6,7 @@
     "start": "react-native start"
   },
   "dependencies": {
-    "@react-native-community/async-storage": "^2.0.0-rc.3",
+    "@react-native-async-storage/async-storage": "^2.0.0",
     "@react-native-community/slider": "^4.5.5",
     "@react-native/gradle-plugin": "^0.76.1",
     "@react-navigation/bottom-tabs": "^6.2.0",
@@ -60,9 +60,9 @@
     "vm-browserify": "0.0.4"
   },
   "devDependencies": {
+    "@babel/core": "^7.20.0",
     "@babel/preset-env": "^7.26.0",
     "@babel/preset-typescript": "^7.26.0",
-    "@babel/core": "^7.20.0",
     "@babel/runtime": "^7.20.0",
     "@react-native/eslint-config": "^0.72.2",
     "@react-native/metro-config": "^0.75.1",
