@@ -126,7 +126,7 @@ android {
         applicationId "ru.aint.mpd.mpd_wrapper"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 5
+        versionCode 7
         versionName "1.1"
     }
 
@@ -195,7 +195,6 @@ dependencies {
     implementation 'com.facebook.react:react-android'
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
-    //implementation "com.facebook.react:react-native:+"  // From node_modules
 
     // JSC from node_modules
     if (useIntlJsc) {
@@ -211,5 +210,3 @@ task copyDownloadableDepsToLibs(type: Copy) {
     from configurations.implementation
     into 'libs'
 }
-
-//apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)

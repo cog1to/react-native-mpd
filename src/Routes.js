@@ -289,7 +289,7 @@ function TabsNavigator() {
   const { colors } = useTheme()
 
   return (
-    <Tab.Navigator 
+    <Tab.Navigator
       screenOptions={({route}) => ({
         tabBarStyle: {
           backgroundColor: ThemeManager.instance().getCurrentTheme().toolbarColor
@@ -326,7 +326,7 @@ function TabsNavigator() {
       <Tab.Screen 
         name="TabBrowse" 
         component={BrowseNavigator} 
-        options={{ headerShown: false, tabBarShowLabel: false }} 
+        options={{ headerShown: false, tabBarShowLabel: false }}
       />
       <Tab.Screen 
         name="TabLibrary" 
