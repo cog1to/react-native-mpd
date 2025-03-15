@@ -61,7 +61,7 @@ function BrowseNavigator({ navigation, route }) {
           headerShown: true,
           headerStyle: { backgroundColor: colors.navbar },
           title: route.params.name,
-          headerTintColor: '#fff'
+          headerTintColor: '#fff',
         })}
       />
       <BrowseStack.Screen 
@@ -71,7 +71,7 @@ function BrowseNavigator({ navigation, route }) {
           headerShown: true,
           title: "",
           headerTintColor: '#fff',
-          headerStyle: { backgroundColor: colors.navbar }
+          headerStyle: { backgroundColor: colors.navbar },
         }}
       />
     </BrowseStack.Navigator>
@@ -360,7 +360,7 @@ function createMainStack() {
       <Stack.Screen
         name="Login"
         component={Login}
-        options={{ headerShown: false }}
+        options={{ headerShown: false, headerBackVisible:false }}
       />
       <Stack.Screen
         name="Home"

@@ -38,7 +38,7 @@ class Browse extends React.Component {
   // Rendering.
 
   render() {
-    const { content, navigation, refreshing, queueSize, position, theme, route: { params: { name } } } = this.props
+    const { content, navigation, refreshing, queueSize, position, theme, route: { params: { name, dir } } } = this.props
 
     return (
       <View style={styles.container}>        
@@ -50,6 +50,7 @@ class Browse extends React.Component {
           queueSize={queueSize}
           canAdd={true}
           canEdit={true}
+          canGoBack={dir.length > 1}
           position={position}
           navigation={navigation}
           mode='list'

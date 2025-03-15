@@ -166,6 +166,7 @@ class Browsable extends React.Component {
     position: PropTypes.number,
     canAdd: PropTypes.bool.isRequired,
     canEdit: PropTypes.bool.isRequired,
+    canGoBack: PropTypes.bool.isRequired,
     canDelete: PropTypes.bool.isRequired,
     canSwipeDelete: PropTypes.bool.isRequired,
     canRearrange: PropTypes.bool.isRequired,
@@ -220,7 +221,7 @@ class Browsable extends React.Component {
 
   componentDidMount() {
     if (Platform.OS === 'android') {
-      BackHandler.addEventListener('hardwareBackPress', this.handleBackPress)
+      this.subscription = BackHandler.addEventListener('hardwareBackPress', this.handleBackPress)
     }
 
     // Workaround for a navbar color bug:
@@ -247,7 +248,7 @@ class Browsable extends React.Component {
 
   componentWillUnmount() {
     if (Platform.OS === 'android') {
-      BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress)
+      this.subscription.remove()
     }
   }
 
@@ -729,7 +730,7 @@ class Browsable extends React.Component {
   }
 
   updateNavigationBar = (searchEnabled) => {
-    const { theme, canFilter, navigation, canSelectMode, mode, onIconTapped, defaultIcon, canDelete, addOptions, title, adjustButtons = 0 } = this.props
+    const { theme, canFilter, navigation, canGoBack, canSelectMode, mode, onIconTapped, defaultIcon, canDelete, addOptions, title, adjustButtons = 0 } = this.props
     const { editing, allSelected } = this.state
     const themeValue = ThemeManager.instance().getTheme(theme)
     const icon = (mode == 'list') ? 'view-module' : 'view-list'
@@ -762,7 +763,7 @@ class Browsable extends React.Component {
                   : null}
             </View>
           )
-        },
+        },        
       })
 
       setTimeout(() => {
@@ -829,7 +830,7 @@ class Browsable extends React.Component {
             )
           },
         })
-      }, 50)
+      }, )
 
       setTimeout(() => {
         navigation.setOptions({
@@ -871,7 +872,7 @@ class Browsable extends React.Component {
               }
             </View>
           )
-        },
+        }
       })
 
       setTimeout(() => {

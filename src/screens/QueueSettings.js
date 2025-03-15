@@ -393,7 +393,7 @@ class QueueSettings extends React.Component {
 
   componentDidMount() {
     if (Platform.OS === 'android') {
-      BackHandler.addEventListener('hardwareBackPress', this.handleBackPress)
+      this.subscription = BackHandler.addEventListener('hardwareBackPress', this.handleBackPress)
     }
 
     this.props.getReplayGain()
@@ -401,7 +401,7 @@ class QueueSettings extends React.Component {
 
   componentWillUnmount() {
      if (Platform.OS === 'android') {
-       BackHandler.removeEventListener('hardwareBackPress', this.handleBackPress)
+       this.subscription.remove()
      }
   }
 }
