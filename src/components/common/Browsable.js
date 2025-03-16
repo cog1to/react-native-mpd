@@ -16,6 +16,7 @@ import DeviceInfo from 'react-native-device-info'
 
 // Navigation.
 import { CommonActions, StackActions } from '@react-navigation/native'
+import { HeaderBackButton } from '@react-navigation/elements'
 
 // Prop Types.
 import PropTypes from 'prop-types'
@@ -210,6 +211,7 @@ class Browsable extends React.Component {
     canRearrange: false,
     canFilter: false,
     canSelectMode: false,
+    canGoBack: true,
     deletePrompt: null,
     onItemMoved: null,
     confirmDelete: true,
@@ -223,6 +225,10 @@ class Browsable extends React.Component {
     if (Platform.OS === 'android') {
       this.subscription = BackHandler.addEventListener('hardwareBackPress', this.handleBackPress)
     }
+
+    // Workaround for Android to restore back button when canceling edit mode.
+    // Save default back button, then use it to restore the left navbar button.
+    this.backButton = this.props.navigation.options?.headerLeft
 
     // Workaround for a navbar color bug:
     // ------------------------------------------------------------------------
@@ -730,7 +736,20 @@ class Browsable extends React.Component {
   }
 
   updateNavigationBar = (searchEnabled) => {
-    const { theme, canFilter, navigation, canGoBack, canSelectMode, mode, onIconTapped, defaultIcon, canDelete, addOptions, title, adjustButtons = 0 } = this.props
+    const { 
+      theme, 
+      canFilter,
+      navigation,
+      canGoBack, 
+      canSelectMode, 
+      mode, 
+      onIconTapped, 
+      defaultIcon, 
+      canDelete, 
+      addOptions, 
+      title, 
+      adjustButtons = 0
+    } = this.props
     const { editing, allSelected } = this.state
     const themeValue = ThemeManager.instance().getTheme(theme)
     const icon = (mode == 'list') ? 'view-module' : 'view-list'
@@ -785,7 +804,6 @@ class Browsable extends React.Component {
               />
             )
           },
-          headerBackVisible: false,
         })
       }, 50)
     } else if (searchEnabled == true) {
@@ -830,16 +848,12 @@ class Browsable extends React.Component {
             )
           },
         })
-      }, )
-
-      setTimeout(() => {
-        navigation.setOptions({
-          headerLeft: null,
-          headerBackVisible: false,
-        })
       }, 50)
     } else {
       navigation.setOptions({
+        title: title,
+        headerTitle: null,
+        headerLeft: canGoBack ? this.backButton : null,
         headerRight: () => { 
           return (
             <View style={styles.rightEditingHeader}>
@@ -874,20 +888,6 @@ class Browsable extends React.Component {
           )
         }
       })
-
-      setTimeout(() => {
-        navigation.setOptions({
-          title: title,
-          headerTitle: null,
-        })
-      }, 50)
-
-      setTimeout(() => {
-        navigation.setOptions({
-          headerLeft: undefined,
-          headerBackVisible: true
-        })
-      }, 50)
     }
   }
 }

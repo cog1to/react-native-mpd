@@ -70,6 +70,7 @@ class Library extends React.Component {
           theme={theme}
           canFilter={true}
           canSelectMode={true}
+          canGoBack={false}
           onIconTapped={this.onModeSelected}
           title={title}
       />

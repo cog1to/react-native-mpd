@@ -45,6 +45,17 @@ const createNavigatorFactory = Platform.OS === 'android'
   ? createStackNavigator
   : createNativeStackNavigator
 
+const makeBackButton = (params) => {
+  if (params.dir.length == 1) {
+    return {
+      headerLeft: null,
+      headerBackVisible: false
+    }
+  } else {
+    return {}
+  }
+}
+
 // Browse.
 const BrowseStack = createNavigatorFactory()
 function BrowseNavigator({ navigation, route }) {
@@ -57,12 +68,12 @@ function BrowseNavigator({ navigation, route }) {
         key={"Browse-"+route.params?.name ?? ""}
         component={Browse} 
         initialParams={{ name: 'Browse', dir: [''], allSelected: false }} 
-        options={({route}) => ({
+        options={({route}) => ({...{
           headerShown: true,
           headerStyle: { backgroundColor: colors.navbar },
           title: route.params.name,
           headerTintColor: '#fff',
-        })}
+        }, ...makeBackButton(route.params)})}
       />
       <BrowseStack.Screen 
         name="Playlists" 
@@ -93,7 +104,9 @@ function LibraryNavigator() {
         options={{
           headerShown: true,
           headerStyle: { backgroundColor: colors.navbar },
-          headerTintColor: '#fff', title: "Library"
+          headerTintColor: '#fff', title: "Library",
+          headerLeft: null,
+          headerBackVisible: false
         }}
       />
       <LibraryStack.Screen
@@ -104,9 +117,9 @@ function LibraryNavigator() {
           mode: store.getState().storage.mode,
         }}
         options={({route}) => ({
+          title: route.params.name,
           headerShown: true,
           headerStyle: { backgroundColor: colors.navbar },
-          title: route.params.name,
           headerBackTitleVisible: false,
           headerTintColor: '#fff' 
         })} 
@@ -119,9 +132,9 @@ function LibraryNavigator() {
           mode: store.getState().storage.mode
         }}
         options={({route}) => ({
+          title: route.params.album,
           headerShown: true,
           headerStyle: { backgroundColor: colors.navbar },
-          title: route.params.album,
           headerTintColor: '#fff'
         })} 
       />
@@ -129,8 +142,8 @@ function LibraryNavigator() {
         name="Playlists" 
         component={Playlists} 
         options={{
-          headerShown: true,
           title: "",
+          headerShown: true,
           headerTintColor: '#fff',
           headerStyle: { backgroundColor: colors.navbar }
         }}
@@ -151,10 +164,12 @@ function QueueNavigator() {
         key="Queue"
         component={Queue} 
         options={{
+          title: "Queue",          
           headerShown: true,
           headerStyle: { backgroundColor: colors.navbar },
-          title: "Queue",
-          headerTintColor: '#fff'
+          headerTintColor: '#fff',
+          headerLeft: null,
+          headerBackVisible: false
         }}
       />
       <QueueStack.Screen
@@ -162,9 +177,9 @@ function QueueNavigator() {
         key="QueueSettings"
         component={QueueSettings}
         options={{
+          title: "Settings",
           headerShown: true,
           headerStyle: { backgroundColor: colors.navbar },
-          title: "Settings",
           headerTintColor: '#fff'
         }}
       />
@@ -173,9 +188,9 @@ function QueueNavigator() {
         key="Playlists"
         component={Playlists}
         options={{
+          title: "",
           headerShown: true,
           headerStyle: { backgroundColor: colors.navbar },
-          title: "",
           headerTintColor: '#fff'
         }}
       />
@@ -195,10 +210,12 @@ function MoreNavigator() {
         key="More"
         component={More}
         options={{
+          title: "More",          
           headerShown: true,
           headerStyle: { backgroundColor: colors.navbar },
-          title: "More",
-          headerTintColor: '#fff'
+          headerTintColor: '#fff',
+          headerLeft: null,
+          headerBackVisible: false
         }}
       />
       <MoreStack.Screen
@@ -206,9 +223,9 @@ function MoreNavigator() {
         key="Search"
         component={Search}
         options={{
-          headerShown: true,
-          headerStyle: { backgroundColor: colors.navbar },
           title: "Search",
+          headerShown: true,
+          headerStyle: { backgroundColor: colors.navbar },          
           headerTintColor: '#fff'
         }}
       />
@@ -217,9 +234,9 @@ function MoreNavigator() {
         key="SearchResults"
         component={SearchResults}
         options={{
+          title: "Search Results",
           headerShown: true,
           headerStyle: { backgroundColor: colors.navbar },
-          title: "Search Results",
           headerTintColor: '#fff'
         }}
       />
@@ -228,9 +245,9 @@ function MoreNavigator() {
         key="Playlists"
         component={Playlists}
         options={{
+          title: "Playlists",
           headerShown: true,
           headerStyle: { backgroundColor: colors.navbar },
-          title: "Playlists",
           headerTintColor: '#fff'
         }}
       />
@@ -239,9 +256,9 @@ function MoreNavigator() {
         key="Playlist"
         component={Playlist}
         options={({route}) => ({
+          title: route.params.name,
           headerShown: true,
           headerStyle: { backgroundColor: colors.navbar },
-          title: route.params.name,
           headerTintColor: '#fff'
         })}
       />
@@ -250,9 +267,9 @@ function MoreNavigator() {
         key="Outputs"
         component={Outputs}
         options={{
+          title: "Outputs",
           headerShown: true,
           headerStyle: { backgroundColor: colors.navbar },
-          title: "Outputs",
           headerTintColor: '#fff'
         }}
       />
@@ -272,10 +289,12 @@ function PlayerNavigator() {
         key="Player"
         component={Player}
         options={{
+          title: "Now Playing",
           headerShown: true,
           headerStyle: { backgroundColor: colors.navbar },
-          title: "Now Playing",
-          headerTintColor: '#fff'
+          headerTintColor: '#fff',
+          headerLeft: null,
+          headerBackVisible: false
         }}
       />
     </PlayerStack.Navigator>
