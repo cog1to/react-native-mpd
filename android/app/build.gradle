@@ -89,7 +89,7 @@ android {
         applicationId "ru.aint.mpd.mpd_wrapper"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 7
+        versionCode 9
         versionName "1.1"
     }
     signingConfigs {
