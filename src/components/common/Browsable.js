@@ -140,7 +140,7 @@ class KeyboardAwareBrowsable extends React.Component {
     const containerStyle = (layout != null)
       ? (Platform.OS === 'ios'
         ? { height: keyboardVisible ? (screenY - layout.y - (hasSafeArea ? 88 : 64)) : '100%', width: '100%' }
-        : { height: keyboardVisible ? (screenY - layout.y - 80) : '100%', width: '100%' })
+        : { height: keyboardVisible ? (screenY - layout.y - 80) : '100%', width: '100%' }) // no fking idea why 102%
       : { height: '100%', width: '100%' }
 
     return (
@@ -351,7 +351,7 @@ class Browsable extends React.Component {
     }()
 
     const safeAreaEdges = (Platform.OS === 'android'
-      ? ['right', 'left', 'bottom']
+      ? ['right', 'left']
       : ['right', 'left']
     )
 

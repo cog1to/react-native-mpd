@@ -55,7 +55,7 @@ react {
     /* Autolinking */
     autolinkLibrariesWithApp()
     entryFile = file("../../index.js")
-    nodeExecutableAndArgs = ["node", "--openssl-legacy-provider"]
+    nodeExecutableAndArgs = ["/Users/aint/.nvm/versions/node/v18.20.7/bin/node", "--openssl-legacy-provider"]
 }
 
 /**
@@ -89,7 +89,7 @@ android {
         applicationId "ru.aint.mpd.mpd_wrapper"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 9
+        versionCode 10
         versionName "1.1"
     }
     signingConfigs {
