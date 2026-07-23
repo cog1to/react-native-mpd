@@ -20,6 +20,10 @@ For example, you can do something like this before building or launching the app
 export JAVA_HOME=/usr/lib/jvm/java-22-openjdk
 ```
 
+Update: The JDK shenanigans are not required with the latest Android Studio/SDK, it seems.
+
+Note: Don't forget to add sdk/emulator and sdk/platform-tools to your PATH, so react-native wrapper could launch emulator and apps on them.
+
 #### Node version
 
 I use the following versions:
