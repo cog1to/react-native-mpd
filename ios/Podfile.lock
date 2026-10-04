@@ -1877,6 +1877,7 @@ PODS:
     - Yoga
   - SocketRocket (0.7.1)
   - TcpSockets (4.0.0):
+    - CocoaAsyncSocket
     - React
   - Yoga (0.0.0)
 
@@ -2209,9 +2210,9 @@ SPEC CHECKSUMS:
   RNScreens: b32d0d59b53acb574fa795a9343591ef4e7ab7c2
   RNVectorIcons: bd818296a51dc2bb8c3bd97a3ca399df1afe216d
   SocketRocket: d4aabe649be1e368d1318fdf28a022d714d65748
-  TcpSockets: c5f030d4dbc758c4c7acb00496dc92c412b02cd2
+  TcpSockets: 48866ffcb39d7114741919d21069fc90189e474a
   Yoga: afd04ff05ebe0121a00c468a8a3c8080221cb14c
 
-PODFILE CHECKSUM: 678a76daf262c02015cbf8d5e9b0b2bad70ff743
+PODFILE CHECKSUM: 975277e09e396e608bf3f8d402364cafac9bdf1d
 
-COCOAPODS: 1.16.2
+COCOAPODS: 1.17.0
